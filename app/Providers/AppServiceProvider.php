@@ -112,7 +112,6 @@ class AppServiceProvider extends ServiceProvider
                 'navPriceRanges' => $navPriceRanges,
                 'announcements' => $announcements,
                 'googleSetting' => GoogleSetting::first() ?? new GoogleSetting(),
-                'offerModal' => \App\Models\OfferModal::current(),
             ]);
         });
     }

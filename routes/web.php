@@ -68,6 +68,19 @@ Route::middleware('maintenance.mode')->group(function () {
 
     Route::controller(FrontController::class)->group(function () {
         Route::get('/', 'home')->name('home');
+        Route::view('/blogs', 'front-pages.blogs')->name('blogs');
+        Route::view('/about', 'front-pages.about')->name('about');
+        Route::view('/contact', 'front-pages.contact')->name('contact');
+        Route::view('/products', 'front-pages.product-listing')->name('products');
+        Route::view('/blog-detail', 'front-pages.blog-detail')->name('blog.detail');
+        Route::view('/certifications', 'front-pages.certifications')->name('certifications');
+        Route::view('/dashboard', 'front-pages.dashboard')->name('dashboard');
+        Route::view('/faqs', 'front-pages.faq')->name('faqs');
+        Route::view('/order-success', 'front-pages.order-success')->name('order.success');
+        Route::view('/payment', 'front-pages.payment')->name('payment');
+        Route::view('/privacy-policy', 'front-pages.privacy-policy')->name('privacy-policy');
+        Route::view('/product-detail', 'front-pages.product-detail')->name('product-detail');
+        Route::view('/products', 'front-pages.products')->name('products');
     });
 
     Route::get('/pincode/check', [PincodeController::class, 'check'])->middleware('throttle:30,1')->name('pincode.check');
@@ -182,7 +195,7 @@ Route::prefix('admin')->name('admin.')->group(function () {
             Route::put('/update/{id}', [HomeSliderController::class, 'update'])->name('update');
             Route::delete('/delete/{id}', [HomeSliderController::class, 'destroy'])->name('destroy');
         });
-    
+
 
         Route::get('/seo', [SeoController::class, 'index'])->name('seo.index');
         Route::put('/seo/{id}', [SeoController::class, 'update'])->name('seo.update');

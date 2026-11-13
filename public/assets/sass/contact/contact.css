@@ -1,0 +1,1963 @@
+@keyframes shine {
+  from {
+    opacity: 0;
+    left: 0%;
+  }
+  50% {
+    opacity: 1;
+  }
+  to {
+    opacity: 0;
+    left: 100%;
+  }
+}
+.contact-secA {
+  padding: 80px 0;
+  background: var(--white);
+}
+@media only screen and (max-width: 1280px) {
+  .contact-secA {
+    padding: 70px 0;
+  }
+}
+@media only screen and (max-width: 1024px) {
+  .contact-secA {
+    padding: 60px 0;
+  }
+}
+@media only screen and (max-width: 991px) {
+  .contact-secA {
+    padding: 54px 0;
+  }
+}
+@media only screen and (max-width: 768px) {
+  .contact-secA {
+    padding: 48px 0;
+  }
+}
+@media only screen and (max-width: 540px) {
+  .contact-secA {
+    padding: 40px 0;
+  }
+}
+.contact-secA .heading {
+  margin-bottom: 48px;
+}
+@media only screen and (max-width: 1024px) {
+  .contact-secA .heading {
+    margin-bottom: 40px;
+  }
+}
+@media only screen and (max-width: 768px) {
+  .contact-secA .heading {
+    margin-bottom: 34px;
+  }
+}
+@media only screen and (max-width: 540px) {
+  .contact-secA .heading {
+    margin-bottom: 26px;
+  }
+}
+.contact-secA .ct-info {
+  display: grid;
+  grid-template-columns: repeat(4, minmax(0, 1fr));
+  gap: 24px;
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+@media only screen and (max-width: 1280px) {
+  .contact-secA .ct-info {
+    gap: 18px;
+  }
+}
+@media only screen and (max-width: 1024px) {
+  .contact-secA .ct-info {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+}
+@media only screen and (max-width: 768px) {
+  .contact-secA .ct-info {
+    gap: 16px;
+  }
+}
+@media only screen and (max-width: 540px) {
+  .contact-secA .ct-info {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: 12px;
+  }
+}
+.contact-secA .ct-info li {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  min-width: 0;
+  padding: 40px 24px 34px;
+  border: 1px solid var(--border);
+  border-radius: 18px;
+  background: var(--bg);
+  text-align: center;
+  transition: border-color 0.3s ease, background 0.3s ease, box-shadow 0.4s ease, transform 0.4s ease;
+}
+@media only screen and (max-width: 1280px) {
+  .contact-secA .ct-info li {
+    padding: 34px 18px 30px;
+  }
+}
+@media only screen and (max-width: 1024px) {
+  .contact-secA .ct-info li {
+    padding: 34px 22px 30px;
+  }
+}
+@media only screen and (max-width: 768px) {
+  .contact-secA .ct-info li {
+    padding: 30px 20px 28px;
+    border-radius: 16px;
+  }
+}
+@media only screen and (max-width: 540px) {
+  .contact-secA .ct-info li {
+    padding: 22px 12px 20px;
+    border-radius: 12px;
+  }
+}
+.contact-secA .ct-info li:hover {
+  border-color: var(--primary);
+  background: var(--white);
+  box-shadow: rgba(0, 0, 0, 0.08) 0 16px 34px;
+  transform: translateY(-4px);
+}
+@media only screen and (max-width: 540px) {
+  .contact-secA .ct-info li:hover {
+    transform: translateY(-2px);
+  }
+}
+.contact-secA .ct-info li:hover .ct-ic {
+  background: var(--primary);
+  color: var(--white);
+}
+.contact-secA .ct-info h4 {
+  margin: 0 0 8px;
+  color: var(--black);
+  font-family: "Poppins";
+  font-size: 19px;
+  font-weight: 600;
+  line-height: 1.3;
+}
+@media only screen and (max-width: 1280px) {
+  .contact-secA .ct-info h4 {
+    font-size: 17px;
+  }
+}
+@media only screen and (max-width: 768px) {
+  .contact-secA .ct-info h4 {
+    font-size: 16.5px;
+  }
+}
+@media only screen and (max-width: 540px) {
+  .contact-secA .ct-info h4 {
+    margin-bottom: 6px;
+    font-size: 14px;
+  }
+}
+.contact-secA .ct-info p {
+  max-width: 240px;
+  margin: 0 0 14px;
+  color: var(--text);
+  font-family: "Poppins";
+  font-size: 14px;
+  line-height: 1.7;
+}
+@media only screen and (max-width: 768px) {
+  .contact-secA .ct-info p {
+    font-size: 13.5px;
+  }
+}
+@media only screen and (max-width: 540px) {
+  .contact-secA .ct-info p {
+    max-width: 100%;
+    margin-bottom: 10px;
+    font-size: 12px;
+    line-height: 1.6;
+  }
+}
+.contact-secA .ct-info a {
+  margin-top: auto;
+  color: var(--primary);
+  font-family: "Poppins";
+  font-size: 14px;
+  font-weight: 600;
+  line-height: 1.5;
+  word-break: break-word;
+  transition: color 0.3s ease;
+}
+@media only screen and (max-width: 768px) {
+  .contact-secA .ct-info a {
+    font-size: 13.5px;
+  }
+}
+@media only screen and (max-width: 540px) {
+  .contact-secA .ct-info a {
+    font-size: 11.5px;
+    line-height: 1.45;
+  }
+}
+.contact-secA .ct-info a:hover {
+  color: var(--black);
+}
+.contact-secA .ct-ic {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 64px;
+  height: 64px;
+  margin-bottom: 22px;
+  border: 1px solid var(--primary);
+  border-radius: 50%;
+  background: var(--white);
+  color: var(--primary);
+  font-size: 22px;
+  transition: all 0.3s ease;
+}
+@media only screen and (max-width: 1024px) {
+  .contact-secA .ct-ic {
+    width: 60px;
+    height: 60px;
+    font-size: 21px;
+  }
+}
+@media only screen and (max-width: 768px) {
+  .contact-secA .ct-ic {
+    width: 58px;
+    height: 58px;
+    margin-bottom: 20px;
+    font-size: 20px;
+  }
+}
+@media only screen and (max-width: 540px) {
+  .contact-secA .ct-ic {
+    width: 46px;
+    height: 46px;
+    margin-bottom: 14px;
+    font-size: 17px;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .contact-secA * {
+    transition: none !important;
+  }
+}
+.contact-secB {
+  padding: 80px 0;
+  background: var(--bg);
+}
+@media only screen and (max-width: 1280px) {
+  .contact-secB {
+    padding: 70px 0;
+  }
+}
+@media only screen and (max-width: 1024px) {
+  .contact-secB {
+    padding: 60px 0;
+  }
+}
+@media only screen and (max-width: 991px) {
+  .contact-secB {
+    padding: 54px 0;
+  }
+}
+@media only screen and (max-width: 768px) {
+  .contact-secB {
+    padding: 48px 0;
+  }
+}
+@media only screen and (max-width: 540px) {
+  .contact-secB {
+    padding: 40px 0;
+  }
+}
+.contact-secB .ct-grid {
+  display: grid;
+  grid-template-columns: minmax(0, 7fr) minmax(0, 4fr);
+  align-items: start;
+  gap: 48px;
+}
+@media only screen and (max-width: 1280px) {
+  .contact-secB .ct-grid {
+    gap: 32px;
+  }
+}
+@media only screen and (max-width: 1024px) {
+  .contact-secB .ct-grid {
+    gap: 28px;
+  }
+}
+@media only screen and (max-width: 991px) {
+  .contact-secB .ct-grid {
+    grid-template-columns: minmax(0, 1fr);
+    gap: 36px;
+  }
+}
+@media only screen and (max-width: 768px) {
+  .contact-secB .ct-grid {
+    gap: 32px;
+  }
+}
+@media only screen and (max-width: 540px) {
+  .contact-secB .ct-grid {
+    gap: 28px;
+  }
+}
+.contact-secB .ct-main {
+  min-width: 0;
+}
+.contact-secB .ct-main .heading {
+  max-width: 100%;
+  margin-bottom: 28px;
+}
+@media only screen and (max-width: 768px) {
+  .contact-secB .ct-main .heading {
+    margin-bottom: 24px;
+  }
+}
+@media only screen and (max-width: 540px) {
+  .contact-secB .ct-main .heading {
+    margin-bottom: 22px;
+  }
+}
+.contact-secB .ct-main .heading .eyebrow {
+  display: block;
+  margin-bottom: 10px;
+}
+.contact-secB .ct-main .heading h3 {
+  margin-bottom: 12px;
+}
+@media only screen and (max-width: 540px) {
+  .contact-secB .ct-main .heading h3 {
+    margin-bottom: 10px;
+  }
+}
+.contact-secB .ct-main .heading p {
+  max-width: 560px;
+  line-height: 1.7;
+}
+@media only screen and (max-width: 991px) {
+  .contact-secB .ct-main .heading p {
+    max-width: 100%;
+  }
+}
+@media only screen and (max-width: 540px) {
+  .contact-secB .ct-main .heading p {
+    line-height: 1.65;
+  }
+}
+.contact-secB .tab-nav {
+  position: relative;
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 6px;
+  width: 100%;
+  max-width: 100%;
+  margin: 0 0 24px;
+  padding: 6px;
+  overflow: visible;
+  list-style: none;
+  border: 1px solid var(--border);
+  border-radius: 999px;
+  background: var(--white);
+}
+@media only screen and (max-width: 768px) {
+  .contact-secB .tab-nav {
+    margin-bottom: 20px;
+  }
+}
+@media only screen and (max-width: 540px) {
+  .contact-secB .tab-nav {
+    margin-bottom: 18px;
+    padding: 5px;
+  }
+}
+.contact-secB .tab-nav li {
+  position: relative;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 10px;
+  min-width: 0;
+  margin: 0;
+  padding: 15px 20px;
+  border: 0;
+  border-radius: 999px;
+  background: transparent;
+  color: var(--text);
+  font-family: "Poppins";
+  font-size: 14.5px;
+  font-weight: 600;
+  line-height: 1.3;
+  text-align: center;
+  white-space: nowrap;
+  cursor: pointer;
+  transition: all 0.35s ease;
+}
+@media only screen and (max-width: 1280px) {
+  .contact-secB .tab-nav li {
+    padding: 14px 14px;
+    font-size: 14px;
+  }
+}
+@media only screen and (max-width: 1024px) {
+  .contact-secB .tab-nav li {
+    padding: 14px 16px;
+  }
+}
+@media only screen and (max-width: 768px) {
+  .contact-secB .tab-nav li {
+    gap: 8px;
+    padding: 13px 12px;
+    font-size: 13.5px;
+  }
+}
+@media only screen and (max-width: 540px) {
+  .contact-secB .tab-nav li {
+    flex-direction: column;
+    gap: 4px;
+    padding: 11px 6px;
+    font-size: 12.5px;
+    white-space: normal;
+  }
+}
+.contact-secB .tab-nav li::before, .contact-secB .tab-nav li::after {
+  display: none;
+}
+.contact-secB .tab-nav li i {
+  font-size: 15px;
+  transition: transform 0.3s ease;
+}
+@media only screen and (max-width: 540px) {
+  .contact-secB .tab-nav li i {
+    font-size: 14px;
+  }
+}
+.contact-secB .tab-nav li:hover {
+  color: var(--primary);
+}
+.contact-secB .tab-nav li.active {
+  background: var(--primary);
+  color: var(--white);
+}
+.contact-secB .tab-nav li.active i {
+  transform: scale(1.1);
+}
+.contact-secB .tab-nav-content .tabs {
+  display: none;
+}
+.contact-secB .tab-nav-content .tabs.active {
+  display: block;
+  animation: ctFade 0.45s ease;
+}
+.contact-secB .ct-form-card {
+  padding: 44px 44px 40px;
+  border: 1px solid var(--border);
+  border-radius: 20px;
+  background: var(--white);
+  box-shadow: rgba(0, 0, 0, 0.05) 0 14px 34px;
+}
+@media only screen and (max-width: 1280px) {
+  .contact-secB .ct-form-card {
+    padding: 36px 28px 32px;
+  }
+}
+@media only screen and (max-width: 1024px) {
+  .contact-secB .ct-form-card {
+    padding: 36px 32px 32px;
+  }
+}
+@media only screen and (max-width: 991px) {
+  .contact-secB .ct-form-card {
+    padding: 40px 36px 36px;
+  }
+}
+@media only screen and (max-width: 768px) {
+  .contact-secB .ct-form-card {
+    padding: 32px 24px 30px;
+    border-radius: 18px;
+  }
+}
+@media only screen and (max-width: 540px) {
+  .contact-secB .ct-form-card {
+    padding: 26px 16px 24px;
+    border-radius: 14px;
+  }
+}
+.contact-secB .ct-card-head {
+  margin-bottom: 30px;
+  padding-bottom: 20px;
+  border-bottom: 1px solid var(--border);
+}
+@media only screen and (max-width: 768px) {
+  .contact-secB .ct-card-head {
+    margin-bottom: 26px;
+    padding-bottom: 18px;
+  }
+}
+@media only screen and (max-width: 540px) {
+  .contact-secB .ct-card-head {
+    margin-bottom: 24px;
+    padding-bottom: 16px;
+  }
+}
+.contact-secB .ct-card-head h4 {
+  margin: 0 0 6px;
+  color: var(--black);
+  font-family: "Poppins";
+  font-size: 24px;
+  font-weight: 600;
+  line-height: 1.25;
+}
+@media only screen and (max-width: 1280px) {
+  .contact-secB .ct-card-head h4 {
+    font-size: 21px;
+  }
+}
+@media only screen and (max-width: 768px) {
+  .contact-secB .ct-card-head h4 {
+    font-size: 20px;
+  }
+}
+@media only screen and (max-width: 540px) {
+  .contact-secB .ct-card-head h4 {
+    font-size: 18px;
+  }
+}
+.contact-secB .ct-card-head p {
+  margin: 0;
+  color: var(--text);
+  font-family: "Poppins";
+  font-size: 14px;
+  line-height: 1.7;
+}
+@media only screen and (max-width: 768px) {
+  .contact-secB .ct-card-head p {
+    font-size: 13.5px;
+  }
+}
+@media only screen and (max-width: 540px) {
+  .contact-secB .ct-card-head p {
+    font-size: 13px;
+  }
+}
+.contact-secB .ct-form {
+  --inputsize: 40px;
+  --labelfontbefore: 14.5px;
+  --textareaheight: 70px;
+  display: grid;
+  gap: 30px;
+}
+@media only screen and (max-width: 768px) {
+  .contact-secB .ct-form {
+    --labelfontbefore: 14px;
+    gap: 28px;
+  }
+}
+@media only screen and (max-width: 540px) {
+  .contact-secB .ct-form {
+    --labelfontbefore: 13.5px;
+    gap: 26px;
+  }
+}
+.contact-secB .ct-form .form-group {
+  min-width: 0;
+}
+.contact-secB .ct-form .form-group label {
+  overflow: hidden;
+  max-width: 100%;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+.contact-secB .ct-form .form-group select {
+  display: block;
+  width: 100%;
+  height: var(--inputsize);
+  padding: 0;
+  border: 0;
+  background: none;
+  color: var(--text);
+  font-family: "Poppins";
+  font-size: var(--labelfontbefore);
+  line-height: var(--inputsize);
+}
+.contact-secB .ct-form .form-group .custom-select {
+  width: 100%;
+  height: var(--inputsize);
+}
+.contact-secB .ct-form .form-group .custom-select.open {
+  z-index: 6;
+}
+.contact-secB .ct-form .form-group .custom-select .current {
+  font-family: "Poppins";
+  font-size: var(--labelfontbefore);
+  line-height: var(--inputsize);
+}
+.contact-secB .ct-form .form-group .custom-select .list li {
+  font-family: "Poppins";
+  line-height: 1.4;
+}
+.contact-secB .ct-form .phone-group .iti {
+  display: block;
+  width: 100%;
+}
+.contact-secB .ct-form .phone-group .iti input.js-phone {
+  width: 100%;
+}
+.contact-secB .ct-group {
+  display: grid;
+  gap: 22px;
+  min-width: 0;
+}
+@media only screen and (max-width: 768px) {
+  .contact-secB .ct-group {
+    gap: 20px;
+  }
+}
+@media only screen and (max-width: 540px) {
+  .contact-secB .ct-group {
+    gap: 18px;
+  }
+}
+.contact-secB .ct-row {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 22px;
+}
+@media only screen and (max-width: 1024px) {
+  .contact-secB .ct-row {
+    gap: 18px;
+  }
+}
+@media only screen and (max-width: 768px) {
+  .contact-secB .ct-row {
+    gap: 16px;
+  }
+}
+@media only screen and (max-width: 540px) {
+  .contact-secB .ct-row {
+    grid-template-columns: minmax(0, 1fr);
+    gap: 18px;
+  }
+}
+.contact-secB .ct-label {
+  display: flex;
+  align-items: center;
+  gap: 14px;
+  color: var(--primary);
+  font-family: "Poppins";
+  font-size: 11px;
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 0.2em;
+}
+@media only screen and (max-width: 768px) {
+  .contact-secB .ct-label {
+    gap: 12px;
+    letter-spacing: 0.16em;
+  }
+}
+@media only screen and (max-width: 540px) {
+  .contact-secB .ct-label {
+    gap: 10px;
+    font-size: 10px;
+    letter-spacing: 0.14em;
+  }
+}
+.contact-secB .ct-label::after {
+  content: "";
+  flex: 1;
+  height: 1px;
+  background: var(--border);
+}
+.contact-secB .ct-upload {
+  position: relative;
+  display: flex;
+  align-items: center;
+  gap: 16px;
+  padding: 18px 20px;
+  border: 1px dashed var(--primary);
+  border-radius: 14px;
+  background: var(--bg);
+  cursor: pointer;
+  transition: background 0.3s ease;
+}
+@media only screen and (max-width: 768px) {
+  .contact-secB .ct-upload {
+    padding: 16px 18px;
+  }
+}
+@media only screen and (max-width: 540px) {
+  .contact-secB .ct-upload {
+    gap: 12px;
+    padding: 14px;
+    border-radius: 12px;
+  }
+}
+.contact-secB .ct-upload:hover {
+  background: var(--white);
+}
+.contact-secB .ct-upload input {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  overflow: hidden;
+  opacity: 0;
+  pointer-events: none;
+}
+.contact-secB .ct-upload-ic {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex: 0 0 46px;
+  width: 46px;
+  height: 46px;
+  border: 1px solid var(--primary);
+  border-radius: 50%;
+  background: var(--white);
+  color: var(--primary);
+}
+@media only screen and (max-width: 540px) {
+  .contact-secB .ct-upload-ic {
+    flex-basis: 40px;
+    width: 40px;
+    height: 40px;
+  }
+}
+.contact-secB .ct-upload-ic svg {
+  display: block;
+  width: 20px;
+  height: 20px;
+  fill: none;
+  stroke: currentColor;
+  stroke-width: 1.6;
+  stroke-linecap: round;
+  stroke-linejoin: round;
+}
+@media only screen and (max-width: 540px) {
+  .contact-secB .ct-upload-ic svg {
+    width: 18px;
+    height: 18px;
+  }
+}
+.contact-secB .ct-upload-text {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+  min-width: 0;
+}
+.contact-secB .ct-upload-text b {
+  color: var(--black);
+  font-family: "Poppins";
+  font-size: 14px;
+  font-weight: 600;
+}
+@media only screen and (max-width: 768px) {
+  .contact-secB .ct-upload-text b {
+    font-size: 13.5px;
+  }
+}
+@media only screen and (max-width: 540px) {
+  .contact-secB .ct-upload-text b {
+    font-size: 13px;
+  }
+}
+.contact-secB .ct-upload-text small {
+  color: var(--text);
+  font-family: "Poppins";
+  font-size: 12px;
+  line-height: 1.5;
+}
+@media only screen and (max-width: 768px) {
+  .contact-secB .ct-upload-text small {
+    font-size: 11.5px;
+  }
+}
+@media only screen and (max-width: 540px) {
+  .contact-secB .ct-upload-text small {
+    font-size: 11px;
+  }
+}
+.contact-secB .ct-foot {
+  display: flex;
+  gap: 12px;
+  justify-content: center;
+  flex-direction: column;
+  align-items: center;
+}
+@media only screen and (max-width: 540px) {
+  .contact-secB .ct-foot {
+    align-items: stretch;
+    gap: 10px;
+  }
+}
+.contact-secB .ct-submit {
+  width: auto;
+  cursor: pointer;
+}
+@media only screen and (max-width: 540px) {
+  .contact-secB .ct-submit {
+    width: 100%;
+  }
+}
+.contact-secB .ct-submit[disabled] {
+  opacity: 0.6;
+  pointer-events: none;
+}
+.contact-secB .ct-note {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  margin: 0;
+  color: var(--text);
+  font-family: "Poppins";
+  font-size: 12.5px;
+  line-height: 1.6;
+  text-align: center;
+}
+@media only screen and (max-width: 540px) {
+  .contact-secB .ct-note {
+    font-size: 12px;
+  }
+}
+.contact-secB .ct-note i {
+  color: var(--primary);
+  font-size: 12px;
+}
+@media only screen and (max-width: 540px) {
+  .contact-secB .ct-note i {
+    font-size: 11px;
+  }
+}
+.contact-secB .ct-side {
+  display: flex;
+  flex-direction: column;
+  gap: 20px;
+  min-width: 0;
+}
+@media (min-width: 992px) {
+  .contact-secB .ct-side {
+    position: sticky;
+    top: calc(var(--headerheight) + 30px);
+  }
+}
+@media only screen and (max-width: 991px) {
+  .contact-secB .ct-side {
+    display: grid;
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: 20px;
+  }
+}
+@media only screen and (max-width: 768px) {
+  .contact-secB .ct-side {
+    gap: 18px;
+  }
+}
+@media only screen and (max-width: 540px) {
+  .contact-secB .ct-side {
+    grid-template-columns: minmax(0, 1fr);
+    gap: 16px;
+  }
+}
+.contact-secB .ct-side-img {
+  position: relative;
+  aspect-ratio: 4/3;
+  margin: 0;
+  overflow: hidden;
+  border-radius: 20px;
+  background: var(--white);
+}
+@media only screen and (max-width: 991px) {
+  .contact-secB .ct-side-img {
+    grid-column: 1/-1;
+    aspect-ratio: 16/7;
+  }
+}
+@media only screen and (max-width: 768px) {
+  .contact-secB .ct-side-img {
+    aspect-ratio: 16/9;
+    border-radius: 18px;
+  }
+}
+@media only screen and (max-width: 540px) {
+  .contact-secB .ct-side-img {
+    aspect-ratio: 4/3;
+    border-radius: 14px;
+  }
+}
+.contact-secB .ct-side-img img {
+  display: block;
+  width: 100%;
+  height: 100%;
+  -o-object-fit: cover;
+     object-fit: cover;
+  transition: transform 0.8s ease;
+}
+.contact-secB .ct-side-img:hover img {
+  transform: scale(1.05);
+}
+.contact-secB .ct-side-img::after {
+  content: "";
+  position: absolute;
+  inset: 0;
+  background: linear-gradient(to top, rgba(0, 0, 0, 0.72) 0%, rgba(0, 0, 0, 0) 60%);
+  pointer-events: none;
+}
+.contact-secB .ct-side-img figcaption {
+  position: absolute;
+  left: 22px;
+  right: 22px;
+  bottom: 20px;
+  z-index: 1;
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+}
+@media only screen and (max-width: 768px) {
+  .contact-secB .ct-side-img figcaption {
+    left: 20px;
+    right: 20px;
+    bottom: 18px;
+  }
+}
+@media only screen and (max-width: 540px) {
+  .contact-secB .ct-side-img figcaption {
+    left: 16px;
+    right: 16px;
+    bottom: 16px;
+  }
+}
+.contact-secB .ct-side-img figcaption small {
+  color: var(--white);
+  font-family: "Poppins";
+  font-size: 11px;
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 0.16em;
+  opacity: 0.85;
+}
+@media only screen and (max-width: 540px) {
+  .contact-secB .ct-side-img figcaption small {
+    font-size: 10px;
+    letter-spacing: 0.12em;
+  }
+}
+.contact-secB .ct-side-img figcaption b {
+  color: var(--white);
+  font-family: "Poppins";
+  font-size: 17px;
+  font-weight: 600;
+  line-height: 1.4;
+}
+@media only screen and (max-width: 1280px) {
+  .contact-secB .ct-side-img figcaption b {
+    font-size: 16px;
+  }
+}
+@media only screen and (max-width: 540px) {
+  .contact-secB .ct-side-img figcaption b {
+    font-size: 15px;
+  }
+}
+.contact-secB .ct-side-box {
+  padding: 28px 28px 26px;
+  border: 1px solid var(--border);
+  border-radius: 18px;
+  background: var(--white);
+}
+@media only screen and (max-width: 1280px) {
+  .contact-secB .ct-side-box {
+    padding: 24px 20px 22px;
+  }
+}
+@media only screen and (max-width: 991px) {
+  .contact-secB .ct-side-box {
+    padding: 26px 24px 24px;
+  }
+}
+@media only screen and (max-width: 768px) {
+  .contact-secB .ct-side-box {
+    padding: 22px 20px 22px;
+    border-radius: 16px;
+  }
+}
+@media only screen and (max-width: 540px) {
+  .contact-secB .ct-side-box {
+    padding: 20px 18px 20px;
+    border-radius: 14px;
+  }
+}
+.contact-secB .ct-side-box h5 {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  margin: 0 0 16px;
+  color: var(--black);
+  font-family: "Poppins";
+  font-size: 16px;
+  font-weight: 600;
+  line-height: 1.3;
+}
+@media only screen and (max-width: 768px) {
+  .contact-secB .ct-side-box h5 {
+    justify-content: center;
+    margin-bottom: 14px;
+    font-size: 15px;
+  }
+}
+.contact-secB .ct-side-box h5 i {
+  color: var(--primary);
+  font-size: 15px;
+}
+@media only screen and (max-width: 540px) {
+  .contact-secB .ct-side-box h5 i {
+    font-size: 14px;
+  }
+}
+.contact-secB .ct-side-box > p {
+  margin: 14px 0 0;
+  color: var(--text);
+  font-family: "Poppins";
+  font-size: 13px;
+  line-height: 1.6;
+}
+@media only screen and (max-width: 540px) {
+  .contact-secB .ct-side-box > p {
+    font-size: 12.5px;
+  }
+}
+.contact-secB .ct-hours {
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+.contact-secB .ct-hours li {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+  padding: 10px 0;
+  border-bottom: 1px dashed var(--border);
+  font-family: "Poppins";
+  font-size: 13.5px;
+  line-height: 1.5;
+}
+@media only screen and (max-width: 768px) {
+  .contact-secB .ct-hours li {
+    font-size: 13px;
+  }
+}
+@media only screen and (max-width: 540px) {
+  .contact-secB .ct-hours li {
+    gap: 10px;
+    padding: 9px 0;
+    font-size: 12.5px;
+  }
+}
+.contact-secB .ct-hours li:last-child {
+  border-bottom: 0;
+}
+.contact-secB .ct-hours li span {
+  color: var(--text);
+}
+.contact-secB .ct-hours li b {
+  color: var(--black);
+  font-weight: 600;
+  text-align: right;
+}
+.contact-secB .ct-social {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 12px;
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+@media only screen and (max-width: 768px) {
+  .contact-secB .ct-social {
+    justify-content: center;
+    gap: 10px;
+  }
+}
+.contact-secB .ct-social a {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 42px;
+  height: 42px;
+  border: 1px solid var(--primary);
+  border-radius: 50%;
+  color: var(--primary);
+  font-size: 15px;
+  transition: all 0.3s ease;
+}
+@media only screen and (max-width: 540px) {
+  .contact-secB .ct-social a {
+    width: 38px;
+    height: 38px;
+    font-size: 14px;
+  }
+}
+.contact-secB .ct-social a:hover {
+  background: var(--primary);
+  color: var(--white);
+  transform: translateY(-3px);
+}
+
+@keyframes ctFade {
+  from {
+    opacity: 0;
+    transform: translateY(10px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+@media (prefers-reduced-motion: reduce) {
+  .contact-secB * {
+    transition: none !important;
+    animation: none !important;
+  }
+}
+.contact-secC {
+  padding: 80px 0;
+  background: var(--white);
+}
+@media only screen and (max-width: 1280px) {
+  .contact-secC {
+    padding: 70px 0;
+  }
+}
+@media only screen and (max-width: 1024px) {
+  .contact-secC {
+    padding: 60px 0;
+  }
+}
+@media only screen and (max-width: 991px) {
+  .contact-secC {
+    padding: 54px 0;
+  }
+}
+@media only screen and (max-width: 768px) {
+  .contact-secC {
+    padding: 48px 0;
+  }
+}
+@media only screen and (max-width: 540px) {
+  .contact-secC {
+    padding: 40px 0;
+  }
+}
+.contact-secC .heading {
+  margin-bottom: 44px;
+}
+@media only screen and (max-width: 1024px) {
+  .contact-secC .heading {
+    margin-bottom: 36px;
+  }
+}
+@media only screen and (max-width: 768px) {
+  .contact-secC .heading {
+    margin-bottom: 30px;
+  }
+}
+@media only screen and (max-width: 540px) {
+  .contact-secC .heading {
+    margin-bottom: 26px;
+  }
+}
+.contact-secC .ct-map-wrap {
+  position: relative;
+  overflow: hidden;
+  border: 1px solid var(--border);
+  border-radius: 22px;
+  background: var(--bg);
+}
+@media only screen and (max-width: 991px) {
+  .contact-secC .ct-map-wrap {
+    display: flex;
+    flex-direction: column;
+  }
+}
+@media only screen and (max-width: 768px) {
+  .contact-secC .ct-map-wrap {
+    border-radius: 18px;
+  }
+}
+@media only screen and (max-width: 540px) {
+  .contact-secC .ct-map-wrap {
+    border-radius: 14px;
+  }
+}
+.contact-secC .ct-map-wrap iframe {
+  display: block;
+  width: 100%;
+  height: 520px;
+  border: 0;
+  filter: grayscale(0.4);
+}
+@media only screen and (max-width: 1280px) {
+  .contact-secC .ct-map-wrap iframe {
+    height: 480px;
+  }
+}
+@media only screen and (max-width: 1024px) {
+  .contact-secC .ct-map-wrap iframe {
+    height: 440px;
+  }
+}
+@media only screen and (max-width: 991px) {
+  .contact-secC .ct-map-wrap iframe {
+    height: 340px;
+  }
+}
+@media only screen and (max-width: 768px) {
+  .contact-secC .ct-map-wrap iframe {
+    height: 320px;
+  }
+}
+@media only screen and (max-width: 540px) {
+  .contact-secC .ct-map-wrap iframe {
+    height: 260px;
+  }
+}
+.contact-secC .ct-office {
+  position: absolute;
+  top: 36px;
+  left: 36px;
+  z-index: 2;
+  width: 380px;
+  max-width: calc(100% - 72px);
+  padding: 34px 32px 30px;
+  border: 1px solid var(--border);
+  border-radius: 18px;
+  background: var(--white);
+  box-shadow: rgba(0, 0, 0, 0.14) 0 18px 40px;
+}
+@media only screen and (max-width: 1280px) {
+  .contact-secC .ct-office {
+    top: 24px;
+    left: 24px;
+    max-width: calc(100% - 48px);
+    padding: 28px 24px 26px;
+  }
+}
+@media only screen and (max-width: 1024px) {
+  .contact-secC .ct-office {
+    width: 340px;
+    padding: 26px 22px 24px;
+  }
+}
+@media only screen and (max-width: 991px) {
+  .contact-secC .ct-office {
+    position: static;
+    width: 100%;
+    max-width: 100%;
+    border: 0;
+    border-top: 1px solid var(--border);
+    border-radius: 0;
+    box-shadow: none;
+  }
+}
+@media only screen and (max-width: 768px) {
+  .contact-secC .ct-office {
+    padding: 26px 22px 24px;
+  }
+}
+@media only screen and (max-width: 540px) {
+  .contact-secC .ct-office {
+    padding: 24px 18px 22px;
+  }
+}
+.contact-secC .ct-office .eyebrow {
+  display: block;
+  margin-bottom: 10px;
+  color: var(--primary);
+  letter-spacing: 0.2em;
+}
+@media only screen and (max-width: 540px) {
+  .contact-secC .ct-office .eyebrow {
+    letter-spacing: 0.16em;
+  }
+}
+.contact-secC .ct-office h4 {
+  margin: 0 0 18px;
+  color: var(--black);
+  font-family: "Poppins";
+  font-size: 24px;
+  font-weight: 600;
+  line-height: 1.25;
+}
+@media only screen and (max-width: 1280px) {
+  .contact-secC .ct-office h4 {
+    font-size: 22px;
+  }
+}
+@media only screen and (max-width: 768px) {
+  .contact-secC .ct-office h4 {
+    font-size: 21px;
+  }
+}
+@media only screen and (max-width: 540px) {
+  .contact-secC .ct-office h4 {
+    margin-bottom: 14px;
+    font-size: 20px;
+  }
+}
+.contact-secC .ct-office ul {
+  margin: 0 0 22px;
+  padding: 0;
+  list-style: none;
+}
+@media only screen and (max-width: 540px) {
+  .contact-secC .ct-office ul {
+    margin-bottom: 18px;
+  }
+}
+.contact-secC .ct-office li {
+  display: grid;
+  grid-template-columns: 22px minmax(0, 1fr);
+  -moz-column-gap: 12px;
+       column-gap: 12px;
+  align-items: start;
+  padding: 8px 0;
+  color: var(--text);
+  font-family: "Poppins";
+  font-size: 14px;
+  line-height: 1.6;
+}
+@media only screen and (max-width: 768px) {
+  .contact-secC .ct-office li {
+    font-size: 13.5px;
+  }
+}
+@media only screen and (max-width: 540px) {
+  .contact-secC .ct-office li {
+    -moz-column-gap: 10px;
+         column-gap: 10px;
+    font-size: 13px;
+  }
+}
+.contact-secC .ct-office li i {
+  padding-top: 4px;
+  color: var(--primary);
+  font-size: 14px;
+}
+@media only screen and (max-width: 540px) {
+  .contact-secC .ct-office li i {
+    font-size: 13px;
+  }
+}
+.contact-secC .ct-office li a {
+  color: var(--text);
+  word-break: break-word;
+  transition: color 0.3s ease;
+}
+.contact-secC .ct-office li a:hover {
+  color: var(--primary);
+}
+.contact-secC .ct-office .btn {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 10px;
+}
+@media only screen and (max-width: 768px) {
+  .contact-secC .ct-office .btn {
+    display: flex;
+    width: -moz-fit-content;
+    width: fit-content;
+    margin: 0 auto;
+  }
+}
+@media only screen and (max-width: 540px) {
+  .contact-secC .ct-office .btn {
+    width: 100%;
+  }
+}
+.contact-secC .ct-office .btn i {
+  font-size: 11px;
+  transition: transform 0.3s ease;
+}
+@media only screen and (max-width: 540px) {
+  .contact-secC .ct-office .btn i {
+    font-size: 10px;
+  }
+}
+.contact-secC .ct-office .btn:hover i {
+  transform: translateX(4px);
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .contact-secC * {
+    transition: none !important;
+  }
+}
+.contact-secE {
+  padding: 80px 0;
+  background: var(--white);
+}
+@media only screen and (max-width: 1280px) {
+  .contact-secE {
+    padding: 70px 0;
+  }
+}
+@media only screen and (max-width: 1024px) {
+  .contact-secE {
+    padding: 60px 0;
+  }
+}
+@media only screen and (max-width: 991px) {
+  .contact-secE {
+    padding: 54px 0;
+  }
+}
+@media only screen and (max-width: 768px) {
+  .contact-secE {
+    padding: 48px 0;
+  }
+}
+@media only screen and (max-width: 540px) {
+  .contact-secE {
+    padding: 40px 0;
+  }
+}
+.contact-secE .cta-box {
+  position: relative;
+  display: grid;
+  grid-template-columns: minmax(0, 6fr) minmax(0, 5fr);
+  align-items: center;
+  gap: 56px;
+  padding: 72px 64px;
+  overflow: hidden;
+  border-radius: 28px;
+  background: linear-gradient(125deg, #7A3508 0%, #B8570F 30%, #E97822 65%, #F7A765 100%);
+  box-shadow: rgba(122, 53, 8, 0.28) 0 28px 60px;
+}
+@media only screen and (max-width: 1280px) {
+  .contact-secE .cta-box {
+    gap: 40px;
+    padding: 56px 40px;
+  }
+}
+@media only screen and (max-width: 1024px) {
+  .contact-secE .cta-box {
+    gap: 32px;
+    padding: 52px 32px;
+  }
+}
+@media only screen and (max-width: 991px) {
+  .contact-secE .cta-box {
+    grid-template-columns: minmax(0, 1fr);
+    gap: 34px;
+    padding: 48px 28px;
+    border-radius: 22px;
+  }
+}
+@media only screen and (max-width: 768px) {
+  .contact-secE .cta-box {
+    gap: 30px;
+    padding: 42px 24px;
+    border-radius: 20px;
+  }
+}
+@media only screen and (max-width: 540px) {
+  .contact-secE .cta-box {
+    gap: 28px;
+    padding: 34px 16px;
+    border-radius: 16px;
+  }
+}
+.contact-secE .cta-box::before {
+  content: "";
+  position: absolute;
+  inset: 0;
+  z-index: 0;
+  background-image: radial-gradient(rgba(255, 255, 255, 0.18) 1.2px, transparent 1.4px);
+  background-size: 22px 22px;
+  opacity: 0.45;
+  pointer-events: none;
+  -webkit-mask-image: linear-gradient(120deg, transparent 10%, #000 90%);
+  mask-image: linear-gradient(120deg, transparent 10%, #000 90%);
+}
+.contact-secE .cta-box::after {
+  content: "";
+  position: absolute;
+  inset: 0;
+  z-index: 0;
+  background: linear-gradient(to bottom, rgba(255, 255, 255, 0.1) 0%, rgba(255, 255, 255, 0) 45%);
+  pointer-events: none;
+}
+.contact-secE .cta-orb {
+  position: absolute;
+  z-index: 0;
+  border-radius: 50%;
+  pointer-events: none;
+}
+.contact-secE .cta-orb-1 {
+  top: -140px;
+  right: -100px;
+  width: 420px;
+  height: 420px;
+  background: radial-gradient(circle, rgba(255, 226, 196, 0.55) 0%, rgba(255, 226, 196, 0) 68%);
+}
+@media only screen and (max-width: 1024px) {
+  .contact-secE .cta-orb-1 {
+    width: 360px;
+    height: 360px;
+  }
+}
+@media only screen and (max-width: 768px) {
+  .contact-secE .cta-orb-1 {
+    top: -120px;
+    right: -110px;
+    width: 320px;
+    height: 320px;
+  }
+}
+@media only screen and (max-width: 540px) {
+  .contact-secE .cta-orb-1 {
+    top: -110px;
+    right: -120px;
+    width: 300px;
+    height: 300px;
+  }
+}
+.contact-secE .cta-orb-2 {
+  bottom: -180px;
+  left: -120px;
+  width: 440px;
+  height: 440px;
+  background: radial-gradient(circle, rgba(60, 22, 2, 0.55) 0%, rgba(60, 22, 2, 0) 68%);
+}
+@media only screen and (max-width: 1024px) {
+  .contact-secE .cta-orb-2 {
+    width: 380px;
+    height: 380px;
+  }
+}
+@media only screen and (max-width: 768px) {
+  .contact-secE .cta-orb-2 {
+    width: 340px;
+    height: 340px;
+  }
+}
+@media only screen and (max-width: 540px) {
+  .contact-secE .cta-orb-2 {
+    width: 300px;
+    height: 300px;
+  }
+}
+.contact-secE .cta-mark {
+  position: absolute;
+  right: 40%;
+  bottom: -60px;
+  z-index: 0;
+  color: var(--white);
+  font-size: 300px;
+  line-height: 1;
+  opacity: 0.07;
+  pointer-events: none;
+}
+@media only screen and (max-width: 1024px) {
+  .contact-secE .cta-mark {
+    font-size: 260px;
+  }
+}
+@media only screen and (max-width: 991px) {
+  .contact-secE .cta-mark {
+    right: -30px;
+    bottom: -50px;
+    font-size: 220px;
+  }
+}
+@media only screen and (max-width: 768px) {
+  .contact-secE .cta-mark {
+    font-size: 200px;
+  }
+}
+@media only screen and (max-width: 540px) {
+  .contact-secE .cta-mark {
+    font-size: 160px;
+  }
+}
+.contact-secE .cta-left {
+  position: relative;
+  z-index: 1;
+  min-width: 0;
+}
+@media only screen and (max-width: 991px) {
+  .contact-secE .cta-left {
+    text-align: center;
+  }
+  .contact-secE .cta-left .cta-btns {
+    justify-content: center;
+  }
+}
+.contact-secE .cta-left .eyebrow {
+  display: inline-block;
+  margin-bottom: 16px;
+  color: #FFD2AE;
+  letter-spacing: 0.22em;
+}
+@media only screen and (max-width: 540px) {
+  .contact-secE .cta-left .eyebrow {
+    margin-bottom: 12px;
+    letter-spacing: 0.18em;
+  }
+}
+.contact-secE .cta-left .eyebrow::before, .contact-secE .cta-left .eyebrow::after {
+  background: #FFD2AE;
+  color: #FFD2AE;
+}
+.contact-secE .cta-left h3 {
+  max-width: 560px;
+  margin: 0 0 20px;
+  color: var(--white);
+  font-family: "Poppins";
+  font-size: 46px;
+  font-weight: 600;
+  line-height: 1.15;
+}
+@media only screen and (max-width: 1280px) {
+  .contact-secE .cta-left h3 {
+    font-size: 40px;
+  }
+}
+@media only screen and (max-width: 1024px) {
+  .contact-secE .cta-left h3 {
+    font-size: 38px;
+  }
+}
+@media only screen and (max-width: 991px) {
+  .contact-secE .cta-left h3 {
+    margin-left: auto;
+    margin-right: auto;
+    font-size: 36px;
+  }
+}
+@media only screen and (max-width: 768px) {
+  .contact-secE .cta-left h3 {
+    margin-bottom: 16px;
+    font-size: 32px;
+  }
+}
+@media only screen and (max-width: 540px) {
+  .contact-secE .cta-left h3 {
+    margin-bottom: 14px;
+    font-size: 26px;
+  }
+}
+.contact-secE .cta-left p {
+  max-width: 520px;
+  margin: 0;
+  color: rgba(255, 255, 255, 0.88);
+  font-family: "Poppins";
+  font-size: 16px;
+  line-height: 1.8;
+}
+@media only screen and (max-width: 1280px) {
+  .contact-secE .cta-left p {
+    font-size: 15.5px;
+  }
+}
+@media only screen and (max-width: 1024px) {
+  .contact-secE .cta-left p {
+    font-size: 15px;
+  }
+}
+@media only screen and (max-width: 991px) {
+  .contact-secE .cta-left p {
+    margin-left: auto;
+    margin-right: auto;
+  }
+}
+@media only screen and (max-width: 768px) {
+  .contact-secE .cta-left p {
+    font-size: 14.5px;
+  }
+}
+@media only screen and (max-width: 540px) {
+  .contact-secE .cta-left p {
+    font-size: 13px;
+    line-height: 1.7;
+  }
+}
+.contact-secE .cta-btns {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 14px;
+  margin-top: 36px;
+}
+@media only screen and (max-width: 1024px) {
+  .contact-secE .cta-btns {
+    margin-top: 32px;
+  }
+}
+@media only screen and (max-width: 768px) {
+  .contact-secE .cta-btns {
+    justify-content: center;
+    margin-top: 30px;
+  }
+}
+@media only screen and (max-width: 540px) {
+  .contact-secE .cta-btns {
+    flex-direction: column;
+    align-items: stretch;
+    gap: 12px;
+    margin-top: 28px;
+  }
+}
+.contact-secE .cta-btns .btn {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 10px;
+  min-width: 190px;
+  cursor: pointer;
+}
+@media only screen and (max-width: 768px) {
+  .contact-secE .cta-btns .btn {
+    min-width: 170px;
+  }
+}
+@media only screen and (max-width: 540px) {
+  .contact-secE .cta-btns .btn {
+    width: 100%;
+    min-width: 0;
+  }
+}
+.contact-secE .cta-btns .btn i {
+  font-size: 12px;
+  transition: transform 0.3s ease;
+}
+@media only screen and (max-width: 540px) {
+  .contact-secE .cta-btns .btn i {
+    font-size: 11px;
+  }
+}
+.contact-secE .cta-btns .btn:hover i.fa-arrow-right {
+  transform: translateX(4px);
+}
+.contact-secE .cta-line {
+  border: 1px solid rgba(255, 255, 255, 0.75);
+  background: transparent;
+  color: var(--white);
+  transition: all 0.3s ease;
+}
+.contact-secE .cta-line:hover {
+  border-color: var(--white);
+  background: var(--white);
+  color: #B8570F;
+}
+.contact-secE .cta-actions {
+  position: relative;
+  z-index: 1;
+  display: flex;
+  flex-direction: column;
+  gap: 14px;
+  min-width: 0;
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+@media only screen and (max-width: 991px) {
+  .contact-secE .cta-actions {
+    width: 100%;
+    max-width: 560px;
+    margin: 0 auto;
+  }
+}
+@media only screen and (max-width: 768px) {
+  .contact-secE .cta-actions {
+    gap: 12px;
+  }
+}
+@media only screen and (max-width: 540px) {
+  .contact-secE .cta-actions {
+    max-width: 100%;
+    gap: 10px;
+  }
+}
+.contact-secE .cta-actions li {
+  min-width: 0;
+}
+.contact-secE .cta-action {
+  display: grid;
+  grid-template-columns: 56px minmax(0, 1fr) 20px;
+  align-items: center;
+  -moz-column-gap: 16px;
+       column-gap: 16px;
+  width: 100%;
+  padding: 18px 22px;
+  border: 1px solid rgba(255, 255, 255, 0.28);
+  border-radius: 16px;
+  background: rgba(255, 255, 255, 0.14);
+  backdrop-filter: blur(10px);
+  color: var(--white);
+  font: inherit;
+  text-align: left;
+  cursor: pointer;
+  transition: background 0.35s ease, transform 0.35s ease, box-shadow 0.35s ease, border-color 0.35s ease;
+}
+@media only screen and (max-width: 1280px) {
+  .contact-secE .cta-action {
+    grid-template-columns: 50px minmax(0, 1fr) 18px;
+    -moz-column-gap: 14px;
+         column-gap: 14px;
+    padding: 16px 16px;
+  }
+}
+@media only screen and (max-width: 1024px) {
+  .contact-secE .cta-action {
+    padding: 16px 18px;
+  }
+}
+@media only screen and (max-width: 768px) {
+  .contact-secE .cta-action {
+    grid-template-columns: 48px minmax(0, 1fr) 18px;
+    padding: 16px 16px;
+    border-radius: 14px;
+  }
+}
+@media only screen and (max-width: 540px) {
+  .contact-secE .cta-action {
+    grid-template-columns: 44px minmax(0, 1fr) 16px;
+    -moz-column-gap: 12px;
+         column-gap: 12px;
+    padding: 14px 12px;
+    border-radius: 12px;
+  }
+}
+.contact-secE .cta-action:hover {
+  border-color: var(--white);
+  background: var(--white);
+  box-shadow: rgba(60, 22, 2, 0.28) 0 16px 32px;
+  transform: translateX(-6px);
+}
+@media only screen and (max-width: 991px) {
+  .contact-secE .cta-action:hover {
+    transform: translateY(-3px);
+  }
+}
+.contact-secE .cta-action:hover .cta-action-ic {
+  background: linear-gradient(135deg, #B8570F, #E97822);
+  border-color: transparent;
+  color: var(--white);
+}
+.contact-secE .cta-action:hover .cta-action-text b {
+  color: var(--black);
+}
+.contact-secE .cta-action:hover .cta-action-text small {
+  color: var(--text);
+}
+.contact-secE .cta-action:hover .cta-action-go {
+  color: #E97822;
+  transform: translateX(4px);
+}
+.contact-secE .cta-action-ic {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 56px;
+  height: 56px;
+  border: 1px solid rgba(255, 255, 255, 0.55);
+  border-radius: 50%;
+  background: rgba(255, 255, 255, 0.12);
+  color: var(--white);
+  font-size: 19px;
+  transition: all 0.35s ease;
+}
+@media only screen and (max-width: 1280px) {
+  .contact-secE .cta-action-ic {
+    width: 50px;
+    height: 50px;
+    font-size: 17px;
+  }
+}
+@media only screen and (max-width: 768px) {
+  .contact-secE .cta-action-ic {
+    width: 48px;
+    height: 48px;
+    font-size: 16px;
+  }
+}
+@media only screen and (max-width: 540px) {
+  .contact-secE .cta-action-ic {
+    width: 44px;
+    height: 44px;
+    font-size: 15px;
+  }
+}
+.contact-secE .cta-action-text {
+  display: flex;
+  flex-direction: column;
+  gap: 3px;
+  min-width: 0;
+}
+.contact-secE .cta-action-text b {
+  color: var(--white);
+  font-family: "Poppins";
+  font-size: 17px;
+  font-weight: 600;
+  line-height: 1.3;
+  transition: color 0.3s ease;
+}
+@media only screen and (max-width: 1280px) {
+  .contact-secE .cta-action-text b {
+    font-size: 16px;
+  }
+}
+@media only screen and (max-width: 768px) {
+  .contact-secE .cta-action-text b {
+    font-size: 15.5px;
+  }
+}
+@media only screen and (max-width: 540px) {
+  .contact-secE .cta-action-text b {
+    font-size: 14.5px;
+  }
+}
+.contact-secE .cta-action-text small {
+  color: rgba(255, 255, 255, 0.82);
+  font-family: "Poppins";
+  font-size: 13px;
+  line-height: 1.5;
+  word-break: break-word;
+  transition: color 0.3s ease;
+}
+@media only screen and (max-width: 768px) {
+  .contact-secE .cta-action-text small {
+    font-size: 12.5px;
+  }
+}
+@media only screen and (max-width: 540px) {
+  .contact-secE .cta-action-text small {
+    font-size: 12px;
+  }
+}
+.contact-secE .cta-action-go {
+  color: rgba(255, 255, 255, 0.85);
+  font-size: 13px;
+  transition: all 0.3s ease;
+}
+@media only screen and (max-width: 540px) {
+  .contact-secE .cta-action-go {
+    font-size: 12px;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .contact-secE * {
+    transition: none !important;
+  }
+}/*# sourceMappingURL=contact.css.map */
