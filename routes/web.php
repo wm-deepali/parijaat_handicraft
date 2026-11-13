@@ -12,23 +12,18 @@ use App\Http\Controllers\Admin\{
     ProductController,
     PaymentController,
     RedirectController,
-    HomeReelController,
     HomePageController,
     CustomerController,
     CategoryController,
-    PageHeroController,
     TaxReportController,
-    AboutPageController,
     SystemLogController,
     DashboardController,
     NdrReportController,
     AttributeController,
-    HomeStoryController,
     HomeSliderController,
     StoredCartController,
     CreditNoteController,
     CollectionController,
-    OfferModalController,
     DynamicPageController,
     FaqCategoryController,
     StockAlertsController,
@@ -36,7 +31,6 @@ use App\Http\Controllers\Admin\{
     OrderReportController,
     OrderReturnController,
     AdminSettingController,
-    HomeCampaignController,
     ReturnReasonController,
     AnnouncementController,
     CouponReportController,
@@ -56,7 +50,6 @@ use App\Http\Controllers\Admin\{
     CustomerWishlistController,
     CancelledInvoiceController,
     CategoryAttributeController,
-    NewsletterSubscriberController
 };
 
 use Illuminate\Support\Facades\Route;
@@ -189,29 +182,7 @@ Route::prefix('admin')->name('admin.')->group(function () {
             Route::put('/update/{id}', [HomeSliderController::class, 'update'])->name('update');
             Route::delete('/delete/{id}', [HomeSliderController::class, 'destroy'])->name('destroy');
         });
-        Route::get('campaign', [HomeCampaignController::class, 'edit'])->name('campaign.edit');
-        Route::put('campaign', [HomeCampaignController::class, 'update'])->name('campaign.update');
-
-        Route::get('story', [HomeStoryController::class, 'edit'])->name('story.edit');
-        Route::put('story', [HomeStoryController::class, 'update'])->name('story.update');
-
-        Route::resource('reels', HomeReelController::class)->except(['show']);
-
-        Route::get('subscribers', [NewsletterSubscriberController::class, 'index'])->name('subscribers.index');
-        Route::get('subscribers/export', [NewsletterSubscriberController::class, 'export'])->name('subscribers.export');
-        Route::post('subscribers/{id}/toggle', [NewsletterSubscriberController::class, 'toggle'])->name('subscribers.toggle');
-        Route::delete('subscribers/{id}', [NewsletterSubscriberController::class, 'destroy'])->name('subscribers.destroy');
-
-        Route::get('offer-modal', [OfferModalController::class, 'edit'])->name('offer-modal.edit');
-        Route::put('offer-modal', [OfferModalController::class, 'update'])->name('offer-modal.update');
-
-        Route::get('about-page', [AboutPageController::class, 'index'])->name('about.index');
-        Route::get('about-page/{key}', [AboutPageController::class, 'edit'])->name('about.edit')->where('key', '[a-z_]+');
-        Route::put('about-page/{key}', [AboutPageController::class, 'update'])->name('about.update')->where('key', '[a-z_]+');
-
-        Route::get('page-banners', [PageHeroController::class, 'index'])->name('page-heroes.index');
-        Route::get('page-banners/{page}', [PageHeroController::class, 'edit'])->name('page-heroes.edit')->where('page', '[a-z_]+');
-        Route::put('page-banners/{page}', [PageHeroController::class, 'update'])->name('page-heroes.update')->where('page', '[a-z_]+');
+    
 
         Route::get('/seo', [SeoController::class, 'index'])->name('seo.index');
         Route::put('/seo/{id}', [SeoController::class, 'update'])->name('seo.update');
