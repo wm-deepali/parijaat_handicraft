@@ -1,0 +1,54 @@
+<?php
+
+use Illuminate\Database\Migrations\Migration;
+use Illuminate\Database\Schema\Blueprint;
+use Illuminate\Support\Facades\Schema;
+
+return new class extends Migration {
+    /**
+     * Run the migrations.
+     */
+    public function up(): void
+    {
+        Schema::create('category_attributes', function (Blueprint $table) {
+
+            $table->id();
+
+            $table->foreignId('category_id')
+                ->constrained()
+                ->cascadeOnDelete();
+
+            $table->foreignId('attribute_id')
+                ->constrained()
+                ->cascadeOnDelete();
+
+            $table->foreignId('parent_category_attribute_id')->nullable()
+                ->constrained('category_attributes')->nullOnDelete();
+            $table->json('show_when_value_ids')->nullable();
+            $table->boolean('is_selectable')->default(false);
+
+            $table->boolean('used_for_variant')->default(false);
+            $table->boolean('price_dependent')->default(false);
+            $table->boolean('image_dependent')->default(false);
+            $table->boolean('stock_dependent')->default(false);
+            $table->boolean('sku_dependent')->default(false);
+
+            $table->boolean('show_in_filter')->default(false);
+            $table->boolean('show_on_listing')->default(false);
+
+            $table->integer('sort_order')->default(0);
+
+            $table->boolean('status')->default(true);
+
+            $table->timestamps();
+        });
+    }
+
+    /**
+     * Reverse the migrations.
+     */
+    public function down(): void
+    {
+        Schema::dropIfExists('category_attributes');
+    }
+};

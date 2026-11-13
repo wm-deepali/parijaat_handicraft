@@ -1,0 +1,237 @@
+<?php
+
+namespace App\Http\Controllers\Admin;
+
+use App\Http\Controllers\Controller;
+use App\Models\Cart;
+use App\Models\CartActivity;
+use Illuminate\Http\Request;
+use Symfony\Component\HttpFoundation\StreamedResponse;
+
+class StoredCartController extends Controller
+{
+    public function index(Request $request)
+    {
+        $query = $this->baseQuery();
+
+        $this->applyFilters($query, $request);
+
+        // Stats: always unfiltered (guest + logged-in dono)
+        $totalCarts = $this->statsQuery()->count();
+        $totalCartValue = $this->statsQuery()->sum('grand_total');
+        $avgCartValue = $totalCarts > 0 ? $totalCartValue / $totalCarts : 0;
+        $abandonedToday = $this->statsQuery()->whereDate('updated_at', today())->count();
+        $guestCarts = $this->statsQuery()->whereNull('customer_id')->count();
+
+        $carts = $query->paginate(10)->withQueryString();
+
+        // Har cart ka tracked journey (stage dikhane ke liye) — show() jaisi visitor-based history
+        $cartIds = $carts->pluck('id');
+
+        $visitorMap = CartActivity::whereIn('cart_id', $cartIds)
+            ->whereNotNull('visitor_id')
+            ->get(['cart_id', 'visitor_id'])
+            ->groupBy('cart_id')
+            ->map(fn($g) => $g->pluck('visitor_id')->unique()->values());
+
+        $allVisitorIds = $visitorMap->flatten()->unique()->values();
+
+        $allActivities = CartActivity::where(function ($q) use ($cartIds, $allVisitorIds) {
+            $q->whereIn('cart_id', $cartIds);
+            if ($allVisitorIds->isNotEmpty()) {
+                $q->orWhereIn('visitor_id', $allVisitorIds);
+            }
+        })
+            ->orderBy('created_at')
+            ->get();
+
+        $activityMap = $carts->mapWithKeys(function ($cart) use ($visitorMap, $allActivities) {
+            $vids = $visitorMap[$cart->id] ?? collect();
+
+            return [
+                $cart->id => $allActivities->filter(
+                    fn($a) => $a->cart_id == $cart->id || $vids->contains($a->visitor_id)
+                )->values(),
+            ];
+        });
+
+        return view('admin.customers.stored-carts', compact(
+            'carts',
+            'totalCarts',
+            'totalCartValue',
+            'avgCartValue',
+            'abandonedToday',
+            'guestCarts',
+            'activityMap'
+        ));
+    }
+
+    public function show(Cart $cart)
+    {
+        $cart->load([
+            'customer',
+            'items.product',
+            'items.imageVariant',
+            'items.skuVariant',
+            'items.addons',
+        ]);
+
+        // Is cart se jude saare visitors (same browser ki poori history)
+        $visitorIds = CartActivity::where('cart_id', $cart->id)
+            ->pluck('visitor_id')
+            ->unique()
+            ->values();
+
+        $activities = CartActivity::where(function ($q) use ($cart, $visitorIds) {
+            $q->where('cart_id', $cart->id);
+
+            if ($visitorIds->isNotEmpty()) {
+                $q->orWhereIn('visitor_id', $visitorIds);
+            }
+        })
+            ->orderBy('created_at')
+            ->get();
+
+        $firstByEvent = $activities->groupBy('event')->map->first();
+
+        return view('admin.customers.stored-cart-detail', compact(
+            'cart',
+            'activities',
+            'firstByEvent'
+        ));
+    }
+
+    public function export(Request $request): StreamedResponse
+    {
+        $query = $this->baseQuery();
+        $this->applyFilters($query, $request);
+
+        $filename = 'stored-carts-' . now()->format('Y-m-d-His') . '.csv';
+
+        return response()->streamDownload(function () use ($query) {
+
+            $handle = fopen('php://output', 'w');
+
+            // BOM for Excel UTF-8 compatibility
+            fwrite($handle, "\xEF\xBB\xBF");
+
+            fputcsv($handle, [
+                'Cart ID',
+                'Customer Name',
+                'Customer Email',
+                'Customer Phone',
+                'Total Items',
+                'Total Qty',
+                'Subtotal (₹)',
+                'Discount (₹)',
+                'Tax Amount (₹)',
+                'Grand Total (₹)',
+                'Coupon Code',
+                'GST Type',
+                'Product Names',
+                'Last Updated',
+                'Cart Age (Days)',
+            ]);
+
+            $query->chunk(200, function ($carts) use ($handle) {
+                foreach ($carts as $cart) {
+                    $items = $cart->items;
+                    $totalQty = $items->sum('quantity');
+                    $itemCount = $items->count();
+                    $productNames = $items
+                        ->map(fn($i) => optional($i->product)->name ?? 'Unknown')
+                        ->implode(' | ');
+
+                    fputcsv($handle, [
+                        $cart->id,
+                        $cart->customer?->name ?? 'Guest',
+                        $cart->customer?->email ?? '',
+                        $cart->customer?->mobile ?? '',
+                        $itemCount,
+                        $totalQty,
+                        number_format($cart->subtotal, 2, '.', ''),
+                        number_format($cart->discount ?? 0, 2, '.', ''),
+                        number_format($cart->tax_amount ?? 0, 2, '.', ''),
+                        number_format($cart->grand_total, 2, '.', ''),
+                        $cart->coupon_code ?? '',
+                        $cart->gst_type ?? '',
+                        $productNames,
+                        $cart->updated_at->format('d M Y h:i A'),
+                        (int) $cart->updated_at->diffInDays(now()),
+                    ]);
+                }
+            });
+
+            fclose($handle);
+
+        }, $filename, [
+            'Content-Type' => 'text/csv; charset=UTF-8',
+            'Content-Disposition' => 'attachment; filename="' . $filename . '"',
+            'Cache-Control' => 'no-store, no-cache',
+            'Pragma' => 'no-cache',
+        ]);
+    }
+
+    public function destroy(Cart $cart)
+    {
+        $cart->items()->delete();
+        $cart->delete();
+
+        return redirect()->route('admin.stored-carts.index')
+            ->with('success', 'Cart cleared successfully.');
+    }
+
+    // ── Shared helpers ────────────────────────────────────────────────────────
+
+    private function statsQuery()
+    {
+        return Cart::where(fn($q) => $q->where('grand_total', '>', 0)
+            ->orWhere('total_amount', '>', 0));
+    }
+
+    private function baseQuery()
+    {
+        return Cart::with(['customer', 'items.product', 'items.imageVariant', 'items.skuVariant', 'items.addons'])
+            ->where(fn($q) => $q->where('grand_total', '>', 0)
+                ->orWhere('total_amount', '>', 0));
+    }
+
+    private function applyFilters($query, Request $request): void
+    {
+        if ($search = $request->input('search')) {
+            $query->whereHas(
+                'customer',
+                fn($q) =>
+                $q->where('name', 'like', "%{$search}%")
+                    ->orWhere('email', 'like', "%{$search}%")
+            );
+        }
+
+        if ($type = $request->input('type')) {
+            if ($type === 'guest') {
+                $query->whereNull('customer_id');
+            } elseif ($type === 'customer') {
+                $query->whereNotNull('customer_id');
+            }
+        }
+
+        if ($age = $request->input('cart_age')) {
+            $query->where('updated_at', '>=', match ($age) {
+                'today' => now()->startOfDay(),
+                '2days' => now()->subDays(2),
+                'week' => now()->subDays(7),
+                default => now()->subYears(10),
+            });
+        }
+
+        if ($minVal = $request->input('min_value')) {
+            $query->where('grand_total', '>=', $minVal);
+        }
+
+        $sortBy = $request->input('sort_by', 'updated_at');
+        $query->orderBy(
+            in_array($sortBy, ['updated_at', 'grand_total']) ? $sortBy : 'updated_at',
+            'desc'
+        );
+    }
+}
