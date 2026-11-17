@@ -25,7 +25,7 @@
                             </div>
                         </div>
                         <figure class="slide-img">
-                            <img src="assets/images/home/herobanner.png"
+                            <img src="{{ asset('assets/images/home/herobanner.png')}}"
                                 alt="Handcrafted brass decor and traditional accessories" />
                         </figure>
                     </div>
@@ -49,7 +49,7 @@
                             </div>
                         </div>
                         <figure class="slide-img">
-                            <img src="assets/images/home/herobanner2.png"
+                            <img src="{{ asset('assets/images/home/herobanner2.png')}}"
                                 alt="Brass diya, pooja thali and traditional accessories" />
                         </figure>
                     </div>
@@ -82,7 +82,7 @@
                                 <a href="product-listing.html" class="cat_card">
                                     <figure>
                                         <picture>
-                                            <img src="assets/images/home/cat1.png" alt="Brass Idols &amp; Statues"
+                                            <img src="{{ asset('assets/images/home/cat1.png')}}" alt="Brass Idols &amp; Statues"
                                                 loading="lazy" />
                                         </picture>
                                     </figure>
@@ -95,7 +95,7 @@
                                 <a href="product-listing.html" class="cat_card">
                                     <figure>
                                         <picture>
-                                            <img src="assets/images/home/cat2.png" alt="Pooja Essentials" loading="lazy" />
+                                            <img src="{{ asset('assets/images/home/cat2.png')}}" alt="Pooja Essentials" loading="lazy" />
                                         </picture>
                                     </figure>
                                     <h2>Pooja Essentials</h2>
@@ -107,7 +107,7 @@
                                 <a href="product-listing.html" class="cat_card">
                                     <figure>
                                         <picture>
-                                            <img src="assets/images/home/cat3.png" alt="Copper Drinkware" loading="lazy" />
+                                            <img src="{{ asset('assets/images/home/cat3.png')}}" alt="Copper Drinkware" loading="lazy" />
                                         </picture>
                                     </figure>
                                     <h2>Copper Drinkware</h2>
@@ -119,7 +119,7 @@
                                 <a href="product-listing.html" class="cat_card">
                                     <figure>
                                         <picture>
-                                            <img src="assets/images/home/cat4.png" alt="Brass Diyas &amp; Lamps"
+                                            <img src="{{ asset('assets/images/home/cat4.png')}}" alt="Brass Diyas &amp; Lamps"
                                                 loading="lazy" />
                                         </picture>
                                     </figure>
@@ -132,7 +132,7 @@
                                 <a href="product-listing.html" class="cat_card">
                                     <figure>
                                         <picture>
-                                            <img src="assets/images/home/cat5.png" alt="Antique Locks &amp; Keys"
+                                            <img src="{{ asset('assets/images/home/cat5.png')}}" alt="Antique Locks &amp; Keys"
                                                 loading="lazy" />
                                         </picture>
                                     </figure>
@@ -145,7 +145,7 @@
                                 <a href="product-listing.html" class="cat_card">
                                     <figure>
                                         <picture>
-                                            <img src="assets/images/home/cat6.png" alt="Bells &amp; Wind Chimes"
+                                            <img src="{{ asset('assets/images/home/cat6.png')}}" alt="Bells &amp; Wind Chimes"
                                                 loading="lazy" />
                                         </picture>
                                     </figure>
@@ -197,7 +197,7 @@
                                         <article class="prod_cart">
                                             <div class="prod-img">
                                                 <a href="product-detail.html" class="prod-link"><img
-                                                        src="assets/images/home/cat4.png" alt="Handmade Brass Oil Lamp"
+                                                        src="{{ asset('assets/images/home/cat4.png')}}" alt="Handmade Brass Oil Lamp"
                                                         loading="lazy" /></a>
                                                 <span class="prod-badge">Bestseller</span>
                                                 <button type="button" class="wish-btn" aria-label="Add to wishlist">
@@ -231,7 +231,7 @@
                                         <article class="prod_cart">
                                             <div class="prod-img">
                                                 <a href="product-detail.html" class="prod-link"><img
-                                                        src="assets/images/home/cat2.png" alt="Brass Aladdin Incense Burner"
+                                                        src="{{ asset('assets/images/home/cat2.png')}}" alt="Brass Aladdin Incense Burner"
                                                         loading="lazy" /></a>
                                                 <button type="button" class="wish-btn" aria-label="Add to wishlist">
                                                     <i class="fa-regular fa-heart"></i>
@@ -265,7 +265,7 @@
                                         <article class="prod_cart">
                                             <div class="prod-img">
                                                 <a href="product-detail.html" class="prod-link"><img
-                                                        src="assets/images/home/cat1.png"
+                                                        src="{{ asset('assets/images/home/cat1.png')}}"
                                                         alt="Brass Decorative Rabbit Figurine" loading="lazy" /></a>
                                                 <span class="prod-badge">Limited Stock</span>
                                                 <button type="button" class="wish-btn" aria-label="Add to wishlist">
@@ -300,7 +300,7 @@
                                         <article class="prod_cart">
                                             <div class="prod-img">
                                                 <a href="product-detail.html" class="prod-link"><img
-                                                        src="assets/images/home/cat3.png" alt="Hammered Copper Goblet"
+                                                        src="{{ asset('assets/images/home/cat3.png')}}" alt="Hammered Copper Goblet"
                                                         loading="lazy" /></a>
                                                 <button type="button" class="wish-btn" aria-label="Add to wishlist">
                                                     <i class="fa-regular fa-heart"></i>
@@ -333,7 +333,7 @@
                                         <article class="prod_cart">
                                             <div class="prod-img">
                                                 <a href="product-detail.html" class="prod-link"><img
-                                                        src="assets/images/home/cat4.png" alt="Brass Lotus Kuber Diya"
+                                                        src="{{ asset('assets/images/home/cat4.png')}}" alt="Brass Lotus Kuber Diya"
                                                         loading="lazy" /></a>
                                                 <span class="prod-badge">Bestseller</span>
                                                 <button type="button" class="wish-btn" aria-label="Add to wishlist">
@@ -367,7 +367,7 @@
                                         <article class="prod_cart">
                                             <div class="prod-img">
                                                 <a href="product-detail.html" class="prod-link"><img
-                                                        src="assets/images/home/cat1.png" alt="Brass Elephant Diya Stand"
+                                                        src="{{ asset('assets/images/home/cat1.png')}}" alt="Brass Elephant Diya Stand"
                                                         loading="lazy" /></a>
                                                 <button type="button" class="wish-btn" aria-label="Add to wishlist">
                                                     <i class="fa-regular fa-heart"></i>
@@ -418,7 +418,7 @@
                                         <article class="prod_cart">
                                             <div class="prod-img">
                                                 <a href="product-detail.html" class="prod-link"><img
-                                                        src="assets/images/home/cat1.png"
+                                                        src="{{ asset('assets/images/home/cat1.png')}}"
                                                         alt="Brass Decorative Rabbit Figurine" loading="lazy" /></a>
                                                 <span class="prod-badge">Limited Stock</span>
                                                 <button type="button" class="wish-btn" aria-label="Add to wishlist">
@@ -453,7 +453,7 @@
                                         <article class="prod_cart">
                                             <div class="prod-img">
                                                 <a href="product-detail.html" class="prod-link"><img
-                                                        src="assets/images/home/cat2.png" alt="Brass Aladdin Incense Burner"
+                                                        src="{{ asset('assets/images/home/cat2.png')}}" alt="Brass Aladdin Incense Burner"
                                                         loading="lazy" /></a>
                                                 <button type="button" class="wish-btn" aria-label="Add to wishlist">
                                                     <i class="fa-regular fa-heart"></i>
@@ -487,7 +487,7 @@
                                         <article class="prod_cart">
                                             <div class="prod-img">
                                                 <a href="product-detail.html" class="prod-link"><img
-                                                        src="assets/images/home/cat4.png" alt="Handmade Brass Oil Lamp"
+                                                        src="{{ asset('assets/images/home/cat4.png')}}" alt="Handmade Brass Oil Lamp"
                                                         loading="lazy" /></a>
                                                 <span class="prod-badge">Bestseller</span>
                                                 <button type="button" class="wish-btn" aria-label="Add to wishlist">
@@ -521,7 +521,7 @@
                                         <article class="prod_cart">
                                             <div class="prod-img">
                                                 <a href="product-detail.html" class="prod-link"><img
-                                                        src="assets/images/home/cat4.png" alt="Brass Lotus Kuber Diya"
+                                                        src="{{ asset('assets/images/home/cat4.png')}}" alt="Brass Lotus Kuber Diya"
                                                         loading="lazy" /></a>
                                                 <span class="prod-badge">Bestseller</span>
                                                 <button type="button" class="wish-btn" aria-label="Add to wishlist">
@@ -555,7 +555,7 @@
                                         <article class="prod_cart">
                                             <div class="prod-img">
                                                 <a href="product-detail.html" class="prod-link"><img
-                                                        src="assets/images/home/cat1.png" alt="Brass Elephant Diya Stand"
+                                                        src="{{ asset('assets/images/home/cat1.png')}}" alt="Brass Elephant Diya Stand"
                                                         loading="lazy" /></a>
                                                 <button type="button" class="wish-btn" aria-label="Add to wishlist">
                                                     <i class="fa-regular fa-heart"></i>
@@ -606,7 +606,7 @@
                                         <article class="prod_cart">
                                             <div class="prod-img">
                                                 <a href="product-detail.html" class="prod-link"><img
-                                                        src="assets/images/home/cat4.png" alt="Brass Lotus Kuber Diya"
+                                                        src="{{ asset('assets/images/home/cat4.png')}}" alt="Brass Lotus Kuber Diya"
                                                         loading="lazy" /></a>
                                                 <span class="prod-badge">Bestseller</span>
                                                 <button type="button" class="wish-btn" aria-label="Add to wishlist">
@@ -640,7 +640,7 @@
                                         <article class="prod_cart">
                                             <div class="prod-img">
                                                 <a href="product-detail.html" class="prod-link"><img
-                                                        src="assets/images/home/cat4.png" alt="Handmade Brass Oil Lamp"
+                                                        src="{{ asset('assets/images/home/cat4.png')}}" alt="Handmade Brass Oil Lamp"
                                                         loading="lazy" /></a>
                                                 <span class="prod-badge">Bestseller</span>
                                                 <button type="button" class="wish-btn" aria-label="Add to wishlist">
@@ -674,7 +674,7 @@
                                         <article class="prod_cart">
                                             <div class="prod-img">
                                                 <a href="product-detail.html" class="prod-link"><img
-                                                        src="assets/images/home/cat1.png" alt="Brass Elephant Diya Stand"
+                                                        src="{{ asset('assets/images/home/cat1.png')}}" alt="Brass Elephant Diya Stand"
                                                         loading="lazy" /></a>
                                                 <button type="button" class="wish-btn" aria-label="Add to wishlist">
                                                     <i class="fa-regular fa-heart"></i>
@@ -708,7 +708,7 @@
                                         <article class="prod_cart">
                                             <div class="prod-img">
                                                 <a href="product-detail.html" class="prod-link"><img
-                                                        src="assets/images/home/cat2.png" alt="Brass Aladdin Incense Burner"
+                                                        src="{{ asset('assets/images/home/cat2.png')}}" alt="Brass Aladdin Incense Burner"
                                                         loading="lazy" /></a>
                                                 <button type="button" class="wish-btn" aria-label="Add to wishlist">
                                                     <i class="fa-regular fa-heart"></i>
@@ -742,7 +742,7 @@
                                         <article class="prod_cart">
                                             <div class="prod-img">
                                                 <a href="product-detail.html" class="prod-link"><img
-                                                        src="assets/images/home/cat1.png"
+                                                        src="{{ asset('assets/images/home/cat1.png')}}"
                                                         alt="Brass Decorative Rabbit Figurine" loading="lazy" /></a>
                                                 <span class="prod-badge">Limited Stock</span>
                                                 <button type="button" class="wish-btn" aria-label="Add to wishlist">
@@ -794,7 +794,7 @@
                                         <article class="prod_cart">
                                             <div class="prod-img">
                                                 <a href="product-detail.html" class="prod-link"><img
-                                                        src="assets/images/home/cat1.png"
+                                                        src="{{ asset('assets/images/home/cat1.png')}}"
                                                         alt="Brass Decorative Rabbit Figurine" loading="lazy" /></a>
                                                 <span class="prod-badge">Limited Stock</span>
                                                 <button type="button" class="wish-btn" aria-label="Add to wishlist">
@@ -829,7 +829,7 @@
                                         <article class="prod_cart">
                                             <div class="prod-img">
                                                 <a href="product-detail.html" class="prod-link"><img
-                                                        src="assets/images/home/cat6.png" alt="Brass Wind Chime"
+                                                        src="{{ asset('assets/images/home/cat6.png')}}" alt="Brass Wind Chime"
                                                         loading="lazy" /></a>
                                                 <button type="button" class="wish-btn" aria-label="Add to wishlist">
                                                     <i class="fa-regular fa-heart"></i>
@@ -862,7 +862,7 @@
                                         <article class="prod_cart">
                                             <div class="prod-img">
                                                 <a href="product-detail.html" class="prod-link"><img
-                                                        src="assets/images/home/cat4.png" alt="Handmade Brass Oil Lamp"
+                                                        src="{{ asset('assets/images/home/cat4.png')}}" alt="Handmade Brass Oil Lamp"
                                                         loading="lazy" /></a>
                                                 <span class="prod-badge">Bestseller</span>
                                                 <button type="button" class="wish-btn" aria-label="Add to wishlist">
@@ -896,7 +896,7 @@
                                         <article class="prod_cart">
                                             <div class="prod-img">
                                                 <a href="product-detail.html" class="prod-link"><img
-                                                        src="assets/images/home/cat5.png" alt="Antique Brass Lock"
+                                                        src="{{ asset('assets/images/home/cat5.png')}}" alt="Antique Brass Lock"
                                                         loading="lazy" /></a>
                                                 <button type="button" class="wish-btn" aria-label="Add to wishlist">
                                                     <i class="fa-regular fa-heart"></i>
@@ -929,7 +929,7 @@
                                         <article class="prod_cart">
                                             <div class="prod-img">
                                                 <a href="product-detail.html" class="prod-link"><img
-                                                        src="assets/images/home/cat4.png" alt="Brass Lotus Kuber Diya"
+                                                        src="{{ asset('assets/images/home/cat4.png')}}" alt="Brass Lotus Kuber Diya"
                                                         loading="lazy" /></a>
                                                 <span class="prod-badge">Bestseller</span>
                                                 <button type="button" class="wish-btn" aria-label="Add to wishlist">
@@ -980,7 +980,7 @@
                                         <article class="prod_cart">
                                             <div class="prod-img">
                                                 <a href="product-detail.html" class="prod-link"><img
-                                                        src="assets/images/home/cat3.png" alt="Hammered Copper Goblet"
+                                                        src="{{ asset('assets/images/home/cat3.png')}}" alt="Hammered Copper Goblet"
                                                         loading="lazy" /></a>
                                                 <button type="button" class="wish-btn" aria-label="Add to wishlist">
                                                     <i class="fa-regular fa-heart"></i>
@@ -1013,7 +1013,7 @@
                                         <article class="prod_cart">
                                             <div class="prod-img">
                                                 <a href="product-detail.html" class="prod-link"><img
-                                                        src="assets/images/home/cat3.png" alt="Copper Water Bottle"
+                                                        src="{{ asset('assets/images/home/cat3.png')}}" alt="Copper Water Bottle"
                                                         loading="lazy" /></a>
                                                 <span class="prod-badge">Bestseller</span>
                                                 <button type="button" class="wish-btn" aria-label="Add to wishlist">
@@ -1047,7 +1047,7 @@
                                         <article class="prod_cart">
                                             <div class="prod-img">
                                                 <a href="product-detail.html" class="prod-link"><img
-                                                        src="assets/images/home/cat3.png" alt="Copper Serving Bowl"
+                                                        src="{{ asset('assets/images/home/cat3.png')}}" alt="Copper Serving Bowl"
                                                         loading="lazy" /></a>
                                                 <button type="button" class="wish-btn" aria-label="Add to wishlist">
                                                     <i class="fa-regular fa-heart"></i>
@@ -1080,7 +1080,7 @@
                                         <article class="prod_cart">
                                             <div class="prod-img">
                                                 <a href="product-detail.html" class="prod-link"><img
-                                                        src="assets/images/home/cat3.png" alt="Copper Jug with Tumblers"
+                                                        src="{{ asset('assets/images/home/cat3.png')}}" alt="Copper Jug with Tumblers"
                                                         loading="lazy" /></a>
                                                 <span class="prod-badge">Limited Stock</span>
                                                 <button type="button" class="wish-btn" aria-label="Add to wishlist">
@@ -1115,7 +1115,7 @@
                                         <article class="prod_cart">
                                             <div class="prod-img">
                                                 <a href="product-detail.html" class="prod-link"><img
-                                                        src="assets/images/home/cat3.png" alt="Hammered Copper Tumbler"
+                                                        src="{{ asset('assets/images/home/cat3.png')}}" alt="Hammered Copper Tumbler"
                                                         loading="lazy" /></a>
                                                 <button type="button" class="wish-btn" aria-label="Add to wishlist">
                                                     <i class="fa-regular fa-heart"></i>
@@ -1164,7 +1164,7 @@
                 <div class="sale-card">
                     <!-- PRODUCT IMAGE (blends into the gradient) -->
                     <figure class="sale-photo">
-                        <img src="assets/images/home/offer1.jpg" alt="Handcrafted brass decor" loading="lazy" />
+                        <img src="{{ asset('assets/images/home/offer1.jpg')}}" alt="Handcrafted brass decor" loading="lazy" />
                     </figure>
 
                     <!-- LEFT : TEXT -->
@@ -1211,7 +1211,7 @@
                     <!-- LEFT : SPOT MEDIA (overlay card) -->
                     <a href="product-listing.html" class="spot-media">
                         <figure class="spot-photo">
-                            <picture><img src="assets/images/home/cat1.png" alt="Sacred Spaces" loading="lazy" /></picture>
+                            <picture><img src="{{ asset('assets/images/home/cat1.png')}}" alt="Sacred Spaces" loading="lazy" /></picture>
                         </figure>
                         <span class="spot-tag">Featured Collection</span>
                         <div class="spot-info">
@@ -1256,7 +1256,7 @@
                                     <div class="swiper-slide">
                                         <a href="product-listing.html" class="spot-card">
                                             <figure>
-                                                <picture><img src="assets/images/home/cat1.png"
+                                                <picture><img src="{{ asset('assets/images/home/cat1.png')}}"
                                                         alt="Brass Idols &amp; Statues" loading="lazy" /></picture>
                                             </figure>
                                             <h5>Brass Idols &amp; Statues</h5>
@@ -1267,7 +1267,7 @@
                                     <div class="swiper-slide">
                                         <a href="product-listing.html" class="spot-card">
                                             <figure>
-                                                <picture><img src="assets/images/home/cat2.png" alt="Pooja Essentials"
+                                                <picture><img src="{{ asset('assets/images/home/cat2.png')}}" alt="Pooja Essentials"
                                                         loading="lazy" /></picture>
                                             </figure>
                                             <h5>Pooja Essentials</h5>
@@ -1278,7 +1278,7 @@
                                     <div class="swiper-slide">
                                         <a href="product-listing.html" class="spot-card">
                                             <figure>
-                                                <picture><img src="assets/images/home/cat3.png" alt="Copper Drinkware"
+                                                <picture><img src="{{ asset('assets/images/home/cat3.png')}}" alt="Copper Drinkware"
                                                         loading="lazy" /></picture>
                                             </figure>
                                             <h5>Copper Drinkware</h5>
@@ -1289,7 +1289,7 @@
                                     <div class="swiper-slide">
                                         <a href="product-listing.html" class="spot-card">
                                             <figure>
-                                                <picture><img src="assets/images/home/cat4.png"
+                                                <picture><img src="{{ asset('assets/images/home/cat4.png')}}"
                                                         alt="Brass Diyas &amp; Lamps" loading="lazy" /></picture>
                                             </figure>
                                             <h5>Brass Diyas &amp; Lamps</h5>
@@ -1300,7 +1300,7 @@
                                     <div class="swiper-slide">
                                         <a href="product-listing.html" class="spot-card">
                                             <figure>
-                                                <picture><img src="assets/images/home/cat5.png"
+                                                <picture><img src="{{ asset('assets/images/home/cat5.png')}}"
                                                         alt="Antique Locks &amp; Keys" loading="lazy" /></picture>
                                             </figure>
                                             <h5>Antique Locks &amp; Keys</h5>
@@ -1311,7 +1311,7 @@
                                     <div class="swiper-slide">
                                         <a href="product-listing.html" class="spot-card">
                                             <figure>
-                                                <picture><img src="assets/images/home/cat6.png"
+                                                <picture><img src="{{ asset('assets/images/home/cat6.png')}}"
                                                         alt="Bells &amp; Wind Chimes" loading="lazy" /></picture>
                                             </figure>
                                             <h5>Bells &amp; Wind Chimes</h5>
@@ -1345,7 +1345,7 @@
                     <!-- LEFT : arch image + tilted detail photo + rotating badge -->
                     <div class="story-media">
                         <figure class="story-main">
-                            <img src="assets/images/home/cat3.png" alt="Artisan shaping handcrafted pieces in a workshop"
+                            <img src="{{ asset('assets/images/home/cat3.png')}}" alt="Artisan shaping handcrafted pieces in a workshop"
                                 loading="lazy" />
                         </figure>
 
@@ -1443,7 +1443,7 @@
                                         <article class="prod_cart">
                                             <div class="prod-img">
                                                 <a href="product-detail.html" class="prod-link"><img
-                                                        src="assets/images/home/cat4.png" alt="Brass Peacock Diya"
+                                                        src="{{ asset('assets/images/home/cat4.png')}}" alt="Brass Peacock Diya"
                                                         loading="lazy" /></a>
                                                 <span class="prod-badge">New</span>
                                                 <button type="button" class="wish-btn" aria-label="Add to wishlist">
@@ -1477,7 +1477,7 @@
                                         <article class="prod_cart">
                                             <div class="prod-img">
                                                 <a href="product-detail.html" class="prod-link"><img
-                                                        src="assets/images/home/cat5.png" alt="Antique Brass Lock"
+                                                        src="{{ asset('assets/images/home/cat5.png')}}" alt="Antique Brass Lock"
                                                         loading="lazy" /></a>
                                                 <span class="prod-badge">New</span>
                                                 <button type="button" class="wish-btn" aria-label="Add to wishlist">
@@ -1511,7 +1511,7 @@
                                         <article class="prod_cart">
                                             <div class="prod-img">
                                                 <a href="product-detail.html" class="prod-link"><img
-                                                        src="assets/images/home/cat3.png" alt="Hammered Copper Tumbler"
+                                                        src="{{ asset('assets/images/home/cat3.png')}}" alt="Hammered Copper Tumbler"
                                                         loading="lazy" /></a>
                                                 <button type="button" class="wish-btn" aria-label="Add to wishlist">
                                                     <i class="fa-regular fa-heart"></i>
@@ -1544,7 +1544,7 @@
                                         <article class="prod_cart">
                                             <div class="prod-img">
                                                 <a href="product-detail.html" class="prod-link"><img
-                                                        src="assets/images/home/cat6.png" alt="Brass Wind Chime"
+                                                        src="{{ asset('assets/images/home/cat6.png')}}" alt="Brass Wind Chime"
                                                         loading="lazy" /></a>
                                                 <span class="prod-badge">New</span>
                                                 <button type="button" class="wish-btn" aria-label="Add to wishlist">
@@ -1578,7 +1578,7 @@
                                         <article class="prod_cart">
                                             <div class="prod-img">
                                                 <a href="product-detail.html" class="prod-link"><img
-                                                        src="assets/images/home/cat1.png" alt="Brass Elephant Figurine"
+                                                        src="{{ asset('assets/images/home/cat1.png')}}" alt="Brass Elephant Figurine"
                                                         loading="lazy" /></a>
                                                 <span class="prod-badge">New</span>
                                                 <button type="button" class="wish-btn" aria-label="Add to wishlist">
@@ -1612,7 +1612,7 @@
                                         <article class="prod_cart">
                                             <div class="prod-img">
                                                 <a href="product-detail.html" class="prod-link"><img
-                                                        src="assets/images/home/cat3.png" alt="Hammered Copper Tumbler"
+                                                        src="{{ asset('assets/images/home/cat3.png')}}" alt="Hammered Copper Tumbler"
                                                         loading="lazy" /></a>
                                                 <button type="button" class="wish-btn" aria-label="Add to wishlist">
                                                     <i class="fa-regular fa-heart"></i>
@@ -1662,7 +1662,7 @@
                                         <article class="prod_cart">
                                             <div class="prod-img">
                                                 <a href="product-detail.html" class="prod-link"><img
-                                                        src="assets/images/home/cat1.png" alt="Brass Elephant Figurine"
+                                                        src="{{ asset('assets/images/home/cat1.png')}}" alt="Brass Elephant Figurine"
                                                         loading="lazy" /></a>
                                                 <span class="prod-badge">New</span>
                                                 <button type="button" class="wish-btn" aria-label="Add to wishlist">
@@ -1696,7 +1696,7 @@
                                         <article class="prod_cart">
                                             <div class="prod-img">
                                                 <a href="product-detail.html" class="prod-link"><img
-                                                        src="assets/images/home/cat2.png" alt="Brass Aladdin Incense Burner"
+                                                        src="{{ asset('assets/images/home/cat2.png')}}" alt="Brass Aladdin Incense Burner"
                                                         loading="lazy" /></a>
                                                 <span class="prod-badge">New</span>
                                                 <button type="button" class="wish-btn" aria-label="Add to wishlist">
@@ -1731,7 +1731,7 @@
                                         <article class="prod_cart">
                                             <div class="prod-img">
                                                 <a href="product-detail.html" class="prod-link"><img
-                                                        src="assets/images/home/cat4.png" alt="Brass Lotus Kuber Diya"
+                                                        src="{{ asset('assets/images/home/cat4.png')}}" alt="Brass Lotus Kuber Diya"
                                                         loading="lazy" /></a>
                                                 <button type="button" class="wish-btn" aria-label="Add to wishlist">
                                                     <i class="fa-regular fa-heart"></i>
@@ -1764,7 +1764,7 @@
                                         <article class="prod_cart">
                                             <div class="prod-img">
                                                 <a href="product-detail.html" class="prod-link"><img
-                                                        src="assets/images/home/cat6.png" alt="Brass Temple Bell"
+                                                        src="{{ asset('assets/images/home/cat6.png')}}" alt="Brass Temple Bell"
                                                         loading="lazy" /></a>
                                                 <span class="prod-badge">New</span>
                                                 <button type="button" class="wish-btn" aria-label="Add to wishlist">
@@ -1798,7 +1798,7 @@
                                         <article class="prod_cart">
                                             <div class="prod-img">
                                                 <a href="product-detail.html" class="prod-link"><img
-                                                        src="assets/images/home/cat4.png" alt="Brass Peacock Diya"
+                                                        src="{{ asset('assets/images/home/cat4.png')}}" alt="Brass Peacock Diya"
                                                         loading="lazy" /></a>
                                                 <span class="prod-badge">New</span>
                                                 <button type="button" class="wish-btn" aria-label="Add to wishlist">
@@ -1849,7 +1849,7 @@
                                         <article class="prod_cart">
                                             <div class="prod-img">
                                                 <a href="product-detail.html" class="prod-link"><img
-                                                        src="assets/images/home/cat1.png"
+                                                        src="{{ asset('assets/images/home/cat1.png')}}"
                                                         alt="Brass Decorative Rabbit Figurine" loading="lazy" /></a>
                                                 <span class="prod-badge">New</span>
                                                 <button type="button" class="wish-btn" aria-label="Add to wishlist">
@@ -1884,7 +1884,7 @@
                                         <article class="prod_cart">
                                             <div class="prod-img">
                                                 <a href="product-detail.html" class="prod-link"><img
-                                                        src="assets/images/home/cat6.png" alt="Brass Wind Chime"
+                                                        src="{{ asset('assets/images/home/cat6.png')}}" alt="Brass Wind Chime"
                                                         loading="lazy" /></a>
                                                 <button type="button" class="wish-btn" aria-label="Add to wishlist">
                                                     <i class="fa-regular fa-heart"></i>
@@ -1917,7 +1917,7 @@
                                         <article class="prod_cart">
                                             <div class="prod-img">
                                                 <a href="product-detail.html" class="prod-link"><img
-                                                        src="assets/images/home/cat4.png" alt="Handmade Brass Oil Lamp"
+                                                        src="{{ asset('assets/images/home/cat4.png')}}" alt="Handmade Brass Oil Lamp"
                                                         loading="lazy" /></a>
                                                 <span class="prod-badge">New</span>
                                                 <button type="button" class="wish-btn" aria-label="Add to wishlist">
@@ -1951,7 +1951,7 @@
                                         <article class="prod_cart">
                                             <div class="prod-img">
                                                 <a href="product-detail.html" class="prod-link"><img
-                                                        src="assets/images/home/cat5.png" alt="Antique Brass Lock"
+                                                        src="{{ asset('assets/images/home/cat5.png')}}" alt="Antique Brass Lock"
                                                         loading="lazy" /></a>
                                                 <button type="button" class="wish-btn" aria-label="Add to wishlist">
                                                     <i class="fa-regular fa-heart"></i>
@@ -1984,7 +1984,7 @@
                                         <article class="prod_cart">
                                             <div class="prod-img">
                                                 <a href="product-detail.html" class="prod-link"><img
-                                                        src="assets/images/home/cat2.png" alt="Brass Aladdin Incense Burner"
+                                                        src="{{ asset('assets/images/home/cat2.png')}}" alt="Brass Aladdin Incense Burner"
                                                         loading="lazy" /></a>
                                                 <span class="prod-badge">New</span>
                                                 <button type="button" class="wish-btn" aria-label="Add to wishlist">
@@ -2036,7 +2036,7 @@
                                         <article class="prod_cart">
                                             <div class="prod-img">
                                                 <a href="product-detail.html" class="prod-link"><img
-                                                        src="assets/images/home/cat3.png" alt="Copper Goblet Gift Set"
+                                                        src="{{ asset('assets/images/home/cat3.png')}}" alt="Copper Goblet Gift Set"
                                                         loading="lazy" /></a>
                                                 <span class="prod-badge">New</span>
                                                 <button type="button" class="wish-btn" aria-label="Add to wishlist">
@@ -2070,7 +2070,7 @@
                                         <article class="prod_cart">
                                             <div class="prod-img">
                                                 <a href="product-detail.html" class="prod-link"><img
-                                                        src="assets/images/home/cat2.png" alt="Brass Aladdin Incense Burner"
+                                                        src="{{ asset('assets/images/home/cat2.png')}}" alt="Brass Aladdin Incense Burner"
                                                         loading="lazy" /></a>
                                                 <button type="button" class="wish-btn" aria-label="Add to wishlist">
                                                     <i class="fa-regular fa-heart"></i>
@@ -2104,7 +2104,7 @@
                                         <article class="prod_cart">
                                             <div class="prod-img">
                                                 <a href="product-detail.html" class="prod-link"><img
-                                                        src="assets/images/home/cat4.png" alt="Brass Lotus Kuber Diya"
+                                                        src="{{ asset('assets/images/home/cat4.png')}}" alt="Brass Lotus Kuber Diya"
                                                         loading="lazy" /></a>
                                                 <span class="prod-badge">New</span>
                                                 <button type="button" class="wish-btn" aria-label="Add to wishlist">
@@ -2138,7 +2138,7 @@
                                         <article class="prod_cart">
                                             <div class="prod-img">
                                                 <a href="product-detail.html" class="prod-link"><img
-                                                        src="assets/images/home/cat1.png" alt="Brass Elephant Diya Stand"
+                                                        src="{{ asset('assets/images/home/cat1.png')}}" alt="Brass Elephant Diya Stand"
                                                         loading="lazy" /></a>
                                                 <button type="button" class="wish-btn" aria-label="Add to wishlist">
                                                     <i class="fa-regular fa-heart"></i>
@@ -2172,7 +2172,7 @@
                                         <article class="prod_cart">
                                             <div class="prod-img">
                                                 <a href="product-detail.html" class="prod-link"><img
-                                                        src="assets/images/home/cat3.png" alt="Hammered Copper Goblet"
+                                                        src="{{ asset('assets/images/home/cat3.png')}}" alt="Hammered Copper Goblet"
                                                         loading="lazy" /></a>
                                                 <span class="prod-badge">New</span>
                                                 <button type="button" class="wish-btn" aria-label="Add to wishlist">
@@ -2232,7 +2232,7 @@
                     <!-- FEATURE (big) -->
                     <article class="offer-card offer-feature">
                         <figure class="offer-img">
-                            <picture><img src="assets/images/home/diwali_7_11zon.png" alt="Diwali Offers" loading="lazy" />
+                            <picture><img src="{{ asset('assets/images/home/diwali_7_11zon.png')}}" alt="Diwali Offers" loading="lazy" />
                             </picture>
                         </figure>
                         <div class="offer-badge">
@@ -2257,7 +2257,7 @@
                                 <div class="swiper-slide">
                                     <a href="javascript:void(0)" class="offer-card">
                                         <figure class="offer-img">
-                                            <picture><img src="assets/images/home/jam_6_11zon.png"
+                                            <picture><img src="{{ asset('assets/images/home/jam_6_11zon.png')}}"
                                                     alt="Krishna Janmashtami Festival Offers" loading="lazy" /></picture>
                                         </figure>
                                         <div class="offer-badge">
@@ -2276,7 +2276,7 @@
                                 <div class="swiper-slide">
                                     <a href="javascript:void(0)" class="offer-card">
                                         <figure class="offer-img">
-                                            <picture><img src="assets/images/home/free_5_11zon.png" alt="Free Shipping"
+                                            <picture><img src="{{ asset('assets/images/home/free_5_11zon.png')}}" alt="Free Shipping"
                                                     loading="lazy" /></picture>
                                         </figure>
                                         <div class="offer-badge">
@@ -2295,7 +2295,7 @@
                                 <div class="swiper-slide">
                                     <a href="javascript:void(0)" class="offer-card">
                                         <figure class="offer-img">
-                                            <picture><img src="assets/images/home/bressbell_1_11zon.png" alt="Best Selling"
+                                            <picture><img src="{{ asset('assets/images/home/bressbell_1_11zon.png')}}" alt="Best Selling"
                                                     loading="lazy" /></picture>
                                         </figure>
                                         <div class="offer-badge">
@@ -2314,7 +2314,7 @@
                                 <div class="swiper-slide">
                                     <a href="javascript:void(0)" class="offer-card">
                                         <figure class="offer-img">
-                                            <picture><img src="assets/images/home/door_3_11zon.png" alt="Door Lock"
+                                            <picture><img src="{{ asset('assets/images/home/door_3_11zon.png')}}" alt="Door Lock"
                                                     loading="lazy" /></picture>
                                         </figure>
                                         <div class="offer-badge">
@@ -2333,7 +2333,7 @@
                                 <div class="swiper-slide">
                                     <a href="javascript:void(0)" class="offer-card">
                                         <figure class="offer-img">
-                                            <picture><img src="assets/images/home/pro30.jpg" alt="Brass Bell"
+                                            <picture><img src="{{ asset('assets/images/home/pro30.jpg')}}" alt="Brass Bell"
                                                     loading="lazy" /></picture>
                                         </figure>
                                         <div class="offer-badge">
@@ -2352,7 +2352,7 @@
                                 <div class="swiper-slide">
                                     <a href="javascript:void(0)" class="offer-card">
                                         <figure class="offer-img">
-                                            <picture><img src="assets/images/home/dinner_2_11zon.png" alt="Dinner Set"
+                                            <picture><img src="{{ asset('assets/images/home/dinner_2_11zon.png')}}" alt="Dinner Set"
                                                     loading="lazy" /></picture>
                                         </figure>
                                         <div class="offer-badge">
@@ -2450,7 +2450,7 @@
                     <!-- RIGHT : WIDE FEATURE -->
                     <a href="product-listing.html" class="craft-feature">
                         <figure class="craft-feature-img">
-                            <picture><img src="assets/images/home/cat1.png" alt="Sacred Spaces" loading="lazy" /></picture>
+                            <picture><img src="{{ asset('assets/images/home/cat1.png')}}" alt="Sacred Spaces" loading="lazy" /></picture>
                         </figure>
                         <span class="craft-tag">Featured Collection</span>
                         <div class="craft-feature-info">
@@ -2473,7 +2473,7 @@
                                 <div class="swiper-slide">
                                     <a href="product-listing.html" class="craft-card">
                                         <figure class="craft-img">
-                                            <picture><img src="assets/images/home/cat1.png" alt="Timeless Interiors"
+                                            <picture><img src="{{ asset('assets/images/home/cat1.png')}}" alt="Timeless Interiors"
                                                     loading="lazy" /></picture>
                                         </figure>
                                         <span class="craft-no">01</span>
@@ -2492,7 +2492,7 @@
                                 <div class="swiper-slide">
                                     <a href="product-listing.html" class="craft-card">
                                         <figure class="craft-img">
-                                            <picture><img src="assets/images/home/cat2.png" alt="Artful Living"
+                                            <picture><img src="{{ asset('assets/images/home/cat2.png')}}" alt="Artful Living"
                                                     loading="lazy" /></picture>
                                         </figure>
                                         <span class="craft-no">02</span>
@@ -2511,7 +2511,7 @@
                                 <div class="swiper-slide">
                                     <a href="product-listing.html" class="craft-card">
                                         <figure class="craft-img">
-                                            <picture><img src="assets/images/home/cat3.png" alt="The Art of Dining"
+                                            <picture><img src="{{ asset('assets/images/home/cat3.png')}}" alt="The Art of Dining"
                                                     loading="lazy" /></picture>
                                         </figure>
                                         <span class="craft-no">03</span>
@@ -2530,7 +2530,7 @@
                                 <div class="swiper-slide">
                                     <a href="product-listing.html" class="craft-card">
                                         <figure class="craft-img">
-                                            <picture><img src="assets/images/home/cat4.png" alt="Lamps &amp; Diyas"
+                                            <picture><img src="{{ asset('assets/images/home/cat4.png')}}" alt="Lamps &amp; Diyas"
                                                     loading="lazy" /></picture>
                                         </figure>
                                         <span class="craft-no">04</span>
@@ -2547,7 +2547,7 @@
                                 <div class="swiper-slide">
                                     <a href="product-listing.html" class="craft-card">
                                         <figure class="craft-img">
-                                            <picture><img src="assets/images/home/cat6.png" alt="Bells &amp; Chimes"
+                                            <picture><img src="{{ asset('assets/images/home/cat6.png')}}" alt="Bells &amp; Chimes"
                                                     loading="lazy" /></picture>
                                         </figure>
                                         <span class="craft-no">05</span>
@@ -2564,7 +2564,7 @@
                                 <div class="swiper-slide">
                                     <a href="product-listing.html" class="craft-card">
                                         <figure class="craft-img">
-                                            <picture><img src="assets/images/home/cat5.png" alt="Antique Locks"
+                                            <picture><img src="{{ asset('assets/images/home/cat5.png')}}" alt="Antique Locks"
                                                     loading="lazy" /></picture>
                                         </figure>
                                         <span class="craft-no">06</span>
@@ -2693,7 +2693,7 @@
                     <!-- LEFT : LARGE EDITORIAL IMAGE -->
                     <a href="product-listing.html" class="gift-feature">
                         <figure class="gift-photo">
-                            <picture><img src="assets/images/home/cat1.png" alt="Handcrafted gifts that tell a story"
+                            <picture><img src="{{ asset('assets/images/home/cat1.png')}}" alt="Handcrafted gifts that tell a story"
                                     loading="lazy" /></picture>
                         </figure>
                         <span class="gift-tag">Gift Edit</span>
@@ -2717,7 +2717,7 @@
                         <div class="gift-tiles">
                             <a href="product-listing.html" class="gift-tile">
                                 <figure>
-                                    <picture><img src="assets/images/home/cat4.png" alt="Gifts for Every Occasion"
+                                    <picture><img src="{{ asset('assets/images/home/cat4.png')}}" alt="Gifts for Every Occasion"
                                             loading="lazy" /></picture>
                                 </figure>
                                 <div class="gift-text">
@@ -2729,7 +2729,7 @@
 
                             <a href="product-listing.html" class="gift-tile">
                                 <figure>
-                                    <picture><img src="assets/images/home/cat2.png" alt="Traditional Gifts"
+                                    <picture><img src="{{ asset('assets/images/home/cat2.png')}}" alt="Traditional Gifts"
                                             loading="lazy" /></picture>
                                 </figure>
                                 <div class="gift-text">
@@ -2741,7 +2741,7 @@
 
                             <a href="product-listing.html" class="gift-tile">
                                 <figure>
-                                    <picture><img src="assets/images/home/cat1.png" alt="Housewarming Gifts"
+                                    <picture><img src="{{ asset('assets/images/home/cat1.png')}}" alt="Housewarming Gifts"
                                             loading="lazy" /></picture>
                                 </figure>
                                 <div class="gift-text">
@@ -2753,7 +2753,7 @@
 
                             <a href="product-listing.html" class="gift-tile">
                                 <figure>
-                                    <picture><img src="assets/images/home/cat5.png" alt="Collectible Treasures"
+                                    <picture><img src="{{ asset('assets/images/home/cat5.png')}}" alt="Collectible Treasures"
                                             loading="lazy" /></picture>
                                 </figure>
                                 <div class="gift-text">
@@ -2777,7 +2777,7 @@
                 <div class="aff-card">
                     <!-- IMAGE -->
                     <figure class="aff-media">
-                        <img src="assets/images/home/cat1.png" alt="Handcrafted brass idol by Parijaat Handicraft"
+                        <img src="{{ asset('assets/images/home/cat1.png')}}" alt="Handcrafted brass idol by Parijaat Handicraft"
                             loading="lazy" />
                     </figure>
 
@@ -2931,7 +2931,7 @@
                                 <article class="prod_cart">
                                     <div class="prod-img">
                                         <a href="product-detail.html" class="prod-link"><img
-                                                src="assets/images/home/cat4.png" alt="Handmade Brass Oil Lamp"
+                                                src="{{ asset('assets/images/home/cat4.png')}}" alt="Handmade Brass Oil Lamp"
                                                 loading="lazy" /></a>
                                         <span class="prod-badge">Bestseller</span>
                                         <button type="button" class="wish-btn" aria-label="Add to wishlist">
@@ -2965,7 +2965,7 @@
                                 <article class="prod_cart">
                                     <div class="prod-img">
                                         <a href="product-detail.html" class="prod-link"><img
-                                                src="assets/images/home/cat2.png" alt="Brass Aladdin Incense Burner"
+                                                src="{{ asset('assets/images/home/cat2.png')}}" alt="Brass Aladdin Incense Burner"
                                                 loading="lazy" /></a>
                                         <button type="button" class="wish-btn" aria-label="Add to wishlist">
                                             <i class="fa-regular fa-heart"></i>
@@ -2998,7 +2998,7 @@
                                 <article class="prod_cart">
                                     <div class="prod-img">
                                         <a href="product-detail.html" class="prod-link"><img
-                                                src="assets/images/home/cat1.png" alt="Brass Decorative Rabbit Figurine"
+                                                src="{{ asset('assets/images/home/cat1.png')}}" alt="Brass Decorative Rabbit Figurine"
                                                 loading="lazy" /></a>
                                         <span class="prod-badge">Limited Stock</span>
                                         <button type="button" class="wish-btn" aria-label="Add to wishlist">
@@ -3033,7 +3033,7 @@
                                 <article class="prod_cart">
                                     <div class="prod-img">
                                         <a href="product-detail.html" class="prod-link"><img
-                                                src="assets/images/home/cat3.png" alt="Hammered Copper Goblet"
+                                                src="{{ asset('assets/images/home/cat3.png')}}" alt="Hammered Copper Goblet"
                                                 loading="lazy" /></a>
                                         <button type="button" class="wish-btn" aria-label="Add to wishlist">
                                             <i class="fa-regular fa-heart"></i>
@@ -3066,7 +3066,7 @@
                                 <article class="prod_cart">
                                     <div class="prod-img">
                                         <a href="product-detail.html" class="prod-link"><img
-                                                src="assets/images/home/cat4.png" alt="Brass Lotus Kuber Diya"
+                                                src="{{ asset('assets/images/home/cat4.png')}}" alt="Brass Lotus Kuber Diya"
                                                 loading="lazy" /></a>
                                         <span class="prod-badge">Bestseller</span>
                                         <button type="button" class="wish-btn" aria-label="Add to wishlist">
@@ -3100,7 +3100,7 @@
                                 <article class="prod_cart">
                                     <div class="prod-img">
                                         <a href="product-detail.html" class="prod-link"><img
-                                                src="assets/images/home/cat6.png" alt="Brass Wind Chime"
+                                                src="{{ asset('assets/images/home/cat6.png')}}" alt="Brass Wind Chime"
                                                 loading="lazy" /></a>
                                         <button type="button" class="wish-btn" aria-label="Add to wishlist">
                                             <i class="fa-regular fa-heart"></i>
@@ -3162,7 +3162,7 @@
                                 <a href="product-listing.html" class="mp-card mp-official"
                                     aria-label="Continue shopping on Parijaat Handicraft">
                                     <figure class="mp-logo">
-                                        <img src="assets/images/logo.png" alt="Parijaat Handicraft" width="160" height="60"
+                                        <img src="{{ asset('assets/images/logo.png')}}" alt="Parijaat Handicraft" width="160" height="60"
                                             loading="lazy" />
                                     </figure>
                                     <small class="mp-here">You're Shopping Here</small>
@@ -3179,7 +3179,7 @@
                             <div class="swiper-slide">
                                 <a href="javascript:void(0)" class="mp-card" aria-label="Visit our Amazon store">
                                     <figure class="mp-logo">
-                                        <img src="assets/icon/amazon.png" alt="Amazon" width="160" height="60"
+                                        <img src="{{ asset('assets/icon/amazon.png')}}" alt="Amazon" width="160" height="60"
                                             loading="lazy" />
                                     </figure>
                                     <h4>Amazon</h4>
@@ -3192,7 +3192,7 @@
                             <div class="swiper-slide">
                                 <a href="javascript:void(0)" class="mp-card" aria-label="Visit our Alibaba store">
                                     <figure class="mp-logo">
-                                        <img src="assets/icon/alibaba.png" alt="Alibaba" width="160" height="60"
+                                        <img src="{{ asset('assets/icon/alibaba.png')}}" alt="Alibaba" width="160" height="60"
                                             loading="lazy" />
                                     </figure>
                                     <h4>Alibaba</h4>
@@ -3205,7 +3205,7 @@
                             <div class="swiper-slide">
                                 <a href="javascript:void(0)" class="mp-card" aria-label="Visit our eBay store">
                                     <figure class="mp-logo">
-                                        <img src="assets/icon/ebay.png" alt="eBay" width="160" height="60" loading="lazy" />
+                                        <img src="{{ asset('assets/icon/ebay.png')}}" alt="eBay" width="160" height="60" loading="lazy" />
                                     </figure>
                                     <h4>eBay</h4>
                                     <p>Find our decor and collectible pieces on eBay.</p>
@@ -3450,7 +3450,7 @@
                         <div class="swiper-wrapper">
                             <div class="swiper-slide">
                                 <article class="reel-card">
-                                    <img src="assets/images/home/cat1.png" alt="Brass idol being finished by hand"
+                                    <img src="{{ asset('assets/images/home/cat1.png')}}" alt="Brass idol being finished by hand"
                                         loading="lazy" />
                                     <span class="reel-tag"><i class="fa-brands fa-instagram"></i></span>
                                     <div class="content-wrap">
@@ -3467,7 +3467,7 @@
 
                             <div class="swiper-slide">
                                 <article class="reel-card">
-                                    <img src="assets/images/home/cat2.png" alt="Pooja essentials arranged for aarti"
+                                    <img src="{{ asset('assets/images/home/cat2.png')}}" alt="Pooja essentials arranged for aarti"
                                         loading="lazy" />
                                     <span class="reel-tag"><i class="fa-brands fa-instagram"></i></span>
                                     <div class="content-wrap">
@@ -3484,7 +3484,7 @@
 
                             <div class="swiper-slide">
                                 <article class="reel-card">
-                                    <img src="assets/images/home/cat3.png" alt="Copper drinkware being crafted"
+                                    <img src="{{ asset('assets/images/home/cat3.png')}}" alt="Copper drinkware being crafted"
                                         loading="lazy" />
                                     <span class="reel-tag"><i class="fa-brands fa-instagram"></i></span>
                                     <div class="content-wrap">
@@ -3501,7 +3501,7 @@
 
                             <div class="swiper-slide">
                                 <article class="reel-card">
-                                    <img src="assets/images/home/cat4.png" alt="Brass diya being lit" loading="lazy" />
+                                    <img src="{{ asset('assets/images/home/cat4.png')}}" alt="Brass diya being lit" loading="lazy" />
                                     <span class="reel-tag"><i class="fa-brands fa-instagram"></i></span>
                                     <div class="content-wrap">
                                         <div class="reel-text">
@@ -3516,7 +3516,7 @@
 
                             <div class="swiper-slide">
                                 <article class="reel-card">
-                                    <img src="assets/images/home/cat5.png" alt="Antique brass lock detail" loading="lazy" />
+                                    <img src="{{ asset('assets/images/home/cat5.png')}}" alt="Antique brass lock detail" loading="lazy" />
                                     <span class="reel-tag"><i class="fa-brands fa-instagram"></i></span>
                                     <div class="content-wrap">
                                         <div class="reel-text">
@@ -3532,7 +3532,7 @@
 
                             <div class="swiper-slide">
                                 <article class="reel-card">
-                                    <img src="assets/images/home/cat6.png" alt="Temple bells and wind chimes"
+                                    <img src="{{ asset('assets/images/home/cat6.png')}}" alt="Temple bells and wind chimes"
                                         loading="lazy" />
                                     <span class="reel-tag"><i class="fa-brands fa-instagram"></i></span>
                                     <div class="content-wrap">

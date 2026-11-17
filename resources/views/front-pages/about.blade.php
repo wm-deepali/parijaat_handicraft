@@ -10,7 +10,7 @@
       <section class="comman-banner">
         <figure class="banner-media">
           <img
-            src="assets/images/home/blog.png"
+            src="{{ asset('assets/images/home/blog.png')}}"
             alt=""
             loading="eager"
           />
@@ -41,7 +41,7 @@
             <!-- LEFT : IMAGE -->
             <div class="who-media">
               <figure>
-                <img src="assets/images/home/cat1.png" alt="" loading="lazy" />
+                <img src="{{ asset('assets/images/home/cat1.png')}}" alt="" loading="lazy" />
               </figure>
             </div>
 
@@ -169,7 +169,7 @@
             <!-- LEFT : IMAGE -->
             <figure class="craft-media">
               <img
-                src="assets/images/home/pro30.jpg"
+                src="{{ asset('assets/images/home/pro30.jpg')}}"
                 alt="Handcrafted brass decor"
                 loading="lazy"
               />
@@ -574,7 +574,7 @@
           <div class="swiper-slide">
             <a href="{{ route('products') }}" class="mp-card mp-official" aria-label="Continue shopping on Parijaat Handicraft">
               <figure class="mp-logo">
-                <img src="assets/images/logo.png" alt="Parijaat Handicraft" width="160" height="60" loading="lazy" />
+                <img src="{{ asset('assets/images/logo.png')}}" alt="Parijaat Handicraft" width="160" height="60" loading="lazy" />
               </figure>
               <small class="mp-here">You're Shopping Here</small>
               <h4>Parijaat Handicraft</h4>
@@ -587,7 +587,7 @@
           <div class="swiper-slide">
             <a href="javascript:void(0)" class="mp-card"  aria-label="Visit our Amazon store">
               <figure class="mp-logo">
-                <img src="assets/icon/amazon.png" alt="Amazon" width="160" height="60" loading="lazy" />
+                <img src="{{ asset('assets/icon/amazon.png')}}" alt="Amazon" width="160" height="60" loading="lazy" />
               </figure>
               <h4>Amazon</h4>
               <p>Shop our handcrafted range on Amazon.</p>
@@ -599,7 +599,7 @@
           <div class="swiper-slide">
             <a href="javascript:void(0)" class="mp-card"  aria-label="Visit our Alibaba store">
               <figure class="mp-logo">
-                <img src="assets/icon/alibaba.png" alt="Alibaba" width="160" height="60" loading="lazy" />
+                <img src="{{ asset('assets/icon/alibaba.png')}}" alt="Alibaba" width="160" height="60" loading="lazy" />
               </figure>
               <h4>Alibaba</h4>
               <p>Bulk and wholesale orders for global buyers.</p>
@@ -611,7 +611,7 @@
           <div class="swiper-slide">
             <a href="javascript:void(0)" class="mp-card" aria-label="Visit our eBay store">
               <figure class="mp-logo">
-                <img src="assets/icon/ebay.png" alt="eBay" width="160" height="60" loading="lazy" />
+                <img src="{{ asset('assets/icon/ebay.png')}}" alt="eBay" width="160" height="60" loading="lazy" />
               </figure>
               <h4>eBay</h4>
               <p>Find our decor and collectible pieces on eBay.</p>
@@ -658,14 +658,14 @@
                 <div class="swiper-slide">
                   <article class="cert-card">
                     <a
-                      href="assets/images/home/demo1.jpg"
+                      href={{ asset('assets/images/home/demo1.jpg')}}"
                       class="cert-img glightbox"
                       data-gallery="certs"
                       data-glightbox="title: Quality Certification"
                       aria-label="View Quality Certification"
                     >
                       <img
-                        src="assets/images/home/demo1.jpg"
+                        src="{{ asset('assets/images/home/demo1.jpg')}}"
                         alt="Quality Certification"
                         loading="lazy"
                       />
@@ -677,14 +677,14 @@
                 <div class="swiper-slide">
                   <article class="cert-card">
                     <a
-                      href="assets/images/home/demo1.jpg"
+                      href={{ asset('assets/images/home/demo1.jpg')}}"
                       class="cert-img glightbox"
                       data-gallery="certs"
                       data-glightbox="title: GST Registration"
                       aria-label="View GST Registration"
                     >
                       <img
-                        src="assets/images/home/demo1.jpg"
+                        src="{{ asset('assets/images/home/demo1.jpg')}}"
                         alt="GST Registration"
                         loading="lazy"
                       />
@@ -696,14 +696,14 @@
                 <div class="swiper-slide">
                   <article class="cert-card">
                     <a
-                      href="assets/images/home/demo1.jpg"
+                      href={{ asset('assets/images/home/demo1.jpg')}}"
                       class="cert-img glightbox"
                       data-gallery="certs"
                       data-glightbox="title: Import Export Registration"
                       aria-label="View Import Export Registration"
                     >
                       <img
-                        src="assets/images/home/demo1.jpg"
+                        src="{{ asset('assets/images/home/demo1.jpg')}}"
                         alt="Import Export Registration"
                         loading="lazy"
                       />
@@ -715,14 +715,14 @@
                 <div class="swiper-slide">
                   <article class="cert-card">
                     <a
-                      href="assets/images/home/demo1.jpg"
+                      href={{ asset('assets/images/home/demo1.jpg')}}"
                       class="cert-img glightbox"
                       data-gallery="certs"
                       data-glightbox="title: Business Registration"
                       aria-label="View Business Registration"
                     >
                       <img
-                        src="assets/images/home/demo1.jpg"
+                        src="{{ asset('assets/images/home/demo1.jpg')}}"
                         alt="Business Registration"
                         loading="lazy"
                       />
