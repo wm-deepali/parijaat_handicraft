@@ -20,7 +20,7 @@
         <div class="banner-top">
           <div class="container">
             <ul class="banner-crumb">
-              <li><a href="index.html">Home</a></li>
+              <li><a href="{{ route('home') }}">Home</a></li>
               <li><i class="fa-solid fa-chevron-right"></i></li>
               <li class="current">About Us</li>
             </ul>
@@ -233,7 +233,7 @@
               </ul>
 
               <div class="craft-btns">
-                <a href="product-listing.html" class="btn btn-primary"
+                <a href="{{ route('products') }}" class="btn btn-primary"
                   >Explore Our Collections</a
                 >
               </div>
@@ -572,7 +572,7 @@
         <div class="swiper-wrapper">
           <!-- OFFICIAL STORE (current site, highlighted, first) -->
           <div class="swiper-slide">
-            <a href="product-listing.html" class="mp-card mp-official" aria-label="Continue shopping on Parijaat Handicraft">
+            <a href="{{ route('products') }}" class="mp-card mp-official" aria-label="Continue shopping on Parijaat Handicraft">
               <figure class="mp-logo">
                 <img src="assets/images/logo.png" alt="Parijaat Handicraft" width="160" height="60" loading="lazy" />
               </figure>
@@ -744,7 +744,7 @@
           </div>
 
           <div class="cert-btns">
-            <a href="certifications.html" class="btn btn-primary"
+            <a href="{{ route('certifications') }}" class="btn btn-primary"
               >View All Certifications</a
             >
           </div>
@@ -864,7 +864,7 @@
               </p>
 
               <div class="cta-btns">
-                <a href="product-listing.html" class="btn btn-white">
+                <a href="{{ route('products') }}" class="btn btn-white">
                   Explore Collections <i class="fa-solid fa-arrow-right"></i>
                 </a>
                 <a

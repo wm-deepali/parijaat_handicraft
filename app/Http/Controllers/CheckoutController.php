@@ -395,9 +395,6 @@ class CheckoutController extends Controller
                     'quantity' => $item->quantity,
                     'price' => $item->price,
                     'total' => $item->total,
-
-                    'custom_colour_code' => $item->custom_colour_code,
-                    'dye_charge' => $item->dye_charge ?? 0,
                 ]);
 
                 foreach ($item->addons as $addon) {

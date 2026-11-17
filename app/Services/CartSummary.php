@@ -13,7 +13,6 @@ class CartSummary
 
         $totalMrp = 0.0;
         $sellTotal = 0.0;
-        $dyeTotal = 0.0;
         $addonLines = [];
 
         foreach ($items as $item) {
@@ -23,7 +22,6 @@ class CartSummary
 
             $totalMrp  += max($mrp, $unit) * $qty;
             $sellTotal += $unit * $qty;
-            $dyeTotal  += (float) $item->dye_charge * $qty;
 
             foreach ($item->addons as $addon) {
                 if ($addon->price > 0) {
@@ -56,7 +54,6 @@ class CartSummary
             'total_mrp'      => $totalMrp,
             'mrp_discount'   => $mrpDiscount,
             'addons'         => $addonLines,
-            'dye'            => $dyeTotal,
             'coupon_code'    => $cart?->coupon_code,
             'coupon'         => $coupon,
             'tax'            => $taxExclusive ? (float) $cart->tax_amount : 0.0,

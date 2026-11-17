@@ -33,13 +33,16 @@ return new class extends Migration {
 
             $table->text('short_description')->nullable();
 
-            /* ── Content: detail page ke accordions ── */
-            $table->longText('fabric_material')->nullable();       // Fabric & Material
-            $table->longText('care_instructions')->nullable();     // Care Instructions
-            $table->longText('shipping_delivery')->nullable();     // Shipping & Delivery (khali ho to store default)
-            $table->longText('returns_exchange')->nullable();      // Returns & Exchange (khali ho to store default)
-            $table->longText('offers_how_to_avail')->nullable();   // Offers & How to Avail (khali ho to coupons se auto)
+            /* ── Content: detail page accordions (in display order) ── */
+            $table->json('specifications')->nullable();          // Product Details (label/value rows)
+            $table->longText('material_craft')->nullable();      // Material & Craft
+            $table->longText('size_dimensions')->nullable();     // Size & Dimensions
+            $table->longText('care_instructions')->nullable();   // Care Instructions
+            $table->longText('shipping_delivery')->nullable();   // Shipping & Delivery
+            $table->longText('returns_exchange')->nullable();    // Returns & Exchange
+            $table->longText('offers_how_to_avail')->nullable(); // Offers & Coupons
 
+            $table->string('price_type', 10)->default('single');
             $table->decimal('mrp', 12, 2)->default(0);
 
             $table->enum('discount_type', [
@@ -56,9 +59,6 @@ return new class extends Migration {
             $table->integer('min_qty')->default(1);
 
             $table->string('delivery_time')->nullable();
-
-            $table->boolean('colour_customization')->default(false);
-            $table->decimal('dye_price', 10, 2)->nullable();
 
             $table->string('meta_title')->nullable();
 

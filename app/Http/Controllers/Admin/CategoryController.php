@@ -133,31 +133,70 @@ class CategoryController extends Controller
         return $html;
     }
 
+    private function contentRules(): array
+    {
+        return [
+            'collection_eyebrow' => 'nullable|string|max:100',
+            'collection_title' => 'nullable|string|max:150',
+            'collection_text' => 'nullable|string|max:500',
+            'art_eyebrow' => 'nullable|string|max:100',
+            'art_title' => 'nullable|string|max:150',
+            'art_text' => 'nullable|string|max:1000',
+            'art_caption' => 'nullable|string|max:100',
+            'art_image' => 'nullable|image|max:2048',
+            'art_points' => 'nullable|array|max:6',
+            'art_points.*.title' => 'nullable|string|max:100',
+            'art_points.*.text' => 'nullable|string|max:300',
+        ];
+    }
+
+    private function contentFields(Request $request): array
+    {
+        $points = collect((array) $request->art_points)
+            ->map(fn($p) => [
+                'title' => trim($p['title'] ?? ''),
+                'text' => trim($p['text'] ?? ''),
+            ])
+            ->filter(fn($p) => $p['title'] !== '' || $p['text'] !== '')
+            ->values()
+            ->all();
+
+        return [
+            'collection_eyebrow' => $request->collection_eyebrow ?: null,
+            'collection_title' => $request->collection_title ?: null,
+            'collection_text' => $request->collection_text ?: null,
+            'art_eyebrow' => $request->art_eyebrow ?: null,
+            'art_title' => $request->art_title ?: null,
+            'art_text' => $request->art_text ?: null,
+            'art_caption' => $request->art_caption ?: null,
+            'art_points' => $points ?: null,
+        ];
+    }
+
     // ✅ Store
     public function store(Request $request)
     {
-        $request->validate([
+        $request->validate(array_merge([
             'name' => 'required|string|max:255',
+            'description' => 'nullable|string|max:1000',
             'size_chart' => 'nullable|string',
-        ]);
+        ], $this->contentRules()));
 
         $image = null;
-
         if ($request->hasFile('image')) {
-            // Displayed as a small card (~121x171 on frontend) -> keep small, ~3x retina buffer
-            $image = $this->compressAndStore(
-                $request->file('image'),
-                'categories',
-                400,
-                80
-            );
+            $image = $this->compressAndStore($request->file('image'), 'categories', 400, 80);
         }
 
-        Category::create([
+        $artImage = null;
+        if ($request->hasFile('art_image')) {
+            $artImage = $this->compressAndStore($request->file('art_image'), 'categories/art', 900, 80);
+        }
+
+        Category::create(array_merge([
             'name' => $request->name,
             'sub_title' => $request->sub_title,
+            'description' => $request->description,
 
-            // ✅ slug safe
             'slug' => $request->slug
                 ? Str::slug($request->slug)
                 : Str::slug($request->name),
@@ -165,21 +204,19 @@ class CategoryController extends Controller
             'meta_title' => $request->meta_title,
             'meta_description' => $request->meta_description,
             'image' => $image,
+            'art_image' => $artImage,
             'size_chart' => $this->cleanRichText($request->size_chart),
 
-            // ✅ FIXED
             'parent_id' => $request->parent_id ?: null,
 
-            // FLAGS
             'is_popular' => $request->is_popular ?? 0,
             'is_featured' => $request->is_featured ?? 0,
             'show_in_navbar' => $request->show_in_navbar ?? 0,
 
             'added_by' => 'admin',
-
             'status' => $request->status ?? 1,
             'sort_order' => $request->sort_order ?? 0,
-        ]);
+        ], $this->contentFields($request)));
 
         return redirect()->route('admin.categories.index')
             ->with('success', 'Category Added Successfully');
@@ -203,37 +240,44 @@ class CategoryController extends Controller
         ));
     }
 
+
     // ✅ Update
     public function update(Request $request, $id)
     {
         $category = Category::findOrFail($id);
 
-        $request->validate([
+        $request->validate(array_merge([
             'name' => 'required|string|max:255',
+            'description' => 'nullable|string|max:1000',
             'size_chart' => 'nullable|string',
-        ]);
+        ], $this->contentRules()));
 
         $image = $category->image;
-
         if ($request->hasFile('image')) {
-
             if ($category->image && Storage::disk('public')->exists($category->image)) {
                 Storage::disk('public')->delete($category->image);
             }
-
-            $image = $this->compressAndStore(
-                $request->file('image'),
-                'categories',
-                400,
-                80
-            );
+            $image = $this->compressAndStore($request->file('image'), 'categories', 400, 80);
         }
 
-        $category->update([
+        $artImage = $category->art_image;
+        if ($request->hasFile('art_image')) {
+            if ($artImage && Storage::disk('public')->exists($artImage)) {
+                Storage::disk('public')->delete($artImage);
+            }
+            $artImage = $this->compressAndStore($request->file('art_image'), 'categories/art', 900, 80);
+        } elseif ($request->boolean('remove_art_image')) {
+            if ($artImage && Storage::disk('public')->exists($artImage)) {
+                Storage::disk('public')->delete($artImage);
+            }
+            $artImage = null;
+        }
+
+        $category->update(array_merge([
             'name' => $request->name,
             'sub_title' => $request->sub_title,
+            'description' => $request->description,
 
-            // ✅ slug safe
             'slug' => $request->slug
                 ? Str::slug($request->slug)
                 : $category->slug,
@@ -241,9 +285,9 @@ class CategoryController extends Controller
             'meta_title' => $request->meta_title,
             'meta_description' => $request->meta_description,
             'image' => $image,
+            'art_image' => $artImage,
             'size_chart' => $this->cleanRichText($request->size_chart),
 
-            // ✅ FIXED
             'parent_id' => $request->parent_id ?: null,
 
             'is_popular' => $request->is_popular ?? 0,
@@ -252,7 +296,7 @@ class CategoryController extends Controller
 
             'status' => $request->status ?? 1,
             'sort_order' => $request->sort_order ?? 0,
-        ]);
+        ], $this->contentFields($request)));
 
         return redirect($request->redirect ?? route('admin.categories.index'))
             ->with('success', 'Category Updated Successfully');
@@ -263,8 +307,10 @@ class CategoryController extends Controller
     {
         $category = Category::findOrFail($id);
 
-        if ($category->image && Storage::disk('public')->exists($category->image)) {
-            Storage::disk('public')->delete($category->image);
+        foreach ([$category->image, $category->art_image] as $file) {
+            if ($file && Storage::disk('public')->exists($file)) {
+                Storage::disk('public')->delete($file);
+            }
         }
 
         $category->delete();

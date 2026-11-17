@@ -48,7 +48,7 @@
             <div class="banner-top">
                 <div class="container">
                     <ul class="banner-crumb">
-                        <li><a href="index.html">Home</a></li>
+                        <li><a href="{{ route('home') }}">Home</a></li>
                         <li><i class="fa-solid fa-chevron-right"></i></li>
                         <li><a href="blogs.html">Blogs</a></li>
                         <li><i class="fa-solid fa-chevron-right"></i></li>
@@ -94,7 +94,7 @@
                             <p>
                                 Some brass pieces are lacquered for a permanent shine, while others are left raw so they
                                 can age gracefully. Check which type you own before you clean it. Our
-                                <a href="product-listing.html">brass collection</a> lists the finish on every product
+                                <a href="{{ route('products') }}">brass collection</a> lists the finish on every product
                                 page.
                             </p>
 
@@ -128,7 +128,7 @@
                             <h3>Keep it shining for longer</h3>
                             <p>
                                 Store brass in a dry place and keep it away from damp corners. Not sure how to care for a
-                                specific piece? Reach us through the <a href="contact.html">contact page</a> and our team
+                                specific piece? Reach us through the <a href="{{ route('contact') }}">contact page</a> and our team
                                 will be happy to help.
                             </p>
                         </div>

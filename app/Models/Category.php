@@ -14,6 +14,19 @@ class Category extends Model
         'slug',
         'parent_id',
         'sub_title',
+        'description',
+
+        'collection_eyebrow',
+        'collection_title',
+        'collection_text',
+
+        'art_eyebrow',
+        'art_title',
+        'art_text',
+        'art_points',
+        'art_image',
+        'art_caption',
+
         'meta_title',
         'meta_description',
         'image',
@@ -26,6 +39,10 @@ class Category extends Model
         'added_by',
         'is_featured',
         'show_in_navbar',
+    ];
+
+    protected $casts = [
+        'art_points' => 'array',
     ];
 
     /*
@@ -44,13 +61,12 @@ class Category extends Model
     public function children()
     {
         return $this->hasMany(Category::class, 'parent_id')
-            ->whereNull('deleted_at'); // ✅ ignore soft deleted
+            ->whereNull('deleted_at'); // ignore soft deleted
     }
-
 
     /*
     |--------------------------------------------------------------------------
-    | SCOPES (🔥 VERY USEFUL)
+    | SCOPES
     |--------------------------------------------------------------------------
     */
 
@@ -74,7 +90,7 @@ class Category extends Model
 
     /*
     |--------------------------------------------------------------------------
-    | ACCESSORS (CLEAN UI)
+    | ACCESSORS
     |--------------------------------------------------------------------------
     */
 
@@ -87,7 +103,6 @@ class Category extends Model
     {
         return !is_null($this->parent_id);
     }
-
 
     public function categoryAttributes()
     {

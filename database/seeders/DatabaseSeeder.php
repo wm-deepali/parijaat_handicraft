@@ -19,6 +19,11 @@ class DatabaseSeeder extends Seeder
             UserSeeder::class,
             SettingSeeder::class,
             SeoPageSeeder::class,
+            CategorySeeder::class,
+            ProductSeeder::class,
+            AttributeSeeder::class,
+            CollectionOccasionSeeder::class,
+            ProductMappingSeeder::class,
         ]);
 
 

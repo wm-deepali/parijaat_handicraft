@@ -469,14 +469,14 @@
                                 <div class="field-group">
                                     <label class="field-label">Category</label>
                                     <input type="text" name="category" class="field-input"
-                                        value="{{ old('category', $blog->category ?? '') }}"
+                                        value="{{ old('category') }}"
                                         placeholder="e.g. Bridal Edit, Styling, Saree Care">
                                 </div>
 
                                 <div class="field-group">
                                     <label class="field-label">Author</label>
                                     <input type="text" name="author" class="field-input"
-                                        value="{{ old('author', $blog->author ?? '') }}"
+                                        value="{{ old('author') }}"
                                         placeholder="Archana Style Team">
                                     <div class="field-hint">Leave empty to use the site name.</div>
                                 </div>
@@ -484,7 +484,7 @@
                                 <div class="field-group">
                                     <label class="field-label">Tags</label>
                                     <input type="text" name="tags" class="field-input"
-                                        value="{{ old('tags', $blog->tags ?? '') }}"
+                                        value="{{ old('tags') }}"
                                         placeholder="Bridal Wear, Silk Sarees, Buying Guide">
                                     <div class="field-hint">Separate with commas.</div>
                                 </div>
@@ -492,7 +492,7 @@
                                 <div class="field-group">
                                     <label class="field-label">Publish Date</label>
                                     <input type="date" name="published_at" class="field-input"
-                                        value="{{ old('published_at', isset($blog) && $blog->published_at ? $blog->published_at->format('Y-m-d') : '') }}">
+                                        value="{{ old('published_at') }}">
                                     <div class="field-hint">Leave empty for today. A future date keeps the post hidden
                                         until that day.</div>
                                 </div>
@@ -597,7 +597,7 @@
                                         <div class="toggle-sub">Large card at the top of the blog page (only one)</div>
                                     </div>
                                     <label class="toggle-switch">
-                                        <input type="checkbox" name="is_featured" id="is_featured" {{ $blog->is_featured ? 'checked' : '' }}>
+                                        <input type="checkbox" name="is_featured" id="is_featured">
                                         <span class="toggle-track"></span>
                                     </label>
                                 </div>

@@ -89,7 +89,7 @@
                     <ul class="top-right">
                         <li><a href="dashboard.html#tab-2">Track Your Order</a></li>
                         <li class="hide-lg">
-                            <a href="contact.html">Help &amp; Support</a>
+                            <a href="{{ route('contact') }}">Help &amp; Support</a>
                         </li>
                         <li><a href="tel:+910000000000">+91 00000 00000</a></li>
                         <li class="currency">
@@ -110,9 +110,9 @@
             <div class="container-fluid">
                 <div class="main-wrapper">
                     <div class="colA">
-                        <a href="index.html" class="logo">
-                            <img src="assets/images/logo.png" alt="Parijaat Handicraft" title="Parijaat Handicraft"
-                                width="180" height="54" />
+                        <a href="{{ route('home') }}" class="logo">
+                            <img src="{{ asset('assets/images/logo.png')}}" alt="Parijaat Handicraft"
+                                title="Parijaat Handicraft" width="180" height="54" />
                         </a>
                     </div>
 
@@ -124,9 +124,11 @@
                             </svg>
                         </button>
                         <div class="search-drop formField">
-                            <form class="search-form" action="javascript:void(0)" method="get">
+                            <form class="search-form" action="{{ route('products') }}" method="get"
+                                data-suggest="{{ route('search.suggest') }}">
                                 <input type="text" name="q" class="searchInput" placeholder="Search products..."
-                                    autocomplete="off" />
+                                    autocomplete="off"
+                                    value="{{ request()->routeIs('products') ? request('q') : '' }}" />
                                 <button type="submit" aria-label="Search">
                                     <svg class="ic" viewBox="0 0 24 24" aria-hidden="true">
                                         <circle cx="11" cy="11" r="7" />
@@ -137,254 +139,19 @@
 
                             <div class="search-results">
                                 <p class="sg-title">Products</p>
-                                <ul class="res-list">
-                                    <li data-name="handmade brass oil lamp diya lamp pooja">
-                                        <a href="product-detail.html">
-                                            <figure>
-                                                <img src="assets/images/home/cat4.png" alt="Handmade Brass Oil Lamp"
-                                                    loading="lazy" />
-                                            </figure>
-                                            <div class="res-info">
-                                                <h5>Handmade Brass Oil Lamp</h5>
-                                                <div class="res-price">
-                                                    <b>Rs. 1,299</b><del>Rs. 1,599</del>
-                                                </div>
-                                            </div>
-                                        </a>
-                                    </li>
-                                    <li data-name="brass aladdin incense burner pooja dhoop">
-                                        <a href="product-detail.html">
-                                            <figure>
-                                                <img src="assets/images/home/cat2.png"
-                                                    alt="Brass Aladdin Incense Burner" loading="lazy" />
-                                            </figure>
-                                            <div class="res-info">
-                                                <h5>Brass Aladdin Incense Burner</h5>
-                                                <div class="res-price">
-                                                    <b>Rs. 899</b><del>Rs. 1,099</del>
-                                                </div>
-                                            </div>
-                                        </a>
-                                    </li>
-                                    <li data-name="brass decorative rabbit figurine home decor showpiece gift">
-                                        <a href="product-detail.html">
-                                            <figure>
-                                                <img src="assets/images/home/cat1.png"
-                                                    alt="Brass Decorative Rabbit Figurine" loading="lazy" />
-                                            </figure>
-                                            <div class="res-info">
-                                                <h5>Brass Decorative Rabbit Figurine</h5>
-                                                <div class="res-price">
-                                                    <b>Rs. 2,199</b><del>Rs. 2,599</del>
-                                                </div>
-                                            </div>
-                                        </a>
-                                    </li>
-                                    <li data-name="hammered copper goblet copper drinkware kitchen">
-                                        <a href="product-detail.html">
-                                            <figure>
-                                                <img src="assets/images/home/cat3.png" alt="Hammered Copper Goblet"
-                                                    loading="lazy" />
-                                            </figure>
-                                            <div class="res-info">
-                                                <h5>Hammered Copper Goblet</h5>
-                                                <div class="res-price">
-                                                    <b>Rs. 749</b><del>Rs. 899</del>
-                                                </div>
-                                            </div>
-                                        </a>
-                                    </li>
-                                    <li data-name="brass lotus kuber diya pooja lamp">
-                                        <a href="product-detail.html">
-                                            <figure>
-                                                <img src="assets/images/home/cat4.png" alt="Brass Lotus Kuber Diya"
-                                                    loading="lazy" />
-                                            </figure>
-                                            <div class="res-info">
-                                                <h5>Brass Lotus Kuber Diya</h5>
-                                                <div class="res-price">
-                                                    <b>Rs. 1,099</b><del>Rs. 1,299</del>
-                                                </div>
-                                            </div>
-                                        </a>
-                                    </li>
-                                    <li data-name="brass elephant diya stand pooja">
-                                        <a href="product-detail.html">
-                                            <figure>
-                                                <img src="assets/images/home/cat1.png" alt="Brass Elephant Diya Stand"
-                                                    loading="lazy" />
-                                            </figure>
-                                            <div class="res-info">
-                                                <h5>Brass Elephant Diya Stand</h5>
-                                                <div class="res-price">
-                                                    <b>Rs. 1,499</b><del>Rs. 1,799</del>
-                                                </div>
-                                            </div>
-                                        </a>
-                                    </li>
-                                    <li data-name="brass peacock diya pooja lamp">
-                                        <a href="product-detail.html">
-                                            <figure>
-                                                <img src="assets/images/home/cat4.png" alt="Brass Peacock Diya"
-                                                    loading="lazy" />
-                                            </figure>
-                                            <div class="res-info">
-                                                <h5>Brass Peacock Diya</h5>
-                                                <div class="res-price">
-                                                    <b>Rs. 1,899</b><del>Rs. 2,299</del>
-                                                </div>
-                                            </div>
-                                        </a>
-                                    </li>
-                                    <li data-name="antique brass lock key decor">
-                                        <a href="product-detail.html">
-                                            <figure>
-                                                <img src="assets/images/home/cat5.png" alt="Antique Brass Lock"
-                                                    loading="lazy" />
-                                            </figure>
-                                            <div class="res-info">
-                                                <h5>Antique Brass Lock</h5>
-                                                <div class="res-price">
-                                                    <b>Rs. 749</b><del>Rs. 899</del>
-                                                </div>
-                                            </div>
-                                        </a>
-                                    </li>
-                                    <li data-name="brass wind chime bells chimes home decor">
-                                        <a href="product-detail.html">
-                                            <figure>
-                                                <img src="assets/images/home/cat6.png" alt="Brass Wind Chime"
-                                                    loading="lazy" />
-                                            </figure>
-                                            <div class="res-info">
-                                                <h5>Brass Wind Chime</h5>
-                                                <div class="res-price">
-                                                    <b>Rs. 1,499</b><del>Rs. 1,799</del>
-                                                </div>
-                                            </div>
-                                        </a>
-                                    </li>
-                                    <li data-name="brass temple bell pooja bells">
-                                        <a href="product-detail.html">
-                                            <figure>
-                                                <img src="assets/images/home/cat6.png" alt="Brass Temple Bell"
-                                                    loading="lazy" />
-                                            </figure>
-                                            <div class="res-info">
-                                                <h5>Brass Temple Bell</h5>
-                                                <div class="res-price">
-                                                    <b>Rs. 1,199</b><del>Rs. 1,499</del>
-                                                </div>
-                                            </div>
-                                        </a>
-                                    </li>
-                                    <li data-name="copper water bottle copper drinkware kitchen">
-                                        <a href="product-detail.html">
-                                            <figure>
-                                                <img src="assets/images/home/cat3.png" alt="Copper Water Bottle"
-                                                    loading="lazy" />
-                                            </figure>
-                                            <div class="res-info">
-                                                <h5>Copper Water Bottle</h5>
-                                                <div class="res-price">
-                                                    <b>Rs. 999</b><del>Rs. 1,199</del>
-                                                </div>
-                                            </div>
-                                        </a>
-                                    </li>
-                                    <li data-name="copper serving bowl copper kitchen dining tableware">
-                                        <a href="product-detail.html">
-                                            <figure>
-                                                <img src="assets/images/home/cat3.png" alt="Copper Serving Bowl"
-                                                    loading="lazy" />
-                                            </figure>
-                                            <div class="res-info">
-                                                <h5>Copper Serving Bowl</h5>
-                                                <div class="res-price">
-                                                    <b>Rs. 1,149</b><del>Rs. 1,399</del>
-                                                </div>
-                                            </div>
-                                        </a>
-                                    </li>
-                                    <li data-name="copper jug with tumblers copper drinkware kitchen gift">
-                                        <a href="product-detail.html">
-                                            <figure>
-                                                <img src="assets/images/home/cat3.png" alt="Copper Jug with Tumblers"
-                                                    loading="lazy" />
-                                            </figure>
-                                            <div class="res-info">
-                                                <h5>Copper Jug with Tumblers</h5>
-                                                <div class="res-price">
-                                                    <b>Rs. 2,499</b><del>Rs. 2,999</del>
-                                                </div>
-                                            </div>
-                                        </a>
-                                    </li>
-                                    <li data-name="hammered copper tumbler copper drinkware kitchen">
-                                        <a href="product-detail.html">
-                                            <figure>
-                                                <img src="assets/images/home/cat3.png" alt="Hammered Copper Tumbler"
-                                                    loading="lazy" />
-                                            </figure>
-                                            <div class="res-info">
-                                                <h5>Hammered Copper Tumbler</h5>
-                                                <div class="res-price">
-                                                    <b>Rs. 549</b><del>Rs. 699</del>
-                                                </div>
-                                            </div>
-                                        </a>
-                                    </li>
-                                    <li data-name="brass elephant figurine home decor sculpture gift">
-                                        <a href="product-detail.html">
-                                            <figure>
-                                                <img src="assets/images/home/cat1.png" alt="Brass Elephant Figurine"
-                                                    loading="lazy" />
-                                            </figure>
-                                            <div class="res-info">
-                                                <h5>Brass Elephant Figurine</h5>
-                                                <div class="res-price">
-                                                    <b>Rs. 2,499</b><del>Rs. 2,999</del>
-                                                </div>
-                                            </div>
-                                        </a>
-                                    </li>
-                                    <li data-name="copper goblet gift set gift copper">
-                                        <a href="product-detail.html">
-                                            <figure>
-                                                <img src="assets/images/home/cat3.png" alt="Copper Goblet Gift Set"
-                                                    loading="lazy" />
-                                            </figure>
-                                            <div class="res-info">
-                                                <h5>Copper Goblet Gift Set</h5>
-                                                <div class="res-price">
-                                                    <b>Rs. 2,799</b><del>Rs. 3,299</del>
-                                                </div>
-                                            </div>
-                                        </a>
-                                    </li>
-                                </ul>
-                                <p class="res-empty">
-                                    No products found. Try "brass", "diya" or "copper".
-                                </p>
+                                <ul class="res-list"></ul>
+                                <p class="res-empty">No products found. Try "brass", "diya" or "copper".</p>
                                 <div class="res-all">
-                                    <a href="product-listing.html">View All Results</a>
+                                    <a href="{{ route('products') }}">View All Results</a>
                                 </div>
                             </div>
 
                             <div class="search-default">
                                 <p class="sg-title">Popular Searches</p>
                                 <ul class="sg-list">
-                                    <li>
-                                        <a href="product-listing.html">Brass Decorative Items</a>
-                                    </li>
-                                    <li><a href="product-listing.html">Pooja Essentials</a></li>
-                                    <li><a href="product-listing.html">Home Decor</a></li>
-                                    <li>
-                                        <a href="product-listing.html">Kitchen &amp; Dining</a>
-                                    </li>
-                                    <li>
-                                        <a href="product-listing.html">Handcrafted Gifts</a>
-                                    </li>
+                                    @foreach (array_slice($navMenu['footer'] ?? [], 0, 5) as $cat)
+                                        <li><a href="{{ route('category.show', $cat['slug']) }}">{{ $cat['name'] }}</a></li>
+                                    @endforeach
                                 </ul>
                             </div>
                         </div>
@@ -493,214 +260,123 @@
             <div class="container-fluid">
                 <nav class="colB" aria-label="Main navigation">
                     <ul class="menu-list">
-                        <li class="active"><a href="index.html">Home</a></li>
+                        <li class="active"><a href="{{ route('home') }}">Home</a></li>
 
-                        <li class="hasMega">
-                            <a href="all-categories-listing.html">Shop All <i
-                                    class="fa-solid fa-chevron-down fi chev"></i></a>
-                            <div class="mega-menu">
-                                <div class="mega-cols">
-                                    <div class="mega-col">
-                                        <h4><a href="product-listing.html">Home Decor</a></h4>
-                                        <ul>
-                                            <li>
-                                                <a href="product-listing.html">Decorative Showpieces</a>
-                                            </li>
-                                            <li><a href="product-listing.html">Wall Decor</a></li>
-                                            <li><a href="product-listing.html">Table Decor</a></li>
-                                            <li>
-                                                <a href="product-listing.html">Decorative Bowls</a>
-                                            </li>
-                                            <li><a href="product-listing.html">Sculptures</a></li>
-                                        </ul>
+                        @if (!empty($navMenu['shop']))
+                            <li class="hasMega">
+                                <a href="{{ route('products') }}">Shop All <i
+                                        class="fa-solid fa-chevron-down fi chev"></i></a>
+                                <div class="mega-menu">
+                                    <div class="mega-cols">
+                                        @foreach ($navMenu['shop'] as $cat)
+                                            <div class="mega-col">
+                                                <h4><a href="{{ route('category.show', $cat['slug']) }}">{{ $cat['name'] }}</a>
+                                                </h4>
+                                                @if (!empty($cat['children']))
+                                                    <ul>
+                                                        @foreach ($cat['children'] as $sub)
+                                                            <li>
+                                                                <a
+                                                                    href="{{ route('category.show', [$cat['slug'], 'sub' => $sub['slug']]) }}">{{ $sub['name'] }}</a>
+                                                            </li>
+                                                        @endforeach
+                                                    </ul>
+                                                @endif
+                                            </div>
+                                        @endforeach
                                     </div>
-                                    <div class="mega-col">
-                                        <h4>
-                                            <a href="product-listing.html">Pooja Essentials</a>
-                                        </h4>
-                                        <ul>
-                                            <li><a href="product-listing.html">Brass Diyas</a></li>
-                                            <li><a href="product-listing.html">Pooja Thali</a></li>
-                                            <li>
-                                                <a href="product-listing.html">Pooja Accessories</a>
-                                            </li>
-                                            <li>
-                                                <a href="product-listing.html">Traditional Decor</a>
-                                            </li>
-                                        </ul>
-                                    </div>
-                                    <div class="mega-col">
-                                        <h4>
-                                            <a href="product-listing.html">Kitchen &amp; Dining</a>
-                                        </h4>
-                                        <ul>
-                                            <li><a href="product-listing.html">Dinner Sets</a></li>
-                                            <li>
-                                                <a href="product-listing.html">Brass Utensils</a>
-                                            </li>
-                                            <li>
-                                                <a href="product-listing.html">Serving Accessories</a>
-                                            </li>
-                                            <li><a href="product-listing.html">Tableware</a></li>
-                                        </ul>
-                                    </div>
-                                    <div class="mega-col">
-                                        <h4>
-                                            <a href="product-listing.html">Metal Handicrafts</a>
-                                        </h4>
-                                        <ul>
-                                            <li>
-                                                <a href="product-listing.html">Brass Handicrafts</a>
-                                            </li>
-                                            <li>
-                                                <a href="product-listing.html">Copper Products</a>
-                                            </li>
-                                            <li>
-                                                <a href="product-listing.html">Traditional Metal Art</a>
-                                            </li>
-                                            <li>
-                                                <a href="product-listing.html">Decorative Metal Items</a>
-                                            </li>
-                                        </ul>
-                                    </div>
-                                    <div class="mega-col">
-                                        <h4>
-                                            <a href="product-listing.html">Gifts &amp; Collections</a>
-                                        </h4>
-                                        <ul>
-                                            <li>
-                                                <a href="product-listing.html">Traditional Gifts</a>
-                                            </li>
-                                            <li>
-                                                <a href="product-listing.html">Festive Gifts</a>
-                                            </li>
-                                            <li>
-                                                <a href="product-listing.html">Decorative Gifts</a>
-                                            </li>
-                                            <li>
-                                                <a href="product-listing.html">Special Collections</a>
-                                            </li>
-                                        </ul>
+                                    <div class="mega-strip">
+                                        <div class="strip-text">
+                                            <b>The Beauty of Handcrafted Living</b>
+                                            <span>Explore timeless creations inspired by India's rich artistic
+                                                heritage.</span>
+                                        </div>
+                                        <a href="{{ route('products') }}" class="strip-btn">Explore Collection
+                                            <i class="fa-solid fa-arrow-right fi"></i></a>
                                     </div>
                                 </div>
-                                <div class="mega-strip">
-                                    <div class="strip-text">
-                                        <b>The Beauty of Handcrafted Living</b>
-                                        <span>Explore timeless creations inspired by India's rich
-                                            artistic heritage.</span>
-                                    </div>
-                                    <a href="all-categories-listing.html" class="strip-btn">Explore Collection
-                                        <i class="fa-solid fa-arrow-right fi"></i></a>
-                                </div>
-                            </div>
-                        </li>
+                            </li>
+                        @endif
 
-                        <li class="hasMega">
-                            <a href="product-listing.html">Shop by Collection
-                                <i class="fa-solid fa-chevron-down fi chev"></i></a>
-                            <div class="mega-menu">
-                                <div class="mega-cols">
-                                    <div class="mega-col">
-                                        <h4>
-                                            <a href="product-listing.html">Shop by Occasion</a>
-                                        </h4>
-                                        <ul>
-                                            <li>
-                                                <a href="product-listing.html">Diwali &amp; Festive</a>
-                                            </li>
-                                            <li><a href="product-listing.html">Housewarming</a></li>
-                                            <li>
-                                                <a href="product-listing.html">Wedding Gifting</a>
-                                            </li>
-                                            <li>
-                                                <a href="product-listing.html">Corporate Gifting</a>
-                                            </li>
-                                            <li>
-                                                <a href="product-listing.html">Anniversary &amp; Birthday</a>
-                                            </li>
-                                        </ul>
+                        @php $c = $navMenu['collection'] ?? []; @endphp
+                        @if (!empty($c['occasions']) || !empty($c['collections']) || !empty($c['attributes']))
+                            <li class="hasMega">
+                                <a href="{{ route('products') }}">Shop by Collection <i
+                                        class="fa-solid fa-chevron-down fi chev"></i></a>
+                                <div class="mega-menu">
+                                    <div class="mega-cols">
+
+                                        @if (!empty($c['occasions']))
+                                            <div class="mega-col">
+                                                <h4><a href="{{ route('products') }}">Shop by Occasion</a></h4>
+                                                <ul>
+                                                    @foreach ($c['occasions'] as $o)
+                                                        <li><a
+                                                                href="{{ route('products', ['occasion' => [$o['slug']]]) }}">{{ $o['name'] }}</a>
+                                                        </li>
+                                                    @endforeach
+                                                </ul>
+                                            </div>
+                                        @endif
+
+                                        @if (!empty($c['prices']))
+                                            <div class="mega-col">
+                                                <h4><a href="{{ route('products') }}">Shop by Price</a></h4>
+                                                <ul>
+                                                    @foreach ($c['prices'] as [$label, $min, $max])
+                                                        <li>
+                                                            <a
+                                                                href="{{ route('products', array_filter(['price_min' => $min, 'price_max' => $max], fn($v) => $v !== null)) }}">{{ $label }}</a>
+                                                        </li>
+                                                    @endforeach
+                                                </ul>
+                                            </div>
+                                        @endif
+
+                                        @if (!empty($c['collections']))
+                                            <div class="mega-col">
+                                                <h4><a href="{{ route('products') }}">Shop by Collection</a></h4>
+                                                <ul>
+                                                    @foreach ($c['collections'] as $col)
+                                                        <li><a
+                                                                href="{{ route('products', ['collection' => [$col['slug']]]) }}">{{ $col['name'] }}</a>
+                                                        </li>
+                                                    @endforeach
+                                                </ul>
+                                            </div>
+                                        @endif
+
+                                        @foreach ($c['attributes'] ?? [] as $attr)
+                                            <div class="mega-col">
+                                                <h4><a href="{{ route('products') }}">Shop by {{ $attr['name'] }}</a></h4>
+                                                <ul>
+                                                    @foreach ($attr['values'] as $v)
+                                                        <li>
+                                                            <a
+                                                                href="{{ route('products', ['attr' => [$attr['slug'] => [$v['slug']]]]) }}">{{ $v['name'] }}</a>
+                                                        </li>
+                                                    @endforeach
+                                                </ul>
+                                            </div>
+                                        @endforeach
                                     </div>
-                                    <div class="mega-col">
-                                        <h4><a href="product-listing.html">Shop by Price</a></h4>
-                                        <ul>
-                                            <li><a href="product-listing.html">Under ₹999</a></li>
-                                            <li>
-                                                <a href="product-listing.html">₹1,000 – ₹2,999</a>
-                                            </li>
-                                            <li>
-                                                <a href="product-listing.html">₹3,000 – ₹5,999</a>
-                                            </li>
-                                            <li>
-                                                <a href="product-listing.html">₹6,000 &amp; Above</a>
-                                            </li>
-                                            <li><a href="product-listing.html">Luxury Edit</a></li>
-                                        </ul>
-                                    </div>
-                                    <div class="mega-col">
-                                        <h4>
-                                            <a href="product-listing.html">Shop by Popularity</a>
-                                        </h4>
-                                        <ul>
-                                            <li><a href="product-listing.html">Best Sellers</a></li>
-                                            <li><a href="product-listing.html">New Arrivals</a></li>
-                                            <li><a href="product-listing.html">Most Loved</a></li>
-                                            <li><a href="product-listing.html">Trending Now</a></li>
-                                            <li>
-                                                <a href="product-listing.html">Customer Favourites</a>
-                                            </li>
-                                        </ul>
-                                    </div>
-                                    <div class="mega-col">
-                                        <h4>
-                                            <a href="product-listing.html">Shop by Material</a>
-                                        </h4>
-                                        <ul>
-                                            <li><a href="product-listing.html">Pure Brass</a></li>
-                                            <li><a href="product-listing.html">Copper</a></li>
-                                            <li>
-                                                <a href="product-listing.html">Bronze &amp; Bell Metal</a>
-                                            </li>
-                                            <li>
-                                                <a href="product-listing.html">Wood &amp; Metal Blend</a>
-                                            </li>
-                                            <li>
-                                                <a href="product-listing.html">Antique Finish</a>
-                                            </li>
-                                        </ul>
-                                    </div>
-                                    <div class="mega-col">
-                                        <h4><a href="product-listing.html">Shop by Space</a></h4>
-                                        <ul>
-                                            <li><a href="product-listing.html">Living Room</a></li>
-                                            <li><a href="product-listing.html">Pooja Room</a></li>
-                                            <li>
-                                                <a href="product-listing.html">Kitchen &amp; Dining</a>
-                                            </li>
-                                            <li>
-                                                <a href="product-listing.html">Entrance &amp; Foyer</a>
-                                            </li>
-                                            <li>
-                                                <a href="product-listing.html">Garden &amp; Outdoor</a>
-                                            </li>
-                                        </ul>
+
+                                    <div class="mega-strip">
+                                        <div class="strip-text">
+                                            <b>Curated for Every Moment</b>
+                                            <span>Find the perfect handcrafted piece by occasion, budget or material.</span>
+                                        </div>
+                                        <a href="{{ route('products') }}" class="strip-btn">View All Collections
+                                            <i class="fa-solid fa-arrow-right fi"></i></a>
                                     </div>
                                 </div>
-                                <div class="mega-strip">
-                                    <div class="strip-text">
-                                        <b>Curated for Every Moment</b>
-                                        <span>Find the perfect handcrafted piece by occasion, budget
-                                            or space.</span>
-                                    </div>
-                                    <a href="all-categories-listing.html" class="strip-btn">View All Collections
-                                        <i class="fa-solid fa-arrow-right fi"></i></a>
-                                </div>
-                            </div>
-                        </li>
+                            </li>
+                        @endif
 
                         <li><a href="about.html#craft">Our Craft</a></li>
-                        <li><a href="about.html">About Us</a></li>
-                        <li><a href="certifications.html">Certifications</a></li>
-                        <li><a href="contact.html">Contact Us</a></li>
+                        <li><a href="{{ route('about') }}">About Us</a></li>
+                        <li><a href="{{ route('certifications') }}">Certifications</a></li>
+                        <li><a href="{{ route('contact') }}">Contact Us</a></li>
                     </ul>
                 </nav>
             </div>
@@ -743,7 +419,8 @@
 
         <div class="foot-news">
             <figure class="news-bg">
-                <picture><img src="assets/images/home/contact.png" alt="Handcrafted brass decor" loading="lazy" />
+                <picture><img src="{{ asset('assets/images/home/contact.png')}}" alt="Handcrafted brass decor"
+                        loading="lazy" />
                 </picture>
             </figure>
             <div class="container">
@@ -778,7 +455,7 @@
                             Handicraft. Thoughtfully curated decor, traditional accessories
                             and handcrafted treasures for everyday living.
                         </p>
-                        <a href="about.html" class="learn-more">Learn more</a>
+                        <a href="{{ route('about') }}" class="learn-more">Learn more</a>
                         <ul class="foot-contact">
                             <li>
                                 <i class="fa-solid fa-location-dot"></i><span>Business address, City, State,
@@ -815,12 +492,12 @@
                     <div class="foot-col">
                         <h5>Our Company</h5>
                         <ul>
-                            <li><a href="about.html">About Us</a></li>
+                            <li><a href="{{ route('about') }}">About Us</a></li>
                             <li><a href="about.html#craft">Our Craft</a></li>
-                            <li><a href="certifications.html">Certifications</a></li>
-                            <li><a href="blogs.html">Blogs</a></li>
-                            <li><a href="contact.html">Contact Us</a></li>
-                            <li><a href="faqs.html">FAQs</a></li>
+                            <li><a href="{{ route('certifications') }}">Certifications</a></li>
+                            <li><a href="{{ route('blogs') }}">Blogs</a></li>
+                            <li><a href="{{ route('contact') }}">Contact Us</a></li>
+                            <li><a href="{{ route('faqs') }}">FAQs</a></li>
                         </ul>
                     </div>
 
@@ -846,16 +523,10 @@
                     <div class="foot-col">
                         <h5>Shop Categories</h5>
                         <ul>
-                            <li><a href="product-listing.html">Home Decor</a></li>
-                            <li><a href="product-listing.html">Pooja Essentials</a></li>
-                            <li><a href="product-listing.html">Kitchen &amp; Dining</a></li>
-                            <li><a href="product-listing.html">Metal Handicrafts</a></li>
-                            <li>
-                                <a href="product-listing.html">Gifts &amp; Collections</a>
-                            </li>
-                            <li>
-                                <a href="all-categories-listing.html">All Categories</a>
-                            </li>
+                            @foreach ($navMenu['footer'] ?? [] as $cat)
+                                <li><a href="{{ route('category.show', $cat['slug']) }}">{{ $cat['name'] }}</a></li>
+                            @endforeach
+                            <li><a href="{{ route('products') }}">All Categories</a></li>
                         </ul>
                     </div>
 
@@ -899,13 +570,14 @@
         </div>
 
         <nav class="float-menu" aria-label="Quick navigation">
-            <a href="index.html" class="float-link active"><i class="fa-solid fa-house"></i><span>Home</span></a>
+            <a href="{{ route('home') }}" class="float-link active"><i
+                    class="fa-solid fa-house"></i><span>Home</span></a>
             <button type="button" class="float-link" data-model=".ham-pop" aria-label="Menu">
                 <i class="fa-solid fa-bars"></i><span>Menu</span>
             </button>
             <a href="javascript:void()" data-model=".login-pop" class="float-link"><i
                     class="fa-regular fa-heart"></i><span>Wishlist</span><b class="f-count">0</b></a>
-            <a href="cart.html" class="float-link"><i class="fa-solid fa-bag-shopping"></i><span>Cart</span><b
+            <a href="{{ route('cart') }}" class="float-link"><i class="fa-solid fa-bag-shopping"></i><span>Cart</span><b
                     class="f-count">0</b></a>
             <a href="dashboard.html#tab-1" class="float-link"><i class="fa-regular fa-user"></i><span>Account</span></a>
         </nav>
@@ -1094,8 +766,9 @@
                     <span>Back</span>
                 </button>
 
-                <a href="index.html" class="ham-logo">
-                    <img src="assets/images/logo.png" alt="Parijaat Handicraft" title="Parijaat Handicraft" />
+                <a href="{{ route('home') }}" class="ham-logo">
+                    <img src="{{ asset('assets/images/logo.png')}}" alt="Parijaat Handicraft"
+                        title="Parijaat Handicraft" />
                 </a>
 
                 <button class="close close-btn" type="button" aria-label="Close menu">
@@ -1103,274 +776,203 @@
                 </button>
             </div>
 
+            @php
+                $hamShop = $navMenu['shop'] ?? [];
+                $hamC = $navMenu['collection'] ?? [];
+
+                $hamHasCollection = !empty($hamC['occasions']) || !empty($hamC['collections']) || !empty($hamC['attributes']);
+            @endphp
+
             <div class="ham-views">
+                {{-- MAIN --}}
                 <div class="ham-view is-active" data-ham-view="main" data-ham-title="Menu">
                     <ul class="ham-list">
-                        <li class="active"><a href="index.html">Home</a></li>
-                        <li>
-                            <button type="button" class="ham-link" data-ham-open="shop">
-                                <span class="ham-link-text">Shop All</span>
-                                <span class="ham-arrow"><i class="fa-solid fa-arrow-right"
-                                        aria-hidden="true"></i></span>
-                            </button>
-                        </li>
-                        <li>
-                            <button type="button" class="ham-link" data-ham-open="collection">
-                                <span class="ham-link-text">Shop by Collection</span>
-                                <span class="ham-arrow"><i class="fa-solid fa-arrow-right"
-                                        aria-hidden="true"></i></span>
-                            </button>
-                        </li>
+                        <li class="active"><a href="{{ route('home') }}">Home</a></li>
+
+                        @if (!empty($hamShop))
+                            <li>
+                                <button type="button" class="ham-link" data-ham-open="shop">
+                                    <span class="ham-link-text">Shop All</span>
+                                    <span class="ham-arrow"><i class="fa-solid fa-arrow-right"
+                                            aria-hidden="true"></i></span>
+                                </button>
+                            </li>
+                        @endif
+
+                        @if ($hamHasCollection)
+                            <li>
+                                <button type="button" class="ham-link" data-ham-open="collection">
+                                    <span class="ham-link-text">Shop by Collection</span>
+                                    <span class="ham-arrow"><i class="fa-solid fa-arrow-right"
+                                            aria-hidden="true"></i></span>
+                                </button>
+                            </li>
+                        @endif
+
                         <li><a href="about.html#craft">Our Craft</a></li>
-                        <li><a href="about.html">About Us</a></li>
-                        <li><a href="certifications.html">Certifications</a></li>
+                        <li><a href="{{ route('about') }}">About Us</a></li>
+                        <li><a href="{{ route('certifications') }}">Certifications</a></li>
                         <li><a href="dashboard.html#tab-2">Track Order</a></li>
-                        <li><a href="contact.html">Help &amp; Support</a></li>
-                        <li><a href="contact.html">Contact Us</a></li>
+                        <li><a href="{{ route('contact') }}">Help &amp; Support</a></li>
+                        <li><a href="{{ route('contact') }}">Contact Us</a></li>
                     </ul>
                 </div>
 
-                <div class="ham-view" data-ham-view="shop" data-ham-title="Shop All" aria-hidden="true">
-                    <div class="ham-head">
-                        <h3 class="ham-title">Shop All</h3>
-                        <p class="ham-sub">
-                            Handcrafted pieces for every corner of your home.
-                        </p>
+                {{-- SHOP ALL : list of categories --}}
+                @if (!empty($hamShop))
+                    <div class="ham-view" data-ham-view="shop" data-ham-title="Shop All" aria-hidden="true">
+                        <div class="ham-head">
+                            <h3 class="ham-title">Shop All</h3>
+                            <p class="ham-sub">Handcrafted pieces for every corner of your home.</p>
+                        </div>
+                        <ul class="ham-list">
+                            @foreach ($hamShop as $cat)
+                                <li>
+                                    @if (!empty($cat['children']))
+                                        <button type="button" class="ham-link" data-ham-open="shop-{{ $cat['slug'] }}">
+                                            <span class="ham-link-text">{{ $cat['name'] }}</span>
+                                            <span class="ham-arrow"><i class="fa-solid fa-arrow-right"
+                                                    aria-hidden="true"></i></span>
+                                        </button>
+                                    @else
+                                        <a href="{{ route('category.show', $cat['slug']) }}">{{ $cat['name'] }}</a>
+                                    @endif
+                                </li>
+                            @endforeach
+                        </ul>
                     </div>
-                    <ul class="ham-list">
-                        <li>
-                            <button type="button" class="ham-link" data-ham-open="shop-decor">
-                                <span class="ham-link-text">Home Decor</span>
-                                <span class="ham-arrow"><i class="fa-solid fa-arrow-right"
-                                        aria-hidden="true"></i></span>
-                            </button>
-                        </li>
-                        <li>
-                            <button type="button" class="ham-link" data-ham-open="shop-pooja">
-                                <span class="ham-link-text">Pooja Essentials</span>
-                                <span class="ham-arrow"><i class="fa-solid fa-arrow-right"
-                                        aria-hidden="true"></i></span>
-                            </button>
-                        </li>
-                        <li>
-                            <button type="button" class="ham-link" data-ham-open="shop-kitchen">
-                                <span class="ham-link-text">Kitchen &amp; Dining</span>
-                                <span class="ham-arrow"><i class="fa-solid fa-arrow-right"
-                                        aria-hidden="true"></i></span>
-                            </button>
-                        </li>
-                        <li>
-                            <button type="button" class="ham-link" data-ham-open="shop-metal">
-                                <span class="ham-link-text">Metal Handicrafts</span>
-                                <span class="ham-arrow"><i class="fa-solid fa-arrow-right"
-                                        aria-hidden="true"></i></span>
-                            </button>
-                        </li>
-                        <li>
-                            <button type="button" class="ham-link" data-ham-open="shop-gifts">
-                                <span class="ham-link-text">Gifts &amp; Collections</span>
-                                <span class="ham-arrow"><i class="fa-solid fa-arrow-right"
-                                        aria-hidden="true"></i></span>
-                            </button>
-                        </li>
-                    </ul>
-                </div>
 
-                <div class="ham-view" data-ham-view="shop-decor" data-ham-title="Shop All" aria-hidden="true">
-                    <div class="ham-head">
-                        <h3 class="ham-title">Home Decor</h3>
-                    </div>
-                    <ul class="ham-list ham-list--sub">
-                        <li><a href="product-listing.html">Decorative Showpieces</a></li>
-                        <li><a href="product-listing.html">Wall Decor</a></li>
-                        <li><a href="product-listing.html">Table Decor</a></li>
-                        <li><a href="product-listing.html">Decorative Bowls</a></li>
-                        <li><a href="product-listing.html">Sculptures</a></li>
-                        <li>
-                            <a href="product-listing.html">Explore All Home Decor &rarr;</a>
-                        </li>
-                    </ul>
-                </div>
+                    {{-- one sub view per category --}}
+                    @foreach ($hamShop as $cat)
+                        @if (!empty($cat['children']))
+                            <div class="ham-view" data-ham-view="shop-{{ $cat['slug'] }}" data-ham-title="Shop All"
+                                aria-hidden="true">
+                                <div class="ham-head">
+                                    <h3 class="ham-title">{{ $cat['name'] }}</h3>
+                                </div>
+                                <ul class="ham-list ham-list--sub">
+                                    @foreach ($cat['children'] as $sub)
+                                        <li><a
+                                                href="{{ route('category.show', [$cat['slug'], 'sub' => $sub['slug']]) }}">{{ $sub['name'] }}</a>
+                                        </li>
+                                    @endforeach
+                                    <li><a href="{{ route('category.show', $cat['slug']) }}">Explore All {{ $cat['name'] }}
+                                            &rarr;</a></li>
+                                </ul>
+                            </div>
+                        @endif
+                    @endforeach
+                @endif
 
-                <div class="ham-view" data-ham-view="shop-pooja" data-ham-title="Shop All" aria-hidden="true">
-                    <div class="ham-head">
-                        <h3 class="ham-title">Pooja Essentials</h3>
+                {{-- SHOP BY COLLECTION --}}
+                @if ($hamHasCollection)
+                    <div class="ham-view" data-ham-view="collection" data-ham-title="Shop by Collection" aria-hidden="true">
+                        <div class="ham-head">
+                            <h3 class="ham-title">Shop by Collection</h3>
+                            <p class="ham-sub">Find the perfect piece by occasion, budget or material.</p>
+                        </div>
+                        <ul class="ham-list">
+                            @if (!empty($hamC['occasions']))
+                                <li>
+                                    <button type="button" class="ham-link" data-ham-open="collection-occasion">
+                                        <span class="ham-link-text">Shop by Occasion</span>
+                                        <span class="ham-arrow"><i class="fa-solid fa-arrow-right"
+                                                aria-hidden="true"></i></span>
+                                    </button>
+                                </li>
+                            @endif
+                            @if (!empty($hamC['prices']))
+                                <li>
+                                    <button type="button" class="ham-link" data-ham-open="collection-price">
+                                        <span class="ham-link-text">Shop by Price</span>
+                                        <span class="ham-arrow"><i class="fa-solid fa-arrow-right"
+                                                aria-hidden="true"></i></span>
+                                    </button>
+                                </li>
+                            @endif
+                            @if (!empty($hamC['collections']))
+                                <li>
+                                    <button type="button" class="ham-link" data-ham-open="collection-popularity">
+                                        <span class="ham-link-text">Shop by Popularity</span>
+                                        <span class="ham-arrow"><i class="fa-solid fa-arrow-right"
+                                                aria-hidden="true"></i></span>
+                                    </button>
+                                </li>
+                            @endif
+                            @foreach ($hamC['attributes'] ?? [] as $attr)
+                                <li>
+                                    <button type="button" class="ham-link" data-ham-open="collection-attr-{{ $attr['slug'] }}">
+                                        <span class="ham-link-text">Shop by {{ $attr['name'] }}</span>
+                                        <span class="ham-arrow"><i class="fa-solid fa-arrow-right"
+                                                aria-hidden="true"></i></span>
+                                    </button>
+                                </li>
+                            @endforeach
+                        </ul>
                     </div>
-                    <ul class="ham-list ham-list--sub">
-                        <li><a href="product-listing.html">Brass Diyas</a></li>
-                        <li><a href="product-listing.html">Pooja Thali</a></li>
-                        <li><a href="product-listing.html">Pooja Accessories</a></li>
-                        <li><a href="product-listing.html">Traditional Decor</a></li>
-                        <li>
-                            <a href="product-listing.html">Explore All Pooja Items &rarr;</a>
-                        </li>
-                    </ul>
-                </div>
 
-                <div class="ham-view" data-ham-view="shop-kitchen" data-ham-title="Shop All" aria-hidden="true">
-                    <div class="ham-head">
-                        <h3 class="ham-title">Kitchen &amp; Dining</h3>
-                    </div>
-                    <ul class="ham-list ham-list--sub">
-                        <li><a href="product-listing.html">Dinner Sets</a></li>
-                        <li><a href="product-listing.html">Brass Utensils</a></li>
-                        <li><a href="product-listing.html">Serving Accessories</a></li>
-                        <li><a href="product-listing.html">Tableware</a></li>
-                        <li>
-                            <a href="product-listing.html">Explore Kitchen &amp; Dining &rarr;</a>
-                        </li>
-                    </ul>
-                </div>
+                    @if (!empty($hamC['occasions']))
+                        <div class="ham-view" data-ham-view="collection-occasion" data-ham-title="Shop by Collection"
+                            aria-hidden="true">
+                            <div class="ham-head">
+                                <h3 class="ham-title">Shop by Occasion</h3>
+                            </div>
+                            <ul class="ham-list ham-list--sub">
+                                @foreach ($hamC['occasions'] as $o)
+                                    <li><a href="{{ route('products', ['occasion' => [$o['slug']]]) }}">{{ $o['name'] }}</a></li>
+                                @endforeach
+                            </ul>
+                        </div>
+                    @endif
 
-                <div class="ham-view" data-ham-view="shop-metal" data-ham-title="Shop All" aria-hidden="true">
-                    <div class="ham-head">
-                        <h3 class="ham-title">Metal Handicrafts</h3>
-                    </div>
-                    <ul class="ham-list ham-list--sub">
-                        <li><a href="product-listing.html">Brass Handicrafts</a></li>
-                        <li><a href="product-listing.html">Copper Products</a></li>
-                        <li><a href="product-listing.html">Traditional Metal Art</a></li>
-                        <li><a href="product-listing.html">Decorative Metal Items</a></li>
-                        <li>
-                            <a href="product-listing.html">Explore Metal Handicrafts &rarr;</a>
-                        </li>
-                    </ul>
-                </div>
+                    @if (!empty($hamC['prices']))
+                        <div class="ham-view" data-ham-view="collection-price" data-ham-title="Shop by Collection"
+                            aria-hidden="true">
+                            <div class="ham-head">
+                                <h3 class="ham-title">Shop by Price</h3>
+                            </div>
+                            <ul class="ham-list ham-list--sub">
+                                @foreach ($hamC['prices'] as [$label, $min, $max])
+                                    <li>
+                                        <a
+                                            href="{{ route('products', array_filter(['price_min' => $min, 'price_max' => $max], fn($v) => $v !== null)) }}">{{ $label }}</a>
+                                    </li>
+                                @endforeach
+                            </ul>
+                        </div>
+                    @endif
 
-                <div class="ham-view" data-ham-view="shop-gifts" data-ham-title="Shop All" aria-hidden="true">
-                    <div class="ham-head">
-                        <h3 class="ham-title">Gifts &amp; Collections</h3>
-                    </div>
-                    <ul class="ham-list ham-list--sub">
-                        <li><a href="product-listing.html">Traditional Gifts</a></li>
-                        <li><a href="product-listing.html">Festive Gifts</a></li>
-                        <li><a href="product-listing.html">Decorative Gifts</a></li>
-                        <li><a href="product-listing.html">Special Collections</a></li>
-                        <li>
-                            <a href="all-categories-listing.html">Explore All Categories &rarr;</a>
-                        </li>
-                    </ul>
-                </div>
+                    @if (!empty($hamC['collections']))
+                        <div class="ham-view" data-ham-view="collection-popularity" data-ham-title="Shop by Collection"
+                            aria-hidden="true">
+                            <div class="ham-head">
+                                <h3 class="ham-title">Shop by Popularity</h3>
+                            </div>
+                            <ul class="ham-list ham-list--sub">
+                                @foreach ($hamC['collections'] as $col)
+                                    <li><a href="{{ route('products', ['collection' => [$col['slug']]]) }}">{{ $col['name'] }}</a>
+                                    </li>
+                                @endforeach
+                            </ul>
+                        </div>
+                    @endif
 
-                <div class="ham-view" data-ham-view="collection" data-ham-title="Shop by Collection" aria-hidden="true">
-                    <div class="ham-head">
-                        <h3 class="ham-title">Shop by Collection</h3>
-                        <p class="ham-sub">
-                            Find the perfect piece by occasion, budget or space.
-                        </p>
-                    </div>
-                    <ul class="ham-list">
-                        <li>
-                            <button type="button" class="ham-link" data-ham-open="collection-occasion">
-                                <span class="ham-link-text">Shop by Occasion</span>
-                                <span class="ham-arrow"><i class="fa-solid fa-arrow-right"
-                                        aria-hidden="true"></i></span>
-                            </button>
-                        </li>
-                        <li>
-                            <button type="button" class="ham-link" data-ham-open="collection-price">
-                                <span class="ham-link-text">Shop by Price</span>
-                                <span class="ham-arrow"><i class="fa-solid fa-arrow-right"
-                                        aria-hidden="true"></i></span>
-                            </button>
-                        </li>
-                        <li>
-                            <button type="button" class="ham-link" data-ham-open="collection-popularity">
-                                <span class="ham-link-text">Shop by Popularity</span>
-                                <span class="ham-arrow"><i class="fa-solid fa-arrow-right"
-                                        aria-hidden="true"></i></span>
-                            </button>
-                        </li>
-                        <li>
-                            <button type="button" class="ham-link" data-ham-open="collection-material">
-                                <span class="ham-link-text">Shop by Material</span>
-                                <span class="ham-arrow"><i class="fa-solid fa-arrow-right"
-                                        aria-hidden="true"></i></span>
-                            </button>
-                        </li>
-                        <li>
-                            <button type="button" class="ham-link" data-ham-open="collection-space">
-                                <span class="ham-link-text">Shop by Space</span>
-                                <span class="ham-arrow"><i class="fa-solid fa-arrow-right"
-                                        aria-hidden="true"></i></span>
-                            </button>
-                        </li>
-                    </ul>
-                </div>
-
-                <div class="ham-view" data-ham-view="collection-occasion" data-ham-title="Shop by Collection"
-                    aria-hidden="true">
-                    <div class="ham-head">
-                        <h3 class="ham-title">Shop by Occasion</h3>
-                    </div>
-                    <ul class="ham-list ham-list--sub">
-                        <li><a href="product-listing.html">Diwali &amp; Festive</a></li>
-                        <li><a href="product-listing.html">Housewarming</a></li>
-                        <li><a href="product-listing.html">Wedding Gifting</a></li>
-                        <li><a href="product-listing.html">Corporate Gifting</a></li>
-                        <li>
-                            <a href="product-listing.html">Anniversary &amp; Birthday</a>
-                        </li>
-                    </ul>
-                </div>
-
-                <div class="ham-view" data-ham-view="collection-price" data-ham-title="Shop by Collection"
-                    aria-hidden="true">
-                    <div class="ham-head">
-                        <h3 class="ham-title">Shop by Price</h3>
-                    </div>
-                    <ul class="ham-list ham-list--sub">
-                        <li><a href="product-listing.html">Under ₹999</a></li>
-                        <li><a href="product-listing.html">₹1,000 – ₹2,999</a></li>
-                        <li><a href="product-listing.html">₹3,000 – ₹5,999</a></li>
-                        <li><a href="product-listing.html">₹6,000 &amp; Above</a></li>
-                        <li><a href="product-listing.html">Luxury Edit</a></li>
-                    </ul>
-                </div>
-
-                <div class="ham-view" data-ham-view="collection-popularity" data-ham-title="Shop by Collection"
-                    aria-hidden="true">
-                    <div class="ham-head">
-                        <h3 class="ham-title">Shop by Popularity</h3>
-                    </div>
-                    <ul class="ham-list ham-list--sub">
-                        <li><a href="product-listing.html">Best Sellers</a></li>
-                        <li><a href="product-listing.html">New Arrivals</a></li>
-                        <li><a href="product-listing.html">Most Loved</a></li>
-                        <li><a href="product-listing.html">Trending Now</a></li>
-                        <li><a href="product-listing.html">Customer Favourites</a></li>
-                    </ul>
-                </div>
-
-                <div class="ham-view" data-ham-view="collection-material" data-ham-title="Shop by Collection"
-                    aria-hidden="true">
-                    <div class="ham-head">
-                        <h3 class="ham-title">Shop by Material</h3>
-                    </div>
-                    <ul class="ham-list ham-list--sub">
-                        <li><a href="product-listing.html">Pure Brass</a></li>
-                        <li><a href="product-listing.html">Copper</a></li>
-                        <li>
-                            <a href="product-listing.html">Bronze &amp; Bell Metal</a>
-                        </li>
-                        <li><a href="product-listing.html">Wood &amp; Metal Blend</a></li>
-                        <li><a href="product-listing.html">Antique Finish</a></li>
-                    </ul>
-                </div>
-
-                <div class="ham-view" data-ham-view="collection-space" data-ham-title="Shop by Collection"
-                    aria-hidden="true">
-                    <div class="ham-head">
-                        <h3 class="ham-title">Shop by Space</h3>
-                    </div>
-                    <ul class="ham-list ham-list--sub">
-                        <li><a href="product-listing.html">Living Room</a></li>
-                        <li><a href="product-listing.html">Pooja Room</a></li>
-                        <li><a href="product-listing.html">Kitchen &amp; Dining</a></li>
-                        <li><a href="product-listing.html">Entrance &amp; Foyer</a></li>
-                        <li><a href="product-listing.html">Garden &amp; Outdoor</a></li>
-                    </ul>
-                </div>
+                    @foreach ($hamC['attributes'] ?? [] as $attr)
+                        <div class="ham-view" data-ham-view="collection-attr-{{ $attr['slug'] }}"
+                            data-ham-title="Shop by Collection" aria-hidden="true">
+                            <div class="ham-head">
+                                <h3 class="ham-title">Shop by {{ $attr['name'] }}</h3>
+                            </div>
+                            <ul class="ham-list ham-list--sub">
+                                @foreach ($attr['values'] as $v)
+                                    <li><a
+                                            href="{{ route('products', ['attr' => [$attr['slug'] => [$v['slug']]]]) }}">{{ $v['name'] }}</a>
+                                    </li>
+                                @endforeach
+                            </ul>
+                        </div>
+                    @endforeach
+                @endif
             </div>
 
             <div class="ham-bottom">
@@ -1387,7 +989,8 @@
                         aria-label="WhatsApp"><i class="fa-brands fa-whatsapp"></i></a>
                 </div>
 
-                <a href="product-listing.html" class="btn btn-primary header-cta">
+                <a href="{{ route('products', ['collection' => ['new-arrivals']]) }}"
+                    class="btn btn-primary header-cta">
                     <i class="fa-solid fa-bag-shopping" aria-hidden="true"></i>
                     Shop New Arrivals
                 </a>
@@ -1412,8 +1015,8 @@
             <ul class="cp-list">
                 <li class="cp-item">
                     <a class="cp-img" href="javascript:void(0);">
-                        <img src="assets/images/home/cat4.png" alt="Handmade Brass Oil Lamp" width="96" height="128"
-                            loading="lazy" />
+                        <img src="{{ asset('assets/images/home/cat4.png')}}" alt="Handmade Brass Oil Lamp" width="96"
+                            height="128" loading="lazy" />
                     </a>
                     <div class="cp-info">
                         <span class="cp-cat">Diyas &amp; Lamps</span>
@@ -1444,8 +1047,8 @@
 
                 <li class="cp-item">
                     <a class="cp-img" href="javascript:void(0);">
-                        <img src="assets/images/home/cat1.png" alt="Brass Lotus Kuber Diya" width="96" height="128"
-                            loading="lazy" />
+                        <img src="{{ asset('assets/images/home/cat1.png')}}" alt="Brass Lotus Kuber Diya" width="96"
+                            height="128" loading="lazy" />
                     </a>
                     <div class="cp-info">
                         <span class="cp-cat">Pooja Essentials</span>
@@ -1476,8 +1079,8 @@
 
                 <li class="cp-item">
                     <a class="cp-img" href="javascript:void(0);">
-                        <img src="assets/images/home/cat3.png" alt="Hammered Copper Goblet" width="96" height="128"
-                            loading="lazy" />
+                        <img src="{{ asset('assets/images/home/cat3.png')}}" alt="Hammered Copper Goblet" width="96"
+                            height="128" loading="lazy" />
                     </a>
                     <div class="cp-info">
                         <span class="cp-cat">Copper Drinkware</span>
@@ -1512,7 +1115,7 @@
                 <span class="cp-empty-icon"><i class="fa-solid fa-bag-shopping" aria-hidden="true"></i></span>
                 <h4>Your cart is empty</h4>
                 <p>Explore brass decor, pooja essentials and copper drinkware.</p>
-                <a href="product-listing.html" class="btn btn-primary">Shop Now</a>
+                <a href="{{ route('products') }}" class="btn btn-primary">Shop Now</a>
             </div>
 
             <div class="cp-foot">
@@ -1526,8 +1129,8 @@
                     (for international orders) are shown at checkout.
                 </p>
                 <div class="cp-btns">
-                    <a href="cart.html" class="btn btn-outline-primary">View Cart</a>
-                    <a href="checkout.html" class="btn btn-primary">Checkout</a>
+                    <a href="{{ route('cart') }}" class="btn btn-outline-primary">View Cart</a>
+                    <a href="{{ route('checkout') }}" class="btn btn-primary">Checkout</a>
                 </div>
             </div>
         </div>
@@ -1542,8 +1145,8 @@
             </svg>
         </button>
         <div class="model-body">
-            <a href="index.html" class="pop-logo" aria-label="Parijaat Handicraft Home">
-                <img src="assets/images/logo.png" alt="" />
+            <a href="{{ route('home') }}" class="pop-logo" aria-label="Parijaat Handicraft Home">
+                <img src="{{ asset('assets/images/logo.png')}}" alt="" />
             </a>
             <div class="pop-title">
                 <h3>Welcome Back</h3>
@@ -1662,7 +1265,8 @@
 
             <div class="op-grid">
                 <div class="op-visual">
-                    <img src="assets/images/home/cat1.png" alt="Welcome to Parijaat Handicraft" loading="lazy" />
+                    <img src="{{ asset('assets/images/home/cat1.png')}}" alt="Welcome to Parijaat Handicraft"
+                        loading="lazy" />
                     <span class="op-badge"><b>10%</b> Off First Order</span>
                 </div>
 
@@ -1700,10 +1304,10 @@
                     </ul>
 
                     <div class="op-btns">
-                        <a href="product-listing.html" class="btn btn-primary">
+                        <a href="{{ route('products') }}" class="btn btn-primary">
                             Shop Now <i class="fa-solid fa-arrow-right-long"></i>
                         </a>
-                        <a href="product-listing.html" class="btn btn-outline-primary">
+                        <a href="{{ route('products') }}" class="btn btn-outline-primary">
                             View All Offers
                         </a>
                     </div>
@@ -1750,6 +1354,92 @@
     <script type="text/javascript" src="{{ asset('assets/js/fancybox.js')}}"></script>
     <script type="text/javascript" src="{{ asset('assets/js/function.js')}}"></script>
     <script type="text/javascript" src="{{ asset('assets/js/main.js')}}"></script>
+
+    <script>
+        (function () {
+            var form = document.querySelector('.search-form[data-suggest]');
+            if (!form) return;
+
+            var input = form.querySelector('.searchInput');
+            var drop = form.closest('.search-drop');
+            var results = drop.querySelector('.search-results');
+            var list = results.querySelector('.res-list');
+            var empty = results.querySelector('.res-empty');
+            var all = results.querySelector('.res-all');
+            var allLink = all.querySelector('a');
+            var def = drop.querySelector('.search-default');
+            var endpoint = form.dataset.suggest;
+
+            var timer = null, ctrl = null;
+
+            function esc(s) {
+                return String(s == null ? '' : s).replace(/[&<>"']/g, function (c) {
+                    return { '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' }[c];
+                });
+            }
+
+            function show(mode) {
+                // mode: default | results | empty
+                def.style.display = mode === 'default' ? '' : 'none';
+                results.style.display = mode === 'default' ? 'none' : 'block';
+                list.style.display = mode === 'results' ? '' : 'none';
+                all.style.display = mode === 'results' ? '' : 'none';
+                empty.style.display = mode === 'empty' ? 'block' : 'none';
+            }
+
+            function render(data) {
+                if (!data.items || !data.items.length) {
+                    list.innerHTML = '';
+                    show('empty');
+                    return;
+                }
+
+                list.innerHTML = data.items.map(function (p) {
+                    return '<li><a href="' + esc(p.url) + '">' +
+                        '<figure><img src="' + esc(p.img) + '" alt="' + esc(p.name) + '" loading="lazy" /></figure>' +
+                        '<div class="res-info"><h5>' + esc(p.name) + '</h5>' +
+                        '<div class="res-price"><b>' + esc(p.now) + '</b>' +
+                        (p.old ? '<del>' + esc(p.old) + '</del>' : '') +
+                        '</div></div></a></li>';
+                }).join('');
+
+                allLink.href = data.all || allLink.href;
+                allLink.textContent = data.total > data.items.length ?
+                    'View All ' + data.total + ' Results' : 'View All Results';
+                show('results');
+            }
+
+            function search() {
+                var term = input.value.trim();
+
+                if (term.length < 2) {
+                    if (ctrl) ctrl.abort();
+                    list.innerHTML = '';
+                    show('default');
+                    return;
+                }
+
+                if (ctrl) ctrl.abort();
+                ctrl = new AbortController();
+
+                fetch(endpoint + '?q=' + encodeURIComponent(term), {
+                    headers: { 'Accept': 'application/json' },
+                    signal: ctrl.signal
+                })
+                    .then(function (r) { return r.json(); })
+                    .then(render)
+                    .catch(function (e) { /* aborted or network error: keep current view */ });
+            }
+
+            input.addEventListener('input', function () {
+                clearTimeout(timer);
+                timer = setTimeout(search, 250);
+            });
+
+            show('default');
+        })();
+    </script>
+
 
     @stack('scripts')
     @include('layouts.tracking-body-bottom')

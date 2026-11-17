@@ -493,7 +493,7 @@
 .product-secB .tab-nav li {
   position: relative;
   flex-shrink: 0;
-  padding: 20px 0;
+  padding: 0;
 }
 @media only screen and (max-width: 1024px) {
   .product-secB .tab-nav li {
@@ -564,7 +564,8 @@
 .product-secB .tab-nav li:hover {
   color: var(--black);
 }
-.product-secB .tab-nav li.active {
+.product-secB .tab-nav li.active,
+.product-secB .tab-nav li.active a {
   color: var(--black);
 }
 .product-secB .tab-nav li.active::after {
@@ -2132,3 +2133,292 @@
   background: var(--primary);
   transform: rotate(45deg);
 }/*# sourceMappingURL=listing.css.map */
+.product-secB .tab-nav li a {
+  display: block;
+  padding: 20px 0;
+  color: inherit;
+  font: inherit;
+  letter-spacing: inherit;
+  text-transform: inherit;
+  text-decoration: none;
+}
+@media only screen and (max-width: 1024px) {
+  .product-secB .tab-nav li a {
+    padding: 18px 0;
+  }
+}
+@media only screen and (max-width: 768px) {
+  .product-secB .tab-nav li a {
+    padding: 16px 0;
+  }
+}
+@media only screen and (max-width: 540px) {
+  .product-secB .tab-nav li a {
+    padding: 15px 0;
+  }
+}
+
+/* ===== Category filter popup (same look as product-listing sidebar) ===== */
+.filter-pop .f-groups { padding: 0 4px; }
+.filter-pop .f-group { border-bottom: 1px solid var(--border); }
+.filter-pop .f-group:last-child { border-bottom: 0; }
+
+.filter-pop .f-group summary {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 15px 0;
+  color: var(--black);
+  font-family: "Poppins";
+  font-size: 13px;
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 0.08em;
+  list-style: none;
+  cursor: pointer;
+  transition: color 0.3s ease;
+}
+.filter-pop .f-group summary::-webkit-details-marker { display: none; }
+.filter-pop .f-group summary::after {
+  content: "+";
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 22px;
+  height: 22px;
+  border: 1px solid var(--border);
+  border-radius: 50%;
+  font-size: 14px;
+  font-weight: 400;
+  letter-spacing: 0;
+  line-height: 1;
+  transition: all 0.3s ease;
+}
+.filter-pop .f-group summary:hover { color: var(--primary); }
+.filter-pop .f-group[open] summary::after {
+  content: "−";
+  border-color: var(--primary);
+  background: var(--primary);
+  color: var(--white);
+}
+.filter-pop .f-body { padding: 0 0 20px; }
+.filter-pop .f-list { display: grid; list-style: none; margin: 0; }
+
+/* checkbox / radio */
+.filter-pop .f-check {
+  position: relative;
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  padding: 7px 0;
+  cursor: pointer;
+}
+.filter-pop .f-check input {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  margin: 0;
+  opacity: 0;
+  cursor: pointer;
+}
+.filter-pop .f-check .f-box {
+  position: relative;
+  flex-shrink: 0;
+  width: 17px;
+  height: 17px;
+  border: 1px solid #c9bfb2;
+  border-radius: 4px;
+  background: var(--white);
+  transition: all 0.25s ease;
+}
+.filter-pop .f-check .f-box::after {
+  content: "";
+  position: absolute;
+  top: 2px;
+  left: 5px;
+  width: 4px;
+  height: 8px;
+  border: solid var(--white);
+  border-width: 0 1.5px 1.5px 0;
+  transform: rotate(45deg);
+  opacity: 0;
+  transition: opacity 0.2s ease;
+}
+.filter-pop .f-check .f-box.is-radio { border-radius: 50%; }
+.filter-pop .f-check .f-box.is-radio::after {
+  top: 4px;
+  left: 4px;
+  width: 7px;
+  height: 7px;
+  border: 0;
+  border-radius: 50%;
+  background: var(--white);
+  transform: none;
+}
+.filter-pop .f-check input:checked + .f-box { border-color: var(--primary); background: var(--primary); }
+.filter-pop .f-check input:checked + .f-box::after { opacity: 1; }
+.filter-pop .f-check input:checked ~ .f-text { color: var(--black); font-weight: 500; }
+.filter-pop .f-check input:focus-visible + .f-box { outline: 2px solid var(--primary); outline-offset: 2px; }
+.filter-pop .f-check .f-text {
+  flex: 1;
+  color: var(--text);
+  font-family: "Poppins";
+  font-size: 14px;
+  transition: color 0.25s ease;
+}
+.filter-pop .f-check:hover .f-text { color: var(--black); }
+.filter-pop .f-check .f-stars { display: inline-flex; align-items: center; gap: 3px; }
+.filter-pop .f-check .f-stars i { color: #c9a45c; font-size: 11px; }
+.filter-pop .f-check .f-stars em { margin-left: 8px; font-size: 13px; font-style: normal; color: inherit; }
+
+/* chips */
+.filter-pop .f-chips { display: flex; flex-wrap: wrap; gap: 8px; }
+.filter-pop .f-chip { position: relative; cursor: pointer; }
+.filter-pop .f-chip input {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  margin: 0;
+  opacity: 0;
+  cursor: pointer;
+}
+.filter-pop .f-chip span {
+  display: inline-block;
+  padding: 8px 14px;
+  border: 1px solid var(--border);
+  border-radius: 999px;
+  background: var(--white);
+  color: var(--text);
+  font-family: "Poppins";
+  font-size: 13px;
+  line-height: 1;
+  transition: all 0.25s ease;
+}
+.filter-pop .f-chip:hover span { border-color: var(--primary); color: var(--primary); }
+.filter-pop .f-chip input:checked + span { border-color: var(--primary); background: var(--primary); color: var(--white); }
+.filter-pop .f-chip input:focus-visible + span { outline: 2px solid var(--primary); outline-offset: 2px; }
+
+/* swatches */
+.filter-pop .f-swatches { display: flex; flex-wrap: wrap; gap: 12px; }
+.filter-pop .f-swatch { position: relative; cursor: pointer; }
+.filter-pop .f-swatch input {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  margin: 0;
+  opacity: 0;
+  cursor: pointer;
+}
+.filter-pop .f-swatch span {
+  display: block;
+  width: 28px;
+  height: 28px;
+  border: 1px solid rgba(0, 0, 0, 0.12);
+  border-radius: 50%;
+  background: var(--c);
+  transition: transform 0.25s ease, box-shadow 0.25s ease;
+}
+.filter-pop .f-swatch:hover span { transform: scale(1.12); }
+.filter-pop .f-swatch input:checked + span { box-shadow: 0 0 0 2px var(--white), 0 0 0 3.5px var(--primary); }
+
+/* price slider + inputs */
+.filter-pop .price-range { position: relative; height: 22px; margin: 8px 8px 20px; }
+.filter-pop .price-range .range-track {
+  position: absolute;
+  top: 50%;
+  left: 0;
+  right: 0;
+  height: 3px;
+  border-radius: 3px;
+  background: var(--border);
+  transform: translateY(-50%);
+}
+.filter-pop .price-range .range-fill {
+  position: absolute;
+  top: 0;
+  bottom: 0;
+  border-radius: 3px;
+  background: var(--primary);
+}
+.filter-pop .price-range input[type="range"] {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 22px;
+  margin: 0;
+  background: none;
+  -webkit-appearance: none;
+  appearance: none;
+  pointer-events: none;
+}
+.filter-pop .price-range input[type="range"]::-webkit-slider-thumb {
+  width: 18px;
+  height: 18px;
+  border: 2px solid var(--primary);
+  border-radius: 50%;
+  background: var(--white);
+  box-shadow: 0 2px 6px rgba(0, 0, 0, 0.2);
+  -webkit-appearance: none;
+  appearance: none;
+  pointer-events: auto;
+  cursor: grab;
+}
+.filter-pop .price-range input[type="range"]::-moz-range-thumb {
+  width: 14px;
+  height: 14px;
+  border: 2px solid var(--primary);
+  border-radius: 50%;
+  background: var(--white);
+  pointer-events: auto;
+  cursor: grab;
+}
+.filter-pop .price-range input[type="range"]::-webkit-slider-runnable-track,
+.filter-pop .price-range input[type="range"]::-moz-range-track { background: transparent; }
+
+.filter-pop .price-inputs { display: flex; align-items: center; gap: 10px; }
+.filter-pop .price-inputs .price-dash { flex-shrink: 0; width: 10px; height: 1px; background: var(--text); opacity: 0.5; }
+.filter-pop .price-inputs label { position: relative; flex: 1; min-width: 0; }
+.filter-pop .price-inputs label span {
+  position: absolute;
+  top: -8px;
+  left: 10px;
+  z-index: 1;
+  padding: 0 5px;
+  background: var(--white);
+  color: var(--text);
+  font-family: "Poppins";
+  font-size: 10px;
+  text-transform: uppercase;
+  letter-spacing: 0.1em;
+}
+.filter-pop .price-inputs label b {
+  position: absolute;
+  top: 50%;
+  left: 12px;
+  color: var(--black);
+  font-size: 13px;
+  font-weight: 500;
+  transform: translateY(-50%);
+}
+.filter-pop .price-inputs label input {
+  width: 100%;
+  padding: 12px 8px 12px 26px;
+  border: 1px solid var(--border);
+  border-radius: 8px;
+  background: var(--white);
+  color: var(--black);
+  font-family: "Poppins";
+  font-size: 13px;
+  outline: none;
+  -webkit-appearance: textfield;
+  -moz-appearance: textfield;
+  appearance: textfield;
+  transition: border-color 0.3s ease;
+}
+.filter-pop .price-inputs label input::-webkit-outer-spin-button,
+.filter-pop .price-inputs label input::-webkit-inner-spin-button { margin: 0; -webkit-appearance: none; appearance: none; }
+.filter-pop .price-inputs label input:focus { border-color: var(--primary); }

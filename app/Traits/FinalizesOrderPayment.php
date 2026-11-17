@@ -68,21 +68,7 @@ trait FinalizesOrderPayment
                 ? "<div style='font-size:11px;color:#7a9e9c;'>SKU: {$sku}</div>"
                 : '';
 
-            // Custom colour code + per-unit dye charge (snapshot from order item)
-            $dyeCharge = (float) $item->dye_charge;
-
-            $colourHtml = '';
-            if ($item->custom_colour_code) {
-                $colourHtml = "<div style='font-size:11px;color:#7a9e9c;'>Custom Colour Code: " . e($item->custom_colour_code);
-
-                if ($dyeCharge > 0) {
-                    $colourHtml .= " (+₹" . number_format($dyeCharge, 2) . "/pc dye charge)";
-                }
-
-                $colourHtml .= "</div>";
-            }
-
-            // order_items.total already = qty × (price + addons + dye)
+            // order_items.total already = qty × (price + addons)
             $lineTotal = $item->total;
 
             $addonsHtml = '';
@@ -101,7 +87,6 @@ trait FinalizesOrderPayment
             <div style='font-size:13px;font-weight:600;color:#1a1a1a;margin-bottom:3px;'>{$item->product_name}</div>
             {$variantHtml}
             {$skuHtml}
-            {$colourHtml}
             <div style='font-size:11px;color:#7a9e9c;'>Qty: {$item->quantity}</div>
             {$addonsHtml}
         </div>

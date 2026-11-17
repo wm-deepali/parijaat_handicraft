@@ -1,5 +1,6 @@
-{{-- resources/views/product-listing.blade.php --}}
 @extends('layouts.app')
+
+@section('title', 'Shop All Products')
 
 @push('styles')
     <link rel="stylesheet" href="{{ asset('assets/sass/product-listing/product-listing.css') }}" />
@@ -7,85 +8,15 @@
 
 @section('content')
     @php
-        // Static data for now – swap with DB/controller data later.
-        $products = [
-            ['sku' => 'SKU-P1',  'name' => 'Handmade Brass Oil Lamp',         'img' => 'assets/images/home/cat4.png', 'badge' => 'Bestseller',    'now' => '$199', 'old' => '$249', 'off' => 20],
-            ['sku' => 'SKU-P2',  'name' => 'Brass Aladdin Incense Burner',    'img' => 'assets/images/home/cat2.png', 'badge' => null,            'now' => '$149', 'old' => '$179', 'off' => 17],
-            ['sku' => 'SKU-P3',  'name' => 'Brass Decorative Rabbit Figurine', 'img' => 'assets/images/home/cat1.png', 'badge' => 'Limited Stock', 'now' => '$399', 'old' => '$469', 'off' => 15],
-            ['sku' => 'SKU-P4',  'name' => 'Hammered Copper Goblet',          'img' => 'assets/images/home/cat3.png', 'badge' => null,            'now' => '$99',  'old' => '$119', 'off' => 17],
-            ['sku' => 'SKU-P5',  'name' => 'Brass Lotus Kuber Diya',          'img' => 'assets/images/home/cat4.png', 'badge' => 'Bestseller',    'now' => '$179', 'old' => '$210', 'off' => 15],
-            ['sku' => 'SKU-P6',  'name' => 'Brass Elephant Diya Stand',       'img' => 'assets/images/home/cat1.png', 'badge' => null,            'now' => '$249', 'old' => '$299', 'off' => 17],
-            ['sku' => 'SKU-P7',  'name' => 'Brass Peacock Diya',              'img' => 'assets/images/home/cat4.png', 'badge' => 'New',           'now' => '$299', 'old' => '$359', 'off' => 17],
-            ['sku' => 'SKU-P8',  'name' => 'Antique Brass Lock',              'img' => 'assets/images/home/cat5.png', 'badge' => 'New',           'now' => '$99',  'old' => '$119', 'off' => 17],
-            ['sku' => 'SKU-P9',  'name' => 'Brass Wind Chime',                'img' => 'assets/images/home/cat6.png', 'badge' => null,            'now' => '$229', 'old' => '$275', 'off' => 17],
-            ['sku' => 'SKU-P10', 'name' => 'Copper Water Bottle',             'img' => 'assets/images/home/cat3.png', 'badge' => 'Bestseller',    'now' => '$129', 'old' => '$155', 'off' => 17],
-            ['sku' => 'SKU-P11', 'name' => 'Copper Jug with Tumblers',        'img' => 'assets/images/home/cat3.png', 'badge' => 'Limited Stock', 'now' => '$349', 'old' => '$419', 'off' => 17],
-            ['sku' => 'SKU-P12', 'name' => 'Brass Temple Bell',               'img' => 'assets/images/home/cat6.png', 'badge' => 'New',           'now' => '$159', 'old' => '$199', 'off' => 20],
-        ];
-
-        // products shown in the two carousels (P1–P5 + P9)
-        $carouselProducts = collect($products)->only([0, 1, 2, 3, 4, 8]);
-
-        $categories = [
-            ['Brass Idols & Statues', 'cat1.png', '12 items'],
-            ['Pooja Essentials',      'cat2.png', '16 items'],
-            ['Copper Drinkware',      'cat3.png', '18 items'],
-            ['Brass Diyas & Lamps',   'cat4.png', '24 items'],
-            ['Antique Locks & Keys',  'cat5.png', '08 items'],
-            ['Bells & Wind Chimes',   'cat6.png', '26 items'],
-            ['Pooja Thali Sets',      'cat2.png', '14 items'],
-        ];
-
-        $swatches = [
-            ['polished-gold', 'Polished Gold', '#d9a93a'],
-            ['antique-brass', 'Antique Brass', '#a8782a'],
-            ['copper', 'Copper Tone', '#b8704a'],
-            ['oxidised-black', 'Oxidised Black', '#2a2522'],
-            ['silver', 'Silver Tone', '#c9c9c9'],
-            ['multicolour', 'Multicolour', 'conic-gradient(#d9a93a, #b3202f, #1f6b4f, #1c2a4a, #d9a93a)'],
-        ];
-
-        // type: check | chip | price | swatch | rating
-        $filters = [
-            ['title' => 'Categories', 'type' => 'check', 'name' => 'category', 'open' => true, 'items' => [
-                'brass-idols' => 'Brass Idols & Statues', 'pooja-essentials' => 'Pooja Essentials',
-                'copper-drinkware' => 'Copper Drinkware', 'diyas-lamps' => 'Brass Diyas & Lamps',
-                'locks-keys' => 'Antique Locks & Keys', 'bells-chimes' => 'Bells & Wind Chimes']],
-            ['title' => 'Price Range', 'type' => 'price', 'open' => true],
-            ['title' => 'Metal / Material', 'type' => 'chip', 'name' => 'material', 'open' => true, 'items' => [
-                'brass' => 'Brass', 'copper' => 'Copper', 'bronze' => 'Bronze', 'iron' => 'Iron',
-                'aluminium' => 'Aluminium', 'wood' => 'Wood', 'mixed-metal' => 'Mixed Metal']],
-            ['title' => 'Colour / Finish', 'type' => 'swatch', 'open' => true],
-            ['title' => 'Size (Height)', 'type' => 'chip', 'name' => 'size', 'open' => true, 'items' => [
-                'small' => 'Up to 4 in', 'medium' => '4 – 8 in', 'large' => '8 – 12 in', 'xlarge' => '12 in & Above']],
-            ['title' => 'Weight', 'type' => 'chip', 'name' => 'weight', 'open' => false, 'items' => [
-                'under-250' => 'Under 250 g', '250-500' => '250 – 500 g', '500-1000' => '500 g – 1 kg', 'above-1000' => 'Above 1 kg']],
-            ['title' => 'Occasion', 'type' => 'chip', 'name' => 'occasion', 'open' => false, 'items' => [
-                'diwali' => 'Diwali', 'daily-pooja' => 'Daily Pooja', 'housewarming' => 'Housewarming',
-                'wedding' => 'Wedding', 'festive' => 'Festive', 'gifting' => 'Gifting']],
-            ['title' => 'Room / Use', 'type' => 'chip', 'name' => 'room', 'open' => false, 'items' => [
-                'pooja-room' => 'Pooja Room', 'living-room' => 'Living Room', 'kitchen-dining' => 'Kitchen & Dining',
-                'entrance' => 'Entrance', 'garden' => 'Garden & Outdoor']],
-            ['title' => 'Deity / Theme', 'type' => 'chip', 'name' => 'theme', 'open' => false, 'items' => [
-                'ganesh' => 'Ganesh', 'lakshmi' => 'Lakshmi', 'krishna' => 'Krishna', 'shiva' => 'Shiva',
-                'hanuman' => 'Hanuman', 'buddha' => 'Buddha', 'animals' => 'Animals']],
-            ['title' => 'Style', 'type' => 'check', 'name' => 'style', 'open' => false, 'items' => [
-                'antique' => 'Antique', 'traditional' => 'Traditional', 'contemporary' => 'Contemporary', 'hand-engraved' => 'Hand Engraved']],
-            ['title' => 'Set Type', 'type' => 'check', 'name' => 'set', 'open' => false, 'items' => [
-                'single' => 'Single Piece', 'set-2' => 'Set of 2', 'set-3-plus' => 'Set of 3 or More', 'gift-set' => 'Gift Set']],
-            ['title' => 'Availability', 'type' => 'check', 'name' => 'availability', 'open' => false, 'items' => [
-                'in-stock' => 'In Stock', 'out-of-stock' => 'Out of Stock']],
-            ['title' => 'Customer Rating', 'type' => 'rating', 'open' => false],
-            ['title' => 'Offers & Collections', 'type' => 'check', 'name' => 'offers', 'open' => false, 'items' => [
-                'discounted' => 'Discounted Products', 'special' => 'Special Offers', 'new' => 'New Arrivals', 'best' => 'Best Sellers']],
-        ];
-
         $trust = [
             ['fa-hammer', 'Thoughtfully Crafted', 'Handcrafted pieces selected with care for detail and finish.'],
             ['fa-landmark', 'Inspired by Indian Heritage', 'Designs that carry traditional character into modern homes.'],
             ['fa-shield-halved', 'Secure Shopping', 'A safe and reliable checkout experience.'],
             ['fa-headset', 'Customer Care', 'Helpful support whenever you need assistance.'],
         ];
+
+        $cur  = $products->currentPage();
+        $last = $products->lastPage();
     @endphp
 
     <main>
@@ -93,7 +24,7 @@
         <section class="listing-banner">
             <div class="container">
                 <ul class="crumb">
-                    <li><a href="index.html">Home</a></li>
+                    <li><a href="{{ route('home') }}">Home</a></li>
                     <li><i class="fa-solid fa-chevron-right"></i></li>
                     <li class="current">Shop All Products</li>
                 </ul>
@@ -106,7 +37,7 @@
                             Explore an exceptional collection of Indian handicrafts, timeless brass creations and
                             thoughtfully designed decorative pieces.
                         </p>
-                        <p class="banner-count">Showing <b>48</b> Products</p>
+                        <p class="banner-count">Showing <b>{{ $products->total() }}</b> Products</p>
                     </div>
 
                     <figure class="banner-visual">
@@ -128,19 +59,23 @@
                 <div class="swiper-wrap">
                     <div class="swiper fourSlider" data-mob="1.4" data-sm="2.4" data-lg="4" data-xl="6">
                         <div class="swiper-wrapper">
-                            @foreach ($categories as [$catName, $catImg, $catCount])
+                            @forelse ($categories as $category)
                                 <div class="swiper-slide">
-                                    <a href="product-listing.html" class="cat-tile">
+                                    <a href="{{ route('category.show', $category->slug) }}" class="cat-tile">
                                         <figure>
-                                            <img src="{{ asset('assets/images/home/' . $catImg) }}"
-                                                alt="{{ $catName }}" loading="lazy" />
+                                            <img src="{{ $category->image ? asset('storage/' . $category->image) : asset('assets/images/home/cat1.png') }}"
+                                                alt="{{ $category->name }}" loading="lazy" />
                                         </figure>
                                         <div class="cat-info">
-                                            <span class="cat-name">{{ $catName }}</span><small>{{ $catCount }}</small>
+                                            <span class="cat-name">{{ $category->name }}</span>
+                                            <small>{{ str_pad($category->products_count, 2, '0', STR_PAD_LEFT) }}
+                                                items</small>
                                         </div>
                                     </a>
                                 </div>
-                            @endforeach
+                            @empty
+                                <p class="text-center w-100">No categories available.</p>
+                            @endforelse
                         </div>
                     </div>
 
@@ -170,7 +105,13 @@
                 {{-- toolbar --}}
                 <div class="listing-toolbar">
                     <p class="listing-count">
-                        All Products &middot; Showing <b>1–12</b> of <b>48</b> Products
+                        All Products &middot;
+                        @if ($products->total())
+                            Showing <b>{{ $products->firstItem() }}–{{ $products->lastItem() }}</b> of
+                            <b>{{ $products->total() }}</b> Products
+                        @else
+                            <b>0</b> Products
+                        @endif
                     </p>
 
                     <div class="listing-tools">
@@ -188,13 +129,13 @@
                         <div class="listing-sort">
                             <label for="listingSort">Sort By</label>
                             <div class="sort-box">
-                                <select id="listingSort" name="sort">
-                                    <option value="featured">Featured</option>
-                                    <option value="newest">Newest Arrivals</option>
-                                    <option value="low">Price: Low to High</option>
-                                    <option value="high">Price: High to Low</option>
-                                    <option value="sold">Best Selling</option>
-                                    <option value="rating">Top Rated</option>
+                                {{-- belongs to the filter form so all filters are kept when sorting --}}
+                                <select id="listingSort" name="sort" form="filterPanel"
+                                    onchange="this.form.submit()">
+                                    @foreach (\App\Models\Product::SORT_OPTIONS as $val => $label)
+                                        <option value="{{ $val }}" @selected($sort === $val)>{{ $label }}
+                                        </option>
+                                    @endforeach
                                 </select>
                                 <i class="fa-solid fa-chevron-down"></i>
                             </div>
@@ -206,28 +147,33 @@
                     <label for="filterToggle" class="filter-overlay" aria-hidden="true"></label>
 
                     {{-- FILTER --}}
-                    <form class="listing-filter" id="filterPanel" action="#" method="get"
+                    <form class="listing-filter" id="filterPanel" action="{{ route('products') }}" method="get"
                         aria-label="Product filters">
                         <div class="f-head">
                             <div class="f-ttl">
                                 <span class="f-icon"><i class="fa-solid fa-sliders"></i></span>
                                 <h4>Filter Products</h4>
                             </div>
-                            <button type="reset" class="f-clear">Clear All</button>
+                            <a href="{{ route('products') }}" class="f-clear">Clear All</a>
                             <label for="filterToggle" class="f-close" aria-label="Close filters"><i
                                     class="fa-solid fa-xmark"></i></label>
                         </div>
 
                         <div class="f-scroll">
                             @foreach ($filters as $f)
-                                <details class="f-group" @if ($f['open']) open @endif>
+                                @php
+                                    $selected = isset($f['key']) ? (array) request($f['key'], []) : [];
+                                    $isOpen = $f['open'] || !empty(array_filter($selected));
+                                @endphp
+                                <details class="f-group" @if ($isOpen) open @endif>
                                     <summary>{{ $f['title'] }}</summary>
 
                                     @if ($f['type'] === 'check')
                                         <div class="f-body f-list">
                                             @foreach ($f['items'] as $val => $label)
                                                 <label class="f-check"><input type="checkbox"
-                                                        name="{{ $f['name'] }}" value="{{ $val }}" /><span
+                                                        name="{{ $f['field'] }}[]" value="{{ $val }}"
+                                                        @checked(in_array($val, $selected)) /><span
                                                         class="f-box"></span><span
                                                         class="f-text">{{ $label }}</span></label>
                                             @endforeach
@@ -236,42 +182,47 @@
                                         <div class="f-body f-chips">
                                             @foreach ($f['items'] as $val => $label)
                                                 <label class="f-chip"><input type="checkbox"
-                                                        name="{{ $f['name'] }}" value="{{ $val }}" /><span>{{ $label }}</span></label>
+                                                        name="{{ $f['field'] }}[]" value="{{ $val }}"
+                                                        @checked(in_array($val, $selected)) /><span>{{ $label }}</span></label>
+                                            @endforeach
+                                        </div>
+                                    @elseif ($f['type'] === 'swatch')
+                                        <div class="f-body f-swatches">
+                                            @foreach ($f['items'] as $val => [$title, $color])
+                                                <label class="f-swatch" title="{{ $title }}"><input
+                                                        type="checkbox" name="{{ $f['field'] }}[]"
+                                                        value="{{ $val }}"
+                                                        @checked(in_array($val, $selected)) /><span
+                                                        style="--c: {{ $color }}"></span></label>
                                             @endforeach
                                         </div>
                                     @elseif ($f['type'] === 'price')
                                         <div class="f-body">
-                                            <div class="price-range" data-min="0" data-max="10000">
+                                            <div class="price-range" data-min="0" data-max="{{ $priceCeil }}">
                                                 <div class="range-track"><span class="range-fill"></span></div>
-                                                <input type="range" class="range-min" min="0" max="10000"
-                                                    step="100" value="0" aria-label="Minimum price" />
-                                                <input type="range" class="range-max" min="0" max="10000"
-                                                    step="100" value="10000" aria-label="Maximum price" />
+                                                <input type="range" class="range-min" min="0"
+                                                    max="{{ $priceCeil }}" step="100" value="{{ $priceMin }}"
+                                                    aria-label="Minimum price" />
+                                                <input type="range" class="range-max" min="0"
+                                                    max="{{ $priceCeil }}" step="100" value="{{ $priceMax }}"
+                                                    aria-label="Maximum price" />
                                             </div>
                                             <div class="price-inputs">
                                                 <label><span>Min</span><b>₹</b><input type="number"
-                                                        name="price_min" class="in-min" value="0" min="0"
-                                                        max="10000" step="100" /></label>
+                                                        name="price_min" class="in-min" value="{{ $priceMin }}"
+                                                        min="0" max="{{ $priceCeil }}" step="100" /></label>
                                                 <i class="price-dash"></i>
                                                 <label><span>Max</span><b>₹</b><input type="number"
-                                                        name="price_max" class="in-max" value="10000" min="0"
-                                                        max="10000" step="100" /></label>
+                                                        name="price_max" class="in-max" value="{{ $priceMax }}"
+                                                        min="0" max="{{ $priceCeil }}" step="100" /></label>
                                             </div>
-                                        </div>
-                                    @elseif ($f['type'] === 'swatch')
-                                        <div class="f-body f-swatches">
-                                            @foreach ($swatches as [$val, $title, $color])
-                                                <label class="f-swatch" title="{{ $title }}"><input
-                                                        type="checkbox" name="finish"
-                                                        value="{{ $val }}" /><span
-                                                        style="--c: {{ $color }}"></span></label>
-                                            @endforeach
                                         </div>
                                     @elseif ($f['type'] === 'rating')
                                         <div class="f-body f-list">
                                             @foreach ([4, 3, 2] as $r)
                                                 <label class="f-check">
-                                                    <input type="radio" name="rating" value="{{ $r }}" /><span
+                                                    <input type="radio" name="rating" value="{{ $r }}"
+                                                        @checked((int) request('rating') === $r) /><span
                                                         class="f-box is-radio"></span>
                                                     <span class="f-text f-stars">
                                                         @for ($i = 1; $i <= 5; $i++)
@@ -289,7 +240,7 @@
                         </div>
 
                         <div class="f-foot">
-                            <button type="reset" class="btn btn-outline-black">Clear All</button>
+                            <a href="{{ route('products') }}" class="btn btn-outline-black">Clear All</a>
                             <button type="submit" class="btn btn-primary">Apply Filters</button>
                         </div>
                     </form>
@@ -297,59 +248,93 @@
                     {{-- PRODUCTS --}}
                     <div class="listing-content">
                         <div class="listing-grid" id="listingGrid">
-                            @foreach ($products as $p)
-                                @include('partials.product-card', ['p' => $p])
-                            @endforeach
+                            @forelse ($products as $item)
+                                @include('partials.product-card', ['p' => $item])
+                            @empty
+                                <p class="text-center w-100">No products match your filters.</p>
+                            @endforelse
                         </div>
 
                         {{-- PAGINATION --}}
-                        <nav class="listing-pagination" aria-label="Product pages">
-                            <a href="javascript:void(0)" class="pg-nav is-disabled" aria-disabled="true"><i
-                                    class="fa-solid fa-arrow-left-long"></i> Previous</a>
-                            <ul>
-                                <li><a href="javascript:void(0)" class="active" aria-current="page">1</a></li>
-                                <li><a href="javascript:void(0)">2</a></li>
-                                <li><a href="javascript:void(0)">3</a></li>
-                                <li><a href="javascript:void(0)">4</a></li>
-                                <li class="dots">…</li>
-                            </ul>
-                            <a href="javascript:void(0)" class="pg-nav">Next <i
-                                    class="fa-solid fa-arrow-right-long"></i></a>
-                        </nav>
+                        @if ($products->hasPages())
+                            <nav class="listing-pagination" aria-label="Product pages">
+                                @if ($products->onFirstPage())
+                                    <a href="javascript:void(0)" class="pg-nav is-disabled" aria-disabled="true"><i
+                                            class="fa-solid fa-arrow-left-long"></i> Previous</a>
+                                @else
+                                    <a href="{{ $products->previousPageUrl() }}" class="pg-nav"><i
+                                            class="fa-solid fa-arrow-left-long"></i> Previous</a>
+                                @endif
+
+                                <ul>
+                                    @if ($cur > 3)
+                                        <li><a href="{{ $products->url(1) }}">1</a></li>
+                                        @if ($cur > 4)
+                                            <li class="dots">…</li>
+                                        @endif
+                                    @endif
+
+                                    @foreach ($products->getUrlRange(max(1, $cur - 2), min($last, $cur + 2)) as $page => $url)
+                                        <li>
+                                            <a href="{{ $url }}" @class(['active' => $page === $cur])
+                                                @if ($page === $cur) aria-current="page" @endif>{{ $page }}</a>
+                                        </li>
+                                    @endforeach
+
+                                    @if ($cur < $last - 2)
+                                        @if ($cur < $last - 3)
+                                            <li class="dots">…</li>
+                                        @endif
+                                        <li><a href="{{ $products->url($last) }}">{{ $last }}</a></li>
+                                    @endif
+                                </ul>
+
+                                @if ($products->hasMorePages())
+                                    <a href="{{ $products->nextPageUrl() }}" class="pg-nav">Next <i
+                                            class="fa-solid fa-arrow-right-long"></i></a>
+                                @else
+                                    <a href="javascript:void(0)" class="pg-nav is-disabled"
+                                        aria-disabled="true">Next <i class="fa-solid fa-arrow-right-long"></i></a>
+                                @endif
+                            </nav>
+                        @endif
                     </div>
                 </div>
             </div>
         </section>
 
         {{-- YOU MAY ALSO LOVE --}}
-        <section class="home-secJ">
-            <div class="container">
-                <div class="heading">
-                    <small class="eyebrow">HANDPICKED FOR YOU</small>
-                    <h3>You May Also Love.</h3>
-                    <p>Discover more beautiful handcrafted treasures, thoughtfully selected to inspire your next find.</p>
-                </div>
+        @if ($related->isNotEmpty())
+            <section class="home-secJ">
+                <div class="container">
+                    <div class="heading">
+                        <small class="eyebrow">HANDPICKED FOR YOU</small>
+                        <h3>You May Also Love.</h3>
+                        <p>Discover more beautiful handcrafted treasures, thoughtfully selected to inspire your next
+                            find.</p>
+                    </div>
 
-                <div class="swiper-wrap">
-                    <div class="swiper fourSlider" data-mob="2" data-sm="3" data-lg="4" data-xl="5">
-                        <div class="swiper-wrapper">
-                            @foreach ($carouselProducts as $p)
-                                <div class="swiper-slide">
-                                    @include('partials.product-card', ['p' => $p])
-                                </div>
-                            @endforeach
+                    <div class="swiper-wrap">
+                        <div class="swiper fourSlider" data-mob="2" data-sm="3" data-lg="4" data-xl="5">
+                            <div class="swiper-wrapper">
+                                @foreach ($related as $item)
+                                    <div class="swiper-slide">
+                                        @include('partials.product-card', ['p' => $item])
+                                    </div>
+                                @endforeach
+                            </div>
+                        </div>
+
+                        <div class="swiper-group">
+                            <button type="button" class="btn-prev" aria-label="Previous"><i
+                                    class="fa-solid fa-chevron-left"></i></button>
+                            <button type="button" class="btn-next" aria-label="Next"><i
+                                    class="fa-solid fa-chevron-right"></i></button>
                         </div>
                     </div>
-
-                    <div class="swiper-group">
-                        <button type="button" class="btn-prev" aria-label="Previous"><i
-                                class="fa-solid fa-chevron-left"></i></button>
-                        <button type="button" class="btn-next" aria-label="Next"><i
-                                class="fa-solid fa-chevron-right"></i></button>
-                    </div>
                 </div>
-            </div>
-        </section>
+            </section>
+        @endif
 
         {{-- TRUST --}}
         <section class="listing-trust">
@@ -371,34 +356,36 @@
         </section>
 
         {{-- RECENTLY VIEWED --}}
-        <section class="home-secJ">
-            <div class="container">
-                <div class="heading">
-                    <small class="eyebrow">RECENTLY VIEWED</small>
-                    <h3>Pick Up Where You Left Off.</h3>
-                    <p>Revisit the handcrafted pieces that caught your eye.</p>
-                </div>
+        @if ($recent->isNotEmpty())
+            <section class="home-secJ">
+                <div class="container">
+                    <div class="heading">
+                        <small class="eyebrow">RECENTLY VIEWED</small>
+                        <h3>Pick Up Where You Left Off.</h3>
+                        <p>Revisit the handcrafted pieces that caught your eye.</p>
+                    </div>
 
-                <div class="swiper-wrap">
-                    <div class="swiper fourSlider" data-mob="2" data-sm="3" data-lg="4" data-xl="5">
-                        <div class="swiper-wrapper">
-                            @foreach ($carouselProducts as $p)
-                                <div class="swiper-slide">
-                                    @include('partials.product-card', ['p' => $p])
-                                </div>
-                            @endforeach
+                    <div class="swiper-wrap">
+                        <div class="swiper fourSlider" data-mob="2" data-sm="3" data-lg="4" data-xl="5">
+                            <div class="swiper-wrapper">
+                                @foreach ($recent as $item)
+                                    <div class="swiper-slide">
+                                        @include('partials.product-card', ['p' => $item])
+                                    </div>
+                                @endforeach
+                            </div>
+                        </div>
+
+                        <div class="swiper-group">
+                            <button type="button" class="btn-prev" aria-label="Previous"><i
+                                    class="fa-solid fa-chevron-left"></i></button>
+                            <button type="button" class="btn-next" aria-label="Next"><i
+                                    class="fa-solid fa-chevron-right"></i></button>
                         </div>
                     </div>
-
-                    <div class="swiper-group">
-                        <button type="button" class="btn-prev" aria-label="Previous"><i
-                                class="fa-solid fa-chevron-left"></i></button>
-                        <button type="button" class="btn-next" aria-label="Next"><i
-                                class="fa-solid fa-chevron-right"></i></button>
-                    </div>
                 </div>
-            </div>
-        </section>
+            </section>
+        @endif
     </main>
 @endsection
 
@@ -486,6 +473,14 @@
                     });
                 });
             }
+
+            var filterForm = document.getElementById("filterPanel");
+if (filterForm) {
+    filterForm.addEventListener("change", function() {
+        filterForm.submit();
+    });
+}
+
         })();
     </script>
 @endpush

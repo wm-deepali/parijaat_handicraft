@@ -30,12 +30,14 @@ class Product extends Model
         'sku',
 
         'short_description',
-        'fabric_material',
+        'specifications',
+        'material_craft',
+        'size_dimensions',
         'care_instructions',
         'shipping_delivery',
         'returns_exchange',
-        'offers_how_to_avail',
 
+        'price_type',
         'mrp',
         'discount_type',
         'discount',
@@ -46,9 +48,6 @@ class Product extends Model
 
         'delivery_time',
 
-        'colour_customization',
-        'dye_price',
-
         'meta_title',
         'meta_description',
 
@@ -57,11 +56,19 @@ class Product extends Model
     ];
 
     protected $casts = [
-
+        'specifications' => 'array',
         'status' => 'boolean',
-        'colour_customization' => 'boolean',
-
     ];
+
+    public function priceTiers()
+    {
+        return $this->hasMany(ProductPriceTier::class)->orderBy('min_qty');
+    }
+
+    public function brand()
+    {
+        return $this->belongsTo(Brand::class);
+    }
 
     public function category()
     {
@@ -78,22 +85,36 @@ class Product extends Model
      * listing pages, luxury tabs, etc). Prefers the compressed THUMB
      * (400px) since these are always shown small — falls back to the
      * full image for older rows created before the thumb column existed.
+     *
+     * Uses the already-loaded `images` relation (forCard() eager loads it),
+     * so no extra query per product (N+1 fix).
      */
     public function getDisplayImageAttribute()
     {
-        $default = $this->images()
-            ->where('is_default', 1)
-            ->first();
-
-        if ($default) {
-            return asset('storage/' . ($default->thumb ?? $default->image));
-        }
-
-        $image = $this->images()->first();
+        $image = $this->images->firstWhere('is_default', 1) ?? $this->images->first();
 
         return $image
             ? asset('storage/' . ($image->thumb ?? $image->image))
-            : asset('assets/images/home/tab1.png');
+            : asset('assets/images/home/cat4.png');
+    }
+
+    /**
+     * Array shape expected by partials/product-card.blade.php
+     */
+    public function toCard(): array
+    {
+        return [
+            'id' => $this->id,
+            'sku' => $this->sku,
+            'name' => $this->name,
+            'brand' => $this->brand?->name,
+            'url' => url('product/' . $this->slug), // swap for route('product.show', $this->slug) once that route exists
+            'img' => $this->display_image,           // already a full asset() URL
+            'now' => '₹' . number_format($this->price),
+            'old' => $this->mrp > $this->price ? '₹' . number_format($this->mrp) : null,
+            'off' => $this->discount_percent,
+            'badge' => null,                           // decide badge rule later (New / Bestseller / collection)
+        ];
     }
 
     public function attributeValues()
@@ -180,7 +201,8 @@ class Product extends Model
     // card ke liye jo relations aur rating chahiye, ek jagah
     public function scopeForCard($query)
     {
-        return $query->with(['images', 'collections:id,name', 'category:id,name', 'subcategory:id,name'])
+        // Product.php: in scopeForCard() add 'brand:id,name' to the with() list
+        return $query->with(['images', 'collections:id,name', 'category:id,name', 'subcategory:id,name', 'brand:id,name'])
             ->withAvg('approvedReviews as avg_rating', 'rating');
     }
 
@@ -198,6 +220,7 @@ class Product extends Model
             ? (int) round((($this->mrp - $this->price) / $this->mrp) * 100)
             : 0;
     }
+
     public function scopeOrderForListing($query, ?string $sort)
     {
         switch ($sort) {
@@ -245,6 +268,24 @@ class Product extends Model
             })
             ->orderBy('id')
             ->first();
+    }
+
+    /** CKEditor HTML -> safe HTML (only formatting tags, no scripts or event handlers) */
+    public static function rich(?string $html): string
+    {
+        $html = strip_tags((string) $html, '<p><br><ul><ol><li><strong><b><em><i><u><a><span><h3><h4><h5><table><thead><tbody><tr><th><td>');
+        $html = preg_replace('/\son\w+\s*=\s*("[^"]*"|\'[^\']*\')/i', '', $html);
+        $html = preg_replace('/(href)\s*=\s*(["\'])\s*javascript:[^"\']*\2/i', '$1=$2#$2', $html);
+
+        return trim($html);
+    }
+
+    /** true if the field has real text (CKEditor saves <p>&nbsp;</p> when "empty") */
+    public static function hasText(?string $html): bool
+    {
+        $text = html_entity_decode(strip_tags((string) $html), ENT_QUOTES, 'UTF-8');
+
+        return trim(str_replace("\xC2\xA0", ' ', $text)) !== '';
     }
 
 }

@@ -433,6 +433,14 @@
                                 </div>
 
                                 <div class="field-group">
+                                    <label class="field-label">Description</label>
+                                    <textarea name="description" class="field-textarea" rows="3" maxlength="1000"
+                                        placeholder="Short paragraph shown in the category page banner">{{ old('description') }}</textarea>
+                                    <div class="field-hint">Shown on the category page banner. Leave blank to hide it.
+                                    </div>
+                                </div>
+
+                                <div class="field-group">
                                     <label class="field-label">Parent Category</label>
                                     <select name="parent_id" class="field-select">
                                         <option value="">— None (top-level) —</option>
@@ -453,6 +461,8 @@
                             </div>
                         </div>
 
+                        @include('admin.categories._content-fields')
+                        
                         <!-- Size Chart -->
                         <div class="section-card">
                             <div class="section-card-header">

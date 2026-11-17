@@ -2861,291 +2861,44 @@
                 </ul>
 
                 <!-- PRODUCT SLIDER : 2 ROWS, 4 PER VIEW -->
-                <div class="swiper-wrap">
-                    <div class="swiper affpSlider">
-                        <div class="swiper-wrapper">
-                            <!-- 01 -->
-                            <div class="swiper-slide">
-                                <article class="affp-tile">
-                                    <figure>
-                                        <a href="javascript:void(0)"><img src="assets/images/home/cat4.png"
-                                                alt="Handmade Brass Oil Lamp" loading="lazy" /></a>
-                                    </figure>
-                                    <div class="affp-text">
-                                        <h5><a href="javascript:void(0)">Handmade Brass Oil Lamp</a></h5>
+                <div class="swiper-wrapper">
+                    @foreach($affiliateLinks as $link)
+                        <div class="swiper-slide">
+                            <article class="affp-tile">
+                                <figure>
+                                    <a href="{{ $link->url }}" target="_blank" rel="noopener noreferrer nofollow sponsored">
+                                        @if($link->image_url)
+                                            <img src="{{ $link->image_url }}" alt="{{ $link->title ?: $link->host }}"
+                                                loading="lazy" />
+                                        @endif
+                                    </a>
+                                </figure>
+                                <div class="affp-text">
+                                    <h5><a href="{{ $link->url }}" target="_blank"
+                                            rel="noopener noreferrer nofollow sponsored">{{ $link->title ?: $link->host }}</a>
+                                    </h5>
+                                    @if($link->price)
                                         <span class="affp-label">Partner Price</span>
                                         <div class="affp-price">
-                                            <b>$229</b><del>$279</del><em>18% OFF</em>
+                                            <b>${{ rtrim(rtrim(number_format($link->price, 2), '0'), '.') }}</b>
+                                            @if($link->mrp && $link->mrp > $link->price)
+                                                <del>${{ rtrim(rtrim(number_format($link->mrp, 2), '0'), '.') }}</del>
+                                            @endif
+                                            @if($link->discount_percent)
+                                                <em>{{ $link->discount_percent }}% OFF</em>
+                                            @endif
                                         </div>
-                                    </div>
-                                    <button type="button" class="affp-btn affp-copy"
-                                        data-link="https://www.parijaat.com/product-detail.html?ref=PARTNER_ID&sku=SKU-P1"
-                                        aria-label="Copy affiliate link" title="Copy link">
-                                        <i class="fa-solid fa-link"></i>
-                                    </button>
-                                </article>
-                            </div>
-
-                            <!-- 02 -->
-                            <div class="swiper-slide">
-                                <article class="affp-tile">
-                                    <figure>
-                                        <a href="javascript:void(0)"><img src="assets/images/home/cat2.png"
-                                                alt="Brass Aladdin Incense Burner" loading="lazy" /></a>
-                                    </figure>
-                                    <div class="affp-text">
-                                        <h5>
-                                            <a href="javascript:void(0)">Brass Aladdin Incense Burner</a>
-                                        </h5>
-                                        <span class="affp-label">Partner Price</span>
-                                        <div class="affp-price">
-                                            <b>$129</b><del>$159</del><em>19% OFF</em>
-                                        </div>
-                                    </div>
-                                    <button type="button" class="affp-btn affp-copy"
-                                        data-link="https://www.parijaat.com/product-detail.html?ref=PARTNER_ID&sku=SKU-P2"
-                                        aria-label="Copy affiliate link" title="Copy link">
-                                        <i class="fa-solid fa-link"></i>
-                                    </button>
-                                </article>
-                            </div>
-
-                            <!-- 03 -->
-                            <div class="swiper-slide">
-                                <article class="affp-tile">
-                                    <figure>
-                                        <a href="javascript:void(0)"><img src="assets/images/home/cat1.png"
-                                                alt="Brass Decorative Rabbit Figurine" loading="lazy" /></a>
-                                    </figure>
-                                    <div class="affp-text">
-                                        <h5>
-                                            <a href="javascript:void(0)">Brass Decorative Rabbit Figurine</a>
-                                        </h5>
-                                        <span class="affp-label">Partner Price</span>
-                                        <div class="affp-price">
-                                            <b>$389</b><del>$459</del><em>15% OFF</em>
-                                        </div>
-                                    </div>
-                                    <button type="button" class="affp-btn affp-copy"
-                                        data-link="https://www.parijaat.com/product-detail.html?ref=PARTNER_ID&sku=SKU-P3"
-                                        aria-label="Copy affiliate link" title="Copy link">
-                                        <i class="fa-solid fa-link"></i>
-                                    </button>
-                                </article>
-                            </div>
-
-                            <!-- 04 -->
-                            <div class="swiper-slide">
-                                <article class="affp-tile">
-                                    <figure>
-                                        <a href="javascript:void(0)"><img src="assets/images/home/cat3.png"
-                                                alt="Hammered Copper Goblet" loading="lazy" /></a>
-                                    </figure>
-                                    <div class="affp-text">
-                                        <h5><a href="javascript:void(0)">Hammered Copper Goblet</a></h5>
-                                        <span class="affp-label">Partner Price</span>
-                                        <div class="affp-price">
-                                            <b>$125</b><del>$149</del><em>16% OFF</em>
-                                        </div>
-                                    </div>
-                                    <button type="button" class="affp-btn affp-copy"
-                                        data-link="https://www.parijaat.com/product-detail.html?ref=PARTNER_ID&sku=SKU-P4"
-                                        aria-label="Copy affiliate link" title="Copy link">
-                                        <i class="fa-solid fa-link"></i>
-                                    </button>
-                                </article>
-                            </div>
-
-                            <!-- 05 -->
-                            <div class="swiper-slide">
-                                <article class="affp-tile">
-                                    <figure>
-                                        <a href="javascript:void(0)"><img src="assets/images/home/cat4.png"
-                                                alt="Brass Lotus Kuber Diya" loading="lazy" /></a>
-                                    </figure>
-                                    <div class="affp-text">
-                                        <h5><a href="javascript:void(0)">Brass Lotus Kuber Diya</a></h5>
-                                        <span class="affp-label">Partner Price</span>
-                                        <div class="affp-price">
-                                            <b>$179</b><del>$209</del><em>14% OFF</em>
-                                        </div>
-                                    </div>
-                                    <button type="button" class="affp-btn affp-copy"
-                                        data-link="https://www.parijaat.com/product-detail.html?ref=PARTNER_ID&sku=SKU-P5"
-                                        aria-label="Copy affiliate link" title="Copy link">
-                                        <i class="fa-solid fa-link"></i>
-                                    </button>
-                                </article>
-                            </div>
-
-                            <!-- 06 -->
-                            <div class="swiper-slide">
-                                <article class="affp-tile">
-                                    <figure>
-                                        <a href="javascript:void(0)"><img src="assets/images/home/cat1.png"
-                                                alt="Brass Elephant Diya Stand" loading="lazy" /></a>
-                                    </figure>
-                                    <div class="affp-text">
-                                        <h5>
-                                            <a href="javascript:void(0)">Brass Elephant Diya Stand</a>
-                                        </h5>
-                                        <span class="affp-label">Partner Price</span>
-                                        <div class="affp-price">
-                                            <b>$259</b><del>$309</del><em>16% OFF</em>
-                                        </div>
-                                    </div>
-                                    <button type="button" class="affp-btn affp-copy"
-                                        data-link="https://www.parijaat.com/product-detail.html?ref=PARTNER_ID&sku=SKU-P6"
-                                        aria-label="Copy affiliate link" title="Copy link">
-                                        <i class="fa-solid fa-link"></i>
-                                    </button>
-                                </article>
-                            </div>
-
-                            <!-- 07 -->
-                            <div class="swiper-slide">
-                                <article class="affp-tile">
-                                    <figure>
-                                        <a href="javascript:void(0)"><img src="assets/images/home/cat4.png"
-                                                alt="Brass Peacock Diya" loading="lazy" /></a>
-                                    </figure>
-                                    <div class="affp-text">
-                                        <h5><a href="javascript:void(0)">Brass Peacock Diya</a></h5>
-                                        <span class="affp-label">Partner Price</span>
-                                        <div class="affp-price">
-                                            <b>$329</b><del>$399</del><em>18% OFF</em>
-                                        </div>
-                                    </div>
-                                    <button type="button" class="affp-btn affp-copy"
-                                        data-link="https://www.parijaat.com/product-detail.html?ref=PARTNER_ID&sku=SKU-P7"
-                                        aria-label="Copy affiliate link" title="Copy link">
-                                        <i class="fa-solid fa-link"></i>
-                                    </button>
-                                </article>
-                            </div>
-
-                            <!-- 08 -->
-                            <div class="swiper-slide">
-                                <article class="affp-tile">
-                                    <figure>
-                                        <a href="javascript:void(0)"><img src="assets/images/home/cat5.png"
-                                                alt="Antique Brass Lock" loading="lazy" /></a>
-                                    </figure>
-                                    <div class="affp-text">
-                                        <h5><a href="javascript:void(0)">Antique Brass Lock</a></h5>
-                                        <span class="affp-label">Partner Price</span>
-                                        <div class="affp-price">
-                                            <b>$135</b><del>$159</del><em>15% OFF</em>
-                                        </div>
-                                    </div>
-                                    <button type="button" class="affp-btn affp-copy"
-                                        data-link="https://www.parijaat.com/product-detail.html?ref=PARTNER_ID&sku=SKU-P8"
-                                        aria-label="Copy affiliate link" title="Copy link">
-                                        <i class="fa-solid fa-link"></i>
-                                    </button>
-                                </article>
-                            </div>
-
-                            <!-- 09 -->
-                            <div class="swiper-slide">
-                                <article class="affp-tile">
-                                    <figure>
-                                        <a href="javascript:void(0)"><img src="assets/images/home/cat6.png"
-                                                alt="Brass Wind Chime" loading="lazy" /></a>
-                                    </figure>
-                                    <div class="affp-text">
-                                        <h5><a href="javascript:void(0)">Brass Wind Chime</a></h5>
-                                        <span class="affp-label">Partner Price</span>
-                                        <div class="affp-price">
-                                            <b>$249</b><del>$299</del><em>17% OFF</em>
-                                        </div>
-                                    </div>
-                                    <button type="button" class="affp-btn affp-copy"
-                                        data-link="https://www.parijaat.com/product-detail.html?ref=PARTNER_ID&sku=SKU-P9"
-                                        aria-label="Copy affiliate link" title="Copy link">
-                                        <i class="fa-solid fa-link"></i>
-                                    </button>
-                                </article>
-                            </div>
-
-                            <!-- 10 -->
-                            <div class="swiper-slide">
-                                <article class="affp-tile">
-                                    <figure>
-                                        <a href="javascript:void(0)"><img src="assets/images/home/cat3.png"
-                                                alt="Copper Water Bottle" loading="lazy" /></a>
-                                    </figure>
-                                    <div class="affp-text">
-                                        <h5><a href="javascript:void(0)">Copper Water Bottle</a></h5>
-                                        <span class="affp-label">Partner Price</span>
-                                        <div class="affp-price">
-                                            <b>$169</b><del>$199</del><em>15% OFF</em>
-                                        </div>
-                                    </div>
-                                    <button type="button" class="affp-btn affp-copy"
-                                        data-link="https://www.parijaat.com/product-detail.html?ref=PARTNER_ID&sku=SKU-P10"
-                                        aria-label="Copy affiliate link" title="Copy link">
-                                        <i class="fa-solid fa-link"></i>
-                                    </button>
-                                </article>
-                            </div>
-
-                            <!-- 11 -->
-                            <div class="swiper-slide">
-                                <article class="affp-tile">
-                                    <figure>
-                                        <a href="javascript:void(0)"><img src="assets/images/home/cat3.png"
-                                                alt="Copper Jug with Tumblers" loading="lazy" /></a>
-                                    </figure>
-                                    <div class="affp-text">
-                                        <h5>
-                                            <a href="javascript:void(0)">Copper Jug with Tumblers</a>
-                                        </h5>
-                                        <span class="affp-label">Partner Price</span>
-                                        <div class="affp-price">
-                                            <b>$399</b><del>$479</del><em>17% OFF</em>
-                                        </div>
-                                    </div>
-                                    <button type="button" class="affp-btn affp-copy"
-                                        data-link="https://www.parijaat.com/product-detail.html?ref=PARTNER_ID&sku=SKU-P11"
-                                        aria-label="Copy affiliate link" title="Copy link">
-                                        <i class="fa-solid fa-link"></i>
-                                    </button>
-                                </article>
-                            </div>
-
-                            <!-- 12 -->
-                            <div class="swiper-slide">
-                                <article class="affp-tile">
-                                    <figure>
-                                        <a href="javascript:void(0)"><img src="assets/images/home/cat6.png"
-                                                alt="Brass Temple Bell" loading="lazy" /></a>
-                                    </figure>
-                                    <div class="affp-text">
-                                        <h5><a href="javascript:void(0)">Brass Temple Bell</a></h5>
-                                        <span class="affp-label">Partner Price</span>
-                                        <div class="affp-price">
-                                            <b>$199</b><del>$249</del><em>20% OFF</em>
-                                        </div>
-                                    </div>
-                                    <button type="button" class="affp-btn affp-copy"
-                                        data-link="https://www.parijaat.com/product-detail.html?ref=PARTNER_ID&sku=SKU-P12"
-                                        aria-label="Copy affiliate link" title="Copy link">
-                                        <i class="fa-solid fa-link"></i>
-                                    </button>
-                                </article>
-                            </div>
+                                    @elseif($link->description)
+                                        <span class="affp-label">{{ \Illuminate\Support\Str::limit($link->description, 70) }}</span>
+                                    @endif
+                                </div>
+                                <button type="button" class="affp-btn affp-copy" data-link="{{ $link->url }}"
+                                    aria-label="Copy affiliate link" title="Copy link">
+                                    <i class="fa-solid fa-link"></i>
+                                </button>
+                            </article>
                         </div>
-                    </div>
-
-                    <div class="swiper-group">
-                        <button type="button" class="btn-prev" aria-label="Previous">
-                            <i class="fa-solid fa-chevron-left"></i>
-                        </button>
-                        <button type="button" class="btn-next" aria-label="Next">
-                            <i class="fa-solid fa-chevron-right"></i>
-                        </button>
-                    </div>
+                    @endforeach
                 </div>
 
                 <div class="affp-cta">

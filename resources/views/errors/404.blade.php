@@ -20,7 +20,7 @@
               </p>
 
               <div class="btn-grp">
-                <a href="index.html" class="btn btn-primary">
+                <a href="{{ route('home') }}" class="btn btn-primary">
                   <i class="fa-solid fa-house" aria-hidden="true"></i> Go to
                   Home
                 </a>

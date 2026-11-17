@@ -52,7 +52,7 @@
             <div class="banner-top">
                 <div class="container">
                     <ul class="banner-crumb">
-                        <li><a href="index.html">Home</a></li>
+                        <li><a href="{{ route('home') }}">Home</a></li>
                         <li><i class="fa-solid fa-chevron-right"></i></li>
                         <li class="current">Blogs</li>
                     </ul>

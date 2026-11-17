@@ -73,6 +73,7 @@
             <a href="#"><i class="fa-solid fa-box"></i> Product & Inventories</a>
             <ul>
                 <li><a href="{{ route('admin.products.index') }}">Manage Products</a></li>
+                <li><a href="{{ route('admin.affiliate-links.index') }}">Affiliate Link</a></li>
                 <li><a href="{{ route('admin.reviews.index') }}">Product Reviews</a></li>
                 <li><a href="{{ route('admin.stock.index') }}">Stock Management</a></li>
                 <li><a href="{{ route('admin.stock.alerts') }}">Stock Alerts</a></li>
@@ -133,11 +134,8 @@
 ) ? 'active' : '' }}">
             <a href="#"><i class="fa-solid fa-file-lines"></i> Content Management</a>
             <ul>
-                <li><a href="{{ route('admin.page-heroes.index') }}">Page Banners</a></li>
                 <li><a href="{{ route('admin.announcements.index') }}">Announcement Bar</a></li>
                 <li><a href="{{ route('admin.home-page.index') }}">Home Page Widgets</a></li>
-                <li><a href="{{ route('admin.offer-modal.edit') }}">Offer Modal</a></li>
-                <li><a href="{{ route('admin.about.index') }}">About Page</a></li>
                 <li><a href="{{ route('admin.faqs.index') }}">FAQ</a></li>
                 <li><a href="{{ route('admin.blogs.index') }}">Blog Management</a></li>
                 <li><a href="{{ route('admin.pages.index') }}">Dynamic Pages</a></li>
@@ -154,7 +152,6 @@
             <ul>
                 <li><a href="{{ route('admin.contact-enquiries.index') }}">Contact Us Enquiries</a></li>
                 <li><a href="{{ route('admin.coupon-enquiries.index') }}">Coupon Enquiries</a></li>
-                <li><a href="{{ route('admin.subscribers.index') }}">Newsletter Subscribers</a></li>
             </ul>
         </li>
 

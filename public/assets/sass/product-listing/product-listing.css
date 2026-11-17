@@ -377,6 +377,7 @@
 }
 .listing-cats .swiper-wrap {
   position: relative;
+  height: fit-content;
 }
 .listing-cats .swiper-slide {
   height: auto;

@@ -14,6 +14,20 @@ class CreateCategoriesTable extends Migration
             $table->string('name');
             $table->string('slug')->unique();
             $table->string('sub_title')->nullable();
+            $table->text('description')->nullable();
+
+            // Collection heading (above product grid)
+            $table->string('collection_eyebrow')->nullable();
+            $table->string('collection_title')->nullable();
+            $table->text('collection_text')->nullable();
+
+            // "Art of" section
+            $table->string('art_eyebrow')->nullable();
+            $table->string('art_title')->nullable();
+            $table->text('art_text')->nullable();
+            $table->json('art_points')->nullable();   // [{"title": "...", "text": "..."}]
+            $table->string('art_image')->nullable();
+            $table->string('art_caption')->nullable();
 
             $table->string('image')->nullable();
             $table->longText('size_chart')->nullable();
@@ -21,7 +35,7 @@ class CreateCategoriesTable extends Migration
             $table->string('meta_title')->nullable();
             $table->text('meta_description')->nullable();
 
-            // 🔥 parent-child relation
+            // parent-child relation
             $table->unsignedBigInteger('parent_id')->nullable();
 
             $table->boolean('is_popular')->default(0);
@@ -34,7 +48,6 @@ class CreateCategoriesTable extends Migration
             $table->timestamps();
             $table->softDeletes();
 
-            // foreign key (optional but recommended)
             $table->foreign('parent_id')
                 ->references('id')
                 ->on('categories')

@@ -258,7 +258,7 @@
                             <p class="save-chip">
                                 <i class="fa-solid fa-piggy-bank" aria-hidden="true"></i> You are saving $235 on this order
                             </p>
-                            <a href="checkout.html" class="btn btn-primary place-btn">
+                            <a href="{{ route('checkout') }}" class="btn btn-primary place-btn">
                                 Proceed to Address
                                 <i class="fa-solid fa-arrow-right-long" aria-hidden="true"></i>
                             </a>
@@ -291,7 +291,7 @@
                         <span>Total</span>
                         <strong>$680</strong>
                     </div>
-                    <a href="checkout.html" class="btn btn-primary">
+                    <a href="{{ route('checkout') }}" class="btn btn-primary">
                         Proceed to Address
                         <i class="fa-solid fa-arrow-right-long" aria-hidden="true"></i>
                     </a>
@@ -308,7 +308,7 @@
                 essentials.
             </p>
             <div class="empty-btns">
-                <a href="listing.html" class="btn btn-primary">Shop Now</a>
+                <a href="{{ route('products') }}" class="btn btn-primary">Shop Now</a>
                 <a href="javascript:void(0)" class="btn btn-outline-primary">View New Arrivals</a>
             </div>
             <ul class="empty-links">

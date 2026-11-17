@@ -38,6 +38,7 @@ use App\Http\Controllers\Admin\{
     CustomizationController,
     ProductReportController,
     CouponEnquiryController,
+    AffiliateLinkController,
     EmailTemplateController,
     ProfileSettingController,
     AttributeValueController,
@@ -68,19 +69,21 @@ Route::middleware('maintenance.mode')->group(function () {
 
     Route::controller(FrontController::class)->group(function () {
         Route::get('/', 'home')->name('home');
+        Route::get('/products', 'products')->name('products');
+        Route::get('/product/{slug}', 'product')->name('product.show');
+        Route::get('/category/{slug}', 'category')->name('category.show');
+        Route::get('/search/suggest', 'searchSuggest')->name('search.suggest');
+
+        Route::view('/faqs', 'front-pages.faq')->name('faqs');
         Route::view('/blogs', 'front-pages.blogs')->name('blogs');
         Route::view('/about', 'front-pages.about')->name('about');
         Route::view('/contact', 'front-pages.contact')->name('contact');
-        Route::view('/products', 'front-pages.product-listing')->name('products');
         Route::view('/blog-detail', 'front-pages.blog-detail')->name('blog.detail');
         Route::view('/certifications', 'front-pages.certifications')->name('certifications');
         Route::view('/dashboard', 'front-pages.dashboard')->name('dashboard');
-        Route::view('/faqs', 'front-pages.faq')->name('faqs');
         Route::view('/order-success', 'front-pages.order-success')->name('order.success');
         Route::view('/payment', 'front-pages.payment')->name('payment');
         Route::view('/privacy-policy', 'front-pages.privacy-policy')->name('privacy-policy');
-        Route::view('/product-detail', 'front-pages.product-detail')->name('product-detail');
-        Route::view('/products', 'front-pages.products')->name('products');
     });
 
     Route::get('/pincode/check', [PincodeController::class, 'check'])->middleware('throttle:30,1')->name('pincode.check');
@@ -112,6 +115,7 @@ Route::middleware('maintenance.mode')->group(function () {
 
     // Yeh sab login ke baad hi
     Route::middleware('customer')->group(function () {
+        Route::post('/product/{product}/review', [ProductReviewController::class, 'store'])->middleware(['throttle:5,1'])->name('product.review.store');
         Route::post('/address/store', [CheckoutController::class, 'storeAddress'])->name('address.store');
         Route::put('/address/{id}', [CheckoutController::class, 'updateAddress'])->name('address.update');
         Route::post('/checkout/change-default-address', [CheckoutController::class, 'changeDefaultAddress'])->name('checkout.change-default-address');
@@ -169,6 +173,8 @@ Route::prefix('admin')->name('admin.')->group(function () {
         Route::resource('faqs', FaqController::class)->names('faqs');
 
         Route::resource('blogs', BlogController::class)->names('blogs');
+
+        Route::resource('affiliate-links', AffiliateLinkController::class)->except('show')->names('affiliate-links');
 
         Route::get('contact-enquiries', [ContactEnquiryController::class, 'index'])->name('contact-enquiries.index');
         Route::get('contact-enquiries/export', [ContactEnquiryController::class, 'export'])->name('contact-enquiries.export');

@@ -36,7 +36,7 @@
             <div class="banner-top">
                 <div class="container">
                     <ul class="banner-crumb">
-                        <li><a href="index.html">Home</a></li>
+                        <li><a href="{{ route('home') }}">Home</a></li>
                         <li><i class="fa-solid fa-chevron-right"></i></li>
                         <li class="current">Certifications &amp; Registrations</li>
                     </ul>
@@ -160,7 +160,7 @@
                         </p>
 
                         <div class="cta-btns">
-                            <a href="contact.html" class="btn btn-white">
+                            <a href="{{ route('contact') }}" class="btn btn-white">
                                 Contact Our Team <i class="fa-solid fa-arrow-right"></i>
                             </a>
                             <button type="button" class="btn cta-line" data-model=".enquiry-pop">

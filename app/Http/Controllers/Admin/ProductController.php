@@ -1,29 +1,31 @@
 <?php
 
 namespace App\Http\Controllers\Admin;
-
 use App\Http\Controllers\Controller;
+
 use App\Models\Brand;
-use App\Models\GiftingOccasion;
-use Illuminate\Http\Request;
-use Illuminate\Http\UploadedFile;
 use App\Models\Product;
 use App\Models\Category;
-use App\Models\CategoryAttribute;
-use Illuminate\Support\Facades\Storage;
-use Illuminate\Support\Facades\DB;
+use App\Models\Collection;
 use Illuminate\Support\Str;
+use Illuminate\Http\Request;
 use App\Models\ProductImage;
 use App\Models\ProductVideo;
 use App\Models\ProductAddon;
-use App\Models\ProductAttributeValue;
-use App\Models\ProductVariant;
-use App\Models\ProductVariantValue;
-use App\Models\ProductVariantImage;
-use App\Models\Collection;
-use Intervention\Image\ImageManager;
-use Intervention\Image\Drivers\Gd\Driver;
 use Intervention\Image\Format;
+use App\Models\ProductVariant;
+use App\Models\AttributeValue;
+use App\Models\GiftingOccasion;
+use App\Models\CategoryAttribute;
+use Illuminate\Http\UploadedFile;
+use Illuminate\Support\Facades\DB;
+use App\Models\ProductVariantImage;
+use App\Models\ProductVariantValue;
+use Intervention\Image\ImageManager;
+use App\Models\ProductAttributeValue;
+use Illuminate\Support\Facades\Storage;
+use Intervention\Image\Drivers\Gd\Driver;
+use Illuminate\Validation\ValidationException;
 
 class ProductController extends Controller
 {
@@ -207,13 +209,13 @@ class ProductController extends Controller
         return response()->json($attributes);
     }
 
-
     public function store(Request $request)
     {
         $request->validate([
             'category_id' => 'required|exists:categories,id',
             'brand_id' => 'nullable|exists:brands,id',
             'name' => 'required|string|max:255',
+            'price_type' => 'required|in:single,range',
             'mrp' => 'nullable|numeric|min:0',
             'discount' => 'nullable|numeric|min:0',
             'discount_type' => 'nullable|in:amount,percentage',
@@ -223,10 +225,6 @@ class ProductController extends Controller
             'sku' => 'nullable|string|max:255',
             'images.*' => 'nullable|image|max:2048',
 
-            // ✅ colour customization (product-level)
-            'colour_customization' => 'nullable|boolean',
-            'dye_price' => 'nullable|numeric|min:0',
-
             // ✅ videos + addon options
             'videos.*' => 'nullable|mimes:mp4,webm,mov,avi|max:20480',
             'addons.*.detail' => 'nullable|string|max:255',
@@ -235,14 +233,18 @@ class ProductController extends Controller
 
             // ✅ multiple images per image-type variant
             'variants_image.*.images.*' => 'nullable|image|max:2048',
+
+            'material_craft' => 'nullable|string',
+            'size_dimensions' => 'nullable|string',
+            'specifications' => 'nullable|array',
+            'specifications.*.label' => 'nullable|string|max:80',
+            'specifications.*.value' => 'nullable|string|max:255',
         ]);
 
-
+        $tiers = $this->cleanTiers($request);
         DB::beginTransaction();
 
         try {
-
-            $colourCustomization = $request->boolean('colour_customization');
 
             $product = Product::create([
                 'category_id' => $request->category_id,
@@ -254,34 +256,34 @@ class ProductController extends Controller
                     : $this->generateUniqueSlug($request->name),
 
                 'short_description' => $request->short_description,
-                'fabric_material' => $request->fabric_material,
+                'material_craft' => $request->material_craft,
+                'size_dimensions' => $request->size_dimensions,
                 'care_instructions' => $request->care_instructions,
                 'shipping_delivery' => $request->shipping_delivery,
                 'returns_exchange' => $request->returns_exchange,
-                'offers_how_to_avail' => $request->offers_how_to_avail,
+                'specifications' => $this->cleanSpecifications($request),
 
                 // ✅ blank MRP/Discount/Price never get inserted as '' into decimal columns
                 'mrp' => $request->mrp !== null && $request->mrp !== '' ? $request->mrp : 0,
                 'discount_type' => $request->discount_type ?: 'amount',
                 'discount' => $request->discount !== null && $request->discount !== '' ? $request->discount : 0,
-                'price' => $request->price !== null && $request->price !== '' ? $request->price : ($request->mrp ?: 0),
+                'price_type' => $tiers ? 'range' : 'single',
+                'price' => $tiers
+                    ? collect($tiers)->min('price')
+                    : ($request->price !== null && $request->price !== '' ? $request->price : ($request->mrp ?: 0)),
 
                 'sku' => $request->sku,
                 'stock' => $request->stock !== null && $request->stock !== '' ? $request->stock : 0,
                 'min_qty' => $request->min_qty !== null && $request->min_qty !== '' ? $request->min_qty : 1,
                 'delivery_time' => $request->delivery_time,
 
-                // ✅ dye price only makes sense when colour customization is on
-                'colour_customization' => $colourCustomization,
-                'dye_price' => $colourCustomization && $request->filled('dye_price')
-                    ? $request->dye_price
-                    : null,
-
                 'meta_title' => $request->meta_title,
                 'meta_description' => $request->meta_description,
 
                 'status' => $request->status,
             ]);
+
+            $this->saveTiers($product, $tiers);
 
             /*
             |--------------------------------------------------------------------------
@@ -567,6 +569,7 @@ class ProductController extends Controller
             'category_id' => 'required|exists:categories,id',
             'brand_id' => 'nullable|exists:brands,id',
             'name' => 'required|string|max:255',
+            'price_type' => 'required|in:single,range',
             'mrp' => 'nullable|numeric|min:0',
             'discount' => 'nullable|numeric|min:0',
             'discount_type' => 'nullable|in:amount,percentage',
@@ -575,10 +578,6 @@ class ProductController extends Controller
             'min_qty' => 'nullable|integer|min:1',
             'sku' => 'nullable|string|max:255',
             'images.*' => 'nullable|image|max:2048',
-
-            // ✅ colour customization (product-level)
-            'colour_customization' => 'nullable|boolean',
-            'dye_price' => 'nullable|numeric|min:0',
 
             // ✅ videos + addon options
             'videos.*' => 'nullable|mimes:mp4,webm,mov,avi|max:20480',
@@ -589,12 +588,19 @@ class ProductController extends Controller
             // ✅ multiple images per image-type variant + per-image delete
             'variants_image.*.images.*' => 'nullable|image|max:2048',
             'delete_variant_images.*' => 'nullable|integer',
+
+            'material_craft' => 'nullable|string',
+            'size_dimensions' => 'nullable|string',
+            'specifications' => 'nullable|array',
+            'specifications.*.label' => 'nullable|string|max:80',
+            'specifications.*.value' => 'nullable|string|max:255',
+
         ]);
+        $tiers = $this->cleanTiers($request);
+
         DB::beginTransaction();
 
         try {
-
-            $colourCustomization = $request->boolean('colour_customization');
 
             $product->update([
 
@@ -606,28 +612,27 @@ class ProductController extends Controller
                 'slug' => $this->resolveSlugOnUpdate($product, $request->slug, $request->name),
 
                 'short_description' => $request->short_description,
-                'fabric_material' => $request->fabric_material,
+                'material_craft' => $request->material_craft,
+                'size_dimensions' => $request->size_dimensions,
                 'care_instructions' => $request->care_instructions,
                 'shipping_delivery' => $request->shipping_delivery,
                 'returns_exchange' => $request->returns_exchange,
-                'offers_how_to_avail' => $request->offers_how_to_avail,
+                'specifications' => $this->cleanSpecifications($request),
 
                 // ✅ blank MRP/Discount/Price never get written as '' into decimal columns
                 'mrp' => $request->mrp !== null && $request->mrp !== '' ? $request->mrp : 0,
                 'discount_type' => $request->discount_type ?: 'amount',
                 'discount' => $request->discount !== null && $request->discount !== '' ? $request->discount : 0,
-                'price' => $request->price !== null && $request->price !== '' ? $request->price : ($request->mrp ?: 0),
+
+                'price_type' => $tiers ? 'range' : 'single',
+                'price' => $tiers
+                    ? collect($tiers)->min('price')
+                    : ($request->price !== null && $request->price !== '' ? $request->price : ($request->mrp ?: 0)),
 
                 'sku' => $request->sku,
                 'stock' => $request->stock !== null && $request->stock !== '' ? $request->stock : 0,
                 'min_qty' => $request->min_qty !== null && $request->min_qty !== '' ? $request->min_qty : 1,
                 'delivery_time' => $request->delivery_time,
-
-                // ✅ dye price only makes sense when colour customization is on
-                'colour_customization' => $colourCustomization,
-                'dye_price' => $colourCustomization && $request->filled('dye_price')
-                    ? $request->dye_price
-                    : null,
 
                 'meta_title' => $request->meta_title,
                 'meta_description' => $request->meta_description,
@@ -635,6 +640,7 @@ class ProductController extends Controller
                 'status' => $request->status,
             ]);
 
+            $this->saveTiers($product, $tiers);
 
             // ✅ ADD NEW IMAGES (OLD DELETE NAHI KAR RAHE - SAFE APPROACH)
             $defaultType = $request->default_type;
@@ -893,6 +899,76 @@ class ProductController extends Controller
     |   [ 'id' => (existing variant id, edit only), 'values' => [attrValueId, ...], ...type-specific fields ]
     */
 
+
+    protected function cleanTiers(Request $request): array
+    {
+        if ($request->price_type !== 'range') {
+            return [];
+        }
+
+        $tiers = collect($request->input('tiers', []))
+            ->map(fn($t) => [
+                'min_qty' => (int) ($t['min_qty'] ?? 0),
+                'max_qty' => ($t['max_qty'] ?? '') !== '' ? (int) $t['max_qty'] : null,
+                'price' => (float) ($t['price'] ?? 0),
+            ])
+            ->filter(fn($t) => $t['min_qty'] > 0)
+            ->sortBy('min_qty')->values()->all();
+
+        $fail = fn($m) => throw ValidationException::withMessages(['tiers' => $m]);
+
+        if (!$tiers)
+            $fail('Add at least one quantity range.');
+
+        foreach ($tiers as $i => $t) {
+            $last = $i === count($tiers) - 1;
+            if ($t['max_qty'] === null && !$last)
+                $fail('Only the last range can have an empty "To" quantity.');
+            if ($t['max_qty'] !== null && $t['max_qty'] < $t['min_qty'])
+                $fail('"To" quantity must be greater than or equal to "From".');
+            if ($i > 0 && $t['min_qty'] <= $tiers[$i - 1]['max_qty'])
+                $fail('Quantity ranges must not overlap.');
+        }
+
+        return $tiers;
+    }
+
+    protected function saveTiers(Product $product, array $tiers): void
+    {
+        $product->priceTiers()->delete();
+
+        foreach ($tiers as $t) {
+            $product->priceTiers()->create($t);
+        }
+    }
+
+
+    protected function cleanSpecifications(Request $request): array
+    {
+        return collect($request->input('specifications', []))
+            ->map(fn($r) => [
+                'label' => trim($r['label'] ?? ''),
+                'value' => trim($r['value'] ?? ''),
+            ])
+            ->filter(fn($r) => $r['label'] !== '' && $r['value'] !== '')
+            ->values()
+            ->all();
+    }
+
+    /** Saves variant value rows WITH attribute_id (needed by the product page). */
+    protected function attachVariantValues(ProductVariant $variant, array $valueIds): void
+    {
+        $attrMap = AttributeValue::whereIn('id', $valueIds)->pluck('attribute_id', 'id');
+
+        foreach ($valueIds as $valueId) {
+            ProductVariantValue::create([
+                'variant_id' => $variant->id,
+                'attribute_id' => $attrMap[$valueId] ?? null,
+                'attribute_value_id' => $valueId,
+            ]);
+        }
+    }
+
     protected function inputKeyForType(string $type): string
     {
         return 'variants_' . $type;
@@ -1005,12 +1081,7 @@ class ProductController extends Controller
 
             $variant->save();
 
-            foreach ($data['values'] ?? [] as $valueId) {
-                ProductVariantValue::create([
-                    'variant_id' => $variant->id,
-                    'attribute_value_id' => $valueId,
-                ]);
-            }
+            $this->attachVariantValues($variant, $data['values'] ?? []);
 
             if ($type === ProductVariant::TYPE_IMAGE) {
                 $this->storeVariantImages($request, $variant, $index);
@@ -1063,25 +1134,14 @@ class ProductController extends Controller
 
                 $existingIds[] = $variant->id;
 
-                foreach ($data['values'] ?? [] as $valueId) {
-                    ProductVariantValue::create([
-                        'variant_id' => $variant->id,
-                        'attribute_value_id' => $valueId,
-                    ]);
-                }
+                $this->attachVariantValues($variant, $data['values'] ?? []);
 
             } else {
 
                 // Re-sync value pivots for existing combinations in case
                 // the admin regenerated the table with different values.
                 ProductVariantValue::where('variant_id', $variant->id)->delete();
-
-                foreach ($data['values'] ?? [] as $valueId) {
-                    ProductVariantValue::create([
-                        'variant_id' => $variant->id,
-                        'attribute_value_id' => $valueId,
-                    ]);
-                }
+                $this->attachVariantValues($variant, $data['values'] ?? []);
             }
         }
 

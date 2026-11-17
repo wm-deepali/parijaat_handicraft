@@ -236,11 +236,6 @@ class CustomerAuthController extends Controller
                     ->where('image_variant_id', $item->image_variant_id)
                     ->where('stock_variant_id', $item->stock_variant_id)
                     ->where('sku_variant_id', $item->sku_variant_id)
-                    ->when(
-                        !empty($item->custom_colour_code),
-                        fn($q) => $q->where('custom_colour_code', $item->custom_colour_code),
-                        fn($q) => $q->whereNull('custom_colour_code')
-                    )
                     ->doesntHave('addons')
                     ->get()
                     ->first(function ($candidate) use ($item) {
@@ -252,7 +247,7 @@ class CustomerAuthController extends Controller
 
                 $existingItem->quantity += $item->quantity;
                 $existingItem->total =
-                    $existingItem->quantity * ($existingItem->price + (float) $existingItem->dye_charge);
+                    $existingItem->quantity * ($existingItem->price);
 
                 $existingItem->save();
 
@@ -266,8 +261,6 @@ class CustomerAuthController extends Controller
                     'stock_variant_id' => $item->stock_variant_id,
                     'sku_variant_id' => $item->sku_variant_id,
                     'selected_attributes' => $item->selected_attributes,
-                    'custom_colour_code' => $item->custom_colour_code,
-                    'dye_charge' => $item->dye_charge ?? 0,
                     'quantity' => $item->quantity,
                     'price' => $item->price,
                     'total' => $item->total,

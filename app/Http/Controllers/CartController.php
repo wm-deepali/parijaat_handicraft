@@ -18,24 +18,6 @@ use Illuminate\Validation\ValidationException;
 class CartController extends Controller
 {
 
-    /**
-     * Per-unit dye charge, calculated ONLY at add-to-cart time and then
-     * snapshotted into cart_items.dye_charge. Applies only when the product
-     * allows colour customization, a colour code was entered, and dye_price > 0.
-     */
-    private function dyeUnitCharge(Product $product, ?string $customColourCode): float
-    {
-        if (!$product->colour_customization) {
-            return 0.0;
-        }
-
-        if ($customColourCode === null || trim($customColourCode) === '') {
-            return 0.0;
-        }
-
-        return max(0.0, (float) $product->dye_price);
-    }
-
     public function add(Request $request)
     {
         $request->validate([
@@ -51,9 +33,7 @@ class CartController extends Controller
 
             'addon_ids' => 'nullable|array',
             'addon_ids.*' => 'integer|exists:product_addons,id',
-
-            'custom_colour_code' => 'nullable|string|max:50',
-
+            
             'quantity' => 'nullable|integer|min:1|max:1000',
         ]);
 
@@ -70,23 +50,6 @@ class CartController extends Controller
                 'message' => "Minimum order quantity is {$minQty}."
             ], 422);
         }
-
-        // Custom colour code — only when the product allows it
-        $customColourCode = null;
-
-        if ($product->colour_customization) {
-            $customColourCode = Str::limit(
-                trim(strip_tags((string) $request->custom_colour_code)),
-                50,
-                ''
-            );
-
-            if ($customColourCode === '') {
-                $customColourCode = null;
-            }
-        }
-
-        $dyeUnitCharge = $this->dyeUnitCharge($product, $customColourCode);
 
         // Listing-page add (no variant ids sent): pick a default in-stock combination
         if (!$request->filled('stock_variant_id') && $product->variants->isNotEmpty()) {
@@ -232,11 +195,6 @@ class CartController extends Controller
                 ->where('image_variant_id', $imageVariant->id ?? null)
                 ->where('stock_variant_id', $stockVariant->id ?? null)
                 ->where('sku_variant_id', $skuVariant->id ?? null)
-                ->when(
-                    $customColourCode !== null,
-                    fn($q) => $q->where('custom_colour_code', $customColourCode),
-                    fn($q) => $q->whereNull('custom_colour_code')
-                )
                 ->doesntHave('addons')
                 ->get()
                 ->first(fn($ci) => $this->attrKey($ci->selected_attributes ?? []) === $this->attrKey($selectedAttributes));
@@ -253,11 +211,8 @@ class CartController extends Controller
                 ], 422);
             }
 
-            // Merged line keeps the dye charge locked in when it was created
-            $lineDyeCharge = (float) $item->dye_charge;
-
             $item->quantity = $newQty;
-            $item->total = $item->quantity * ($item->price + $addonUnitTotal + $lineDyeCharge);
+            $item->total = $item->quantity * ($item->price + $addonUnitTotal);
             $item->save();
 
         } else {
@@ -273,12 +228,9 @@ class CartController extends Controller
 
                 'selected_attributes' => $selectedAttributes,
 
-                'custom_colour_code' => $customColourCode,
-                'dye_charge' => $dyeUnitCharge,
-
                 'quantity' => $quantity,
                 'price' => $price,
-                'total' => $quantity * ($price + $addonUnitTotal + $dyeUnitCharge),
+                'total' => $quantity * ($price + $addonUnitTotal),
             ]);
 
             foreach ($selectedAddons as $addon) {
@@ -296,7 +248,7 @@ class CartController extends Controller
 
         $couponResult = $this->revalidateCoupon($cart);
 
-        $trackingEvents = PixelTracker::addToCart($product, $quantity, $price + (float) $item->dye_charge);
+        $trackingEvents = PixelTracker::addToCart($product, $quantity, $price);
 
         $cart->load($this->miniCartRelations());
 
@@ -608,7 +560,7 @@ class CartController extends Controller
         $trackingEvents = PixelTracker::removeFromCart(
             $item->product,
             $item->quantity,
-            $item->price + (float) $item->dye_charge
+            $item->price
         );
 
         $item->delete();
@@ -673,18 +625,14 @@ class CartController extends Controller
             }
         }
 
-        // Addon prices and the dye charge are per-unit, so they scale with
-        // quantity too. Dye charge comes from the value saved on this line
-        // (cart_items.dye_charge), NOT from the product's current dye_price.
         $addonUnitTotal = $item->addons->sum('price');
-        $dyeUnitCharge = (float) $item->dye_charge;
 
-        $item->total = $item->quantity * ($item->price + $addonUnitTotal + $dyeUnitCharge);
+        $item->total = $item->quantity * ($item->price + $addonUnitTotal);
         $item->save();
 
         // Tracking: only the change in quantity, and only if it really changed
         $delta = (int) $item->quantity - $oldQty;
-        $unitPrice = (float) $item->price + $dyeUnitCharge;
+        $unitPrice = (float) $item->price;
         $trackingEvents = null;
 
         if ($delta > 0) {
@@ -701,7 +649,7 @@ class CartController extends Controller
         $couponResult = $this->revalidateCoupon($cart);
 
         $baseMrp = $item->priceVariant->mrp ?? $item->product->mrp;
-        $totalMrp = ($baseMrp + $addonUnitTotal + $dyeUnitCharge) * $item->quantity;
+        $totalMrp = ($baseMrp + $addonUnitTotal) * $item->quantity;
 
         $cart->load($this->miniCartRelations());
         $miniCartHtml = view('layouts.mini-cart', ['miniCart' => $cart])->render();

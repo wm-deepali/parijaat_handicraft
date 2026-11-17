@@ -893,64 +893,97 @@
                             </div>
                         </div>
 
-                        <!-- Content -->
+                        <!-- Content (detail page accordions) -->
                         <div class="section-card">
                             <div class="section-card-header">
                                 <h5>Content</h5>
                             </div>
 
                             <div class="content-tabs">
-                                <button type="button" class="content-tab-btn active" data-tab="fabric_material">Fabric
-                                    &amp; Material</button>
+                                <button type="button" class="content-tab-btn active" data-tab="material_craft">Material
+                                    &amp; Craft</button>
+                                <button type="button" class="content-tab-btn" data-tab="size_dimensions">Size &amp;
+                                    Dimensions</button>
                                 <button type="button" class="content-tab-btn" data-tab="care_instructions">Care
                                     Instructions</button>
                                 <button type="button" class="content-tab-btn" data-tab="shipping_delivery">Shipping
                                     &amp; Delivery</button>
                                 <button type="button" class="content-tab-btn" data-tab="returns_exchange">Returns &amp;
                                     Exchange</button>
-                                <button type="button" class="content-tab-btn" data-tab="offers_how_to_avail">Offers
-                                    &amp; How to Avail</button>
                             </div>
 
                             <div class="section-card-body">
 
-                                <div class="content-tab-panel active" data-panel="fabric_material">
-                                    <textarea name="fabric_material" id="fabric_material"
-                                        class="field-textarea">{{ old('fabric_material') }}</textarea>
-                                    <div class="field-hint">Fabric aur weave ke baare me ek chhota paragraph. Detail
-                                        page ke "Fabric &amp; Material" accordion me dikhega.</div>
+                                <div class="content-tab-panel active" data-panel="material_craft">
+                                    <textarea name="material_craft" id="material_craft"
+                                        class="field-textarea">{{ old('material_craft') }}</textarea>
+                                    <div class="field-hint">Material aur craft ke baare me ek chhota paragraph. Detail
+                                        page ke
+                                        "Material &amp; Craft" accordion me dikhega.</div>
+                                </div>
+
+                                <div class="content-tab-panel" data-panel="size_dimensions">
+                                    <textarea name="size_dimensions" id="size_dimensions"
+                                        class="field-textarea">{{ old('size_dimensions') }}</textarea>
+                                    <div class="field-hint">Ek line me ek point (height, base width, fit advice). Detail
+                                        page ke
+                                        "Size &amp; Dimensions" accordion me dikhega.</div>
                                 </div>
 
                                 <div class="content-tab-panel" data-panel="care_instructions">
                                     <textarea name="care_instructions" id="care_instructions"
                                         class="field-textarea">{{ old('care_instructions') }}</textarea>
-                                    <div class="field-hint">Bullet list me likho (dry clean only, iron on low heat...).
-                                    </div>
+                                    <div class="field-hint">Ek line me ek point (wipe with a soft dry cloth, avoid harsh
+                                        chemicals...).
+                                        Detail page ke "Care Instructions" accordion me dikhega.</div>
                                 </div>
 
                                 <div class="content-tab-panel" data-panel="shipping_delivery">
                                     <textarea name="shipping_delivery" id="shipping_delivery"
                                         class="field-textarea">{{ old('shipping_delivery') }}</textarea>
-                                    <div class="field-hint">Khali chhodo to store ki default shipping policy dikhegi.
-                                    </div>
+                                    <div class="field-hint">Ek line me ek point. Khali chhodo to "Shipping &amp;
+                                        Delivery" accordion
+                                        detail page par nahi dikhega.</div>
                                 </div>
 
                                 <div class="content-tab-panel" data-panel="returns_exchange">
                                     <textarea name="returns_exchange" id="returns_exchange"
                                         class="field-textarea">{{ old('returns_exchange') }}</textarea>
-                                    <div class="field-hint">Khali chhodo to store ki default return/exchange policy
-                                        dikhegi.</div>
-                                </div>
-
-                                <div class="content-tab-panel" data-panel="offers_how_to_avail">
-                                    <textarea name="offers_how_to_avail" id="offers_how_to_avail"
-                                        class="field-textarea">{{ old('offers_how_to_avail') }}</textarea>
-                                    <div class="field-hint">Khali chhodo to active coupons se steps apne aap ban
-                                        jayenge.</div>
+                                    <div class="field-hint">Return / exchange policy ka chhota paragraph. Khali chhodo
+                                        to
+                                        "Returns &amp; Exchange" accordion detail page par nahi dikhega.</div>
                                 </div>
 
                             </div>
                         </div>
+
+                        <!-- Specifications (Product Details accordion) -->
+                        <div class="section-card">
+                            <div class="section-card-header">
+                                <h5>Product Details (Specifications)</h5>
+                                <button type="button" class="btn-secondary-dash" id="add-spec-row"
+                                    style="padding:5px 12px;font-size:11.5px;">
+                                    <i class="fa fa-plus"></i> Add Row
+                                </button>
+                            </div>
+                            <div class="section-card-body" style="padding:0;overflow-x:auto">
+                                <table class="variants-table" id="spec-table" style="display:none">
+                                    <thead>
+                                        <tr>
+                                            <th style="width:35%">Label</th>
+                                            <th>Value</th>
+                                            <th style="width:40px"></th>
+                                        </tr>
+                                    </thead>
+                                    <tbody id="spec-table-body"></tbody>
+                                </table>
+                                <div class="field-hint" id="spec-empty-hint" style="padding:16px 20px">
+                                    Add rows like Material, Finish, Height, Weight, In the Box. They appear in the
+                                    "Product Details" accordion on the product page.
+                                </div>
+                            </div>
+                        </div>
+
                         <!-- Pricing -->
                         <div class="section-card">
                             <div class="section-card-header">
@@ -958,10 +991,22 @@
                             </div>
                             <div class="section-card-body">
 
+                                <div class="field-group">
+                                    <label class="field-label">Price Type</label>
+                                    <select name="price_type" id="price_type" class="field-select">
+                                        <option value="single" {{ old('price_type', 'single') == 'single' ? 'selected' : '' }}>Single Quantity</option>
+                                        <option value="range" {{ old('price_type') == 'range' ? 'selected' : '' }}>
+                                            Quantity Range</option>
+                                    </select>
+                                </div>
+
                                 <div class="field-hint" style="margin-bottom:14px;">MRP and Discount are optional. Leave
-                                    blank if not applicable — Final Price will simply equal MRP (or 0 if MRP is also
-                                    blank). If none of the selected variant attributes are marked Price Dependent, this
-                                    product-level price is what customers pay regardless of variant chosen.</div>
+                                    blank if not
+                                    applicable — Final Price will simply equal MRP (or 0 if MRP is also blank). If none
+                                    of the selected
+                                    variant attributes are marked Price Dependent, this product-level price is what
+                                    customers pay.
+                                    In Quantity Range mode, MRP is only used for the strike-through price.</div>
 
                                 <div class="pricing-grid">
                                     <div class="field-group" style="margin:0">
@@ -969,24 +1014,50 @@
                                         <input type="number" step="0.01" name="mrp" id="mrp" class="field-input"
                                             value="{{ old('mrp') }}" placeholder="0.00">
                                     </div>
-                                    <div class="field-group" style="margin:0">
+                                    <div class="field-group single-only" style="margin:0">
                                         <label class="field-label">Discount Type</label>
                                         <select name="discount_type" id="discount_type" class="field-select">
                                             <option value="amount" {{ old('discount_type') == 'amount' ? 'selected' : '' }}>Amount (₹)</option>
                                             <option value="percentage" {{ old('discount_type') == 'percentage' ? 'selected' : '' }}>Percentage (%)</option>
                                         </select>
                                     </div>
-                                    <div class="field-group" style="margin:0">
+                                    <div class="field-group single-only" style="margin:0">
                                         <label class="field-label">Discount</label>
                                         <input type="number" step="0.01" name="discount" id="discount"
                                             class="field-input" value="{{ old('discount') }}" placeholder="0">
                                     </div>
                                 </div>
 
-                                <div class="final-price-box">
+                                <div class="final-price-box single-only">
                                     <span class="label">Final Price</span>
                                     <span class="value" id="price-display">₹0.00</span>
                                     <input type="hidden" name="price" id="price" value="0">
+                                </div>
+
+                                {{-- Quantity range --}}
+                                <div id="range-block" style="display:none;margin-top:16px">
+                                    <div
+                                        style="border:1px solid var(--border);border-radius:var(--radius-sm);overflow:hidden">
+                                        <table class="variants-table">
+                                            <thead>
+                                                <tr>
+                                                    <th>From Qty</th>
+                                                    <th>To Qty</th>
+                                                    <th>Price per piece (₹)</th>
+                                                    <th style="width:40px"></th>
+                                                </tr>
+                                            </thead>
+                                            <tbody id="tier-body"></tbody>
+                                        </table>
+                                    </div>
+                                    <button type="button" class="btn-secondary-dash" id="add-tier-row"
+                                        style="margin-top:10px;padding:5px 12px;font-size:11.5px;">
+                                        <i class="fa fa-plus"></i> Add Range
+                                    </button>
+                                    <div class="field-hint">Example: 1–10 → 200, 11–50 → 190. Leave "To" blank on the
+                                        last row for "and above".
+                                        Ranges must not overlap. The lowest price is used as the product's listing
+                                        price.</div>
                                 </div>
 
                             </div>
@@ -1088,24 +1159,6 @@
                                 </div>
                             </div>
 
-                            {{-- Colour customization (product-level) --}}
-                            <div style="padding:16px 20px;border-top:1px solid var(--border);">
-                                <input type="hidden" name="colour_customization" value="0">
-                                <label class="check-toggle" style="margin-bottom:12px;">
-                                    <input type="checkbox" name="colour_customization" id="colour_customization"
-                                        value="1" {{ old('colour_customization') ? 'checked' : '' }}>
-                                    <span>Colour customization available</span>
-                                </label>
-
-                                <div class="field-group" id="dye-price-wrapper"
-                                    style="margin:0;{{ old('colour_customization') ? '' : 'display:none' }}">
-                                    <label class="field-label">Dye Price (₹)</label>
-                                    <input type="number" step="0.01" min="0" name="dye_price" id="dye_price"
-                                        class="field-input" value="{{ old('dye_price') }}" placeholder="0.00">
-                                    <div class="field-hint">Extra charge when the customer wants a custom colour.
-                                    </div>
-                                </div>
-                            </div>
                         </div>
 
                         <!-- Inventory -->
@@ -1228,11 +1281,11 @@
      * All 5 are initialized up front so their values are always present
      * in the POST regardless of which tab was last open. */
     CKEDITOR.config.versionCheck = false;
-    CKEDITOR.replace('fabric_material');
+    CKEDITOR.replace('material_craft');
+    CKEDITOR.replace('size_dimensions');
     CKEDITOR.replace('care_instructions');
     CKEDITOR.replace('shipping_delivery');
     CKEDITOR.replace('returns_exchange');
-    CKEDITOR.replace('offers_how_to_avail');
 
     /* ── Content tabs ────────────────────────────────────────────── */
     $(document).on('click', '.content-tab-btn', function () {
@@ -1439,11 +1492,38 @@
         $('#addon-empty-hint').toggle(!hasRows);
     }
 
-    /* ── Colour customization → show/hide dye price ─────────────── */
-    $(document).on('change', '#colour_customization', function () {
-        $('#dye-price-wrapper').toggle(this.checked);
-        if (!this.checked) $('#dye_price').val('');
-    });
+    /* ── Specifications (dynamic rows) ──────────────────────────────
+ * Posted as specifications[index][label] / [value]; the controller
+ * drops empty rows and stores the rest as JSON. */
+    let specIndex = 0;
+
+    function addSpecRow(label, value) {
+        const esc = s => String(s ?? '').replace(/&/g, '&amp;').replace(/"/g, '&quot;').replace(/</g, '&lt;');
+        $('#spec-table-body').append(`
+        <tr id="spec-row-${specIndex}">
+            <td><input type="text" name="specifications[${specIndex}][label]" class="field-input" placeholder="e.g. Height" value="${esc(label)}"></td>
+            <td><input type="text" name="specifications[${specIndex}][value]" class="field-input" placeholder="e.g. 6 in (15 cm)" value="${esc(value)}"></td>
+            <td><button type="button" class="remove-btn" style="position:static" onclick="removeSpecRow(${specIndex})">×</button></td>
+        </tr>`);
+        specIndex++;
+        toggleSpecTable();
+    }
+
+    function removeSpecRow(index) {
+        $('#spec-row-' + index).remove();
+        toggleSpecTable();
+    }
+
+    function toggleSpecTable() {
+        const hasRows = $('#spec-table-body tr').length > 0;
+        $('#spec-table').toggle(hasRows);
+        $('#spec-empty-hint').toggle(!hasRows);
+    }
+
+    $(document).on('click', '#add-spec-row', function () { addSpecRow('', ''); });
+
+    // restore rows after a validation error
+    @json(old('specifications', [])).forEach(r => addSpecRow(r.label, r.value));
 
     /* ── Category → subcategories & attributes ──────────────────── */
     $('#category_id').on('change', function () {
@@ -1797,6 +1877,36 @@
             row.find('input[name$="[price]"]').val(finalPrice.toFixed(2));
         }
     );
+
+    /* ── Price type + quantity range ── */
+    let tierIndex = 0;
+
+    function addTierRow(min, max, price) {
+        $('#tier-body').append(`
+        <tr id="tier-row-${tierIndex}">
+            <td><input type="number" min="1" name="tiers[${tierIndex}][min_qty]" class="field-input" value="${min ?? ''}" placeholder="1"></td>
+            <td><input type="number" min="1" name="tiers[${tierIndex}][max_qty]" class="field-input" value="${max ?? ''}" placeholder="and above"></td>
+            <td><input type="number" step="0.01" min="0" name="tiers[${tierIndex}][price]" class="field-input" value="${price ?? ''}" placeholder="0.00"></td>
+            <td><button type="button" class="remove-btn" style="position:static" onclick="$('#tier-row-${tierIndex}').remove()">×</button></td>
+        </tr>`);
+        tierIndex++;
+    }
+
+    $(document).on('click', '#add-tier-row', function () {
+        let prevMax = parseInt($('#tier-body tr:last input[name$="[max_qty]"]').val(), 10);
+        addTierRow(prevMax ? prevMax + 1 : 1, '', '');
+    });
+
+    function togglePriceType() {
+        let range = $('#price_type').val() === 'range';
+        $('.single-only').toggle(!range);
+        $('#range-block').toggle(range).find(':input').prop('disabled', !range);
+        if (range && !$('#tier-body tr').length) addTierRow(1, '', '');
+    }
+    $('#price_type').on('change', togglePriceType);
+
+    @json(old('tiers', [])).forEach(t => addTierRow(t.min_qty, t.max_qty, t.price));
+    togglePriceType();
 
 </script>
 
