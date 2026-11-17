@@ -954,7 +954,7 @@ $(function () {
   safe("offer-popup", function () {
     var $pop = $(".offer-pop");
     var $overlay = $(".overlay");
-    var KEY = "archanaOfferClosed";
+    var KEY = "parijaatOfferClosed";
 
     if (!$pop.length) return;
 

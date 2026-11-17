@@ -4,11 +4,11 @@
   <meta http-equiv="Content-Type" content="text/html; charset=utf-8">
   <meta http-equiv="X-UA-Compatible" content="IE=edge">
   <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=0, minimal-ui">
-  <meta name="description" content="Web Mingo Single Vendor E-Commerce Package Starts 24,999/-">
-  <meta name="keywords" content="Web Mingo E-Commerce Admin">
+  <meta name="description" content="Parijaat Handicraft Single Vendor E-Commerce Package Starts 24,999/-">
+  <meta name="keywords" content="Parijaat Handicraft E-Commerce Admin">
   <meta name="author" content="Webmingo">
   <meta name="csrf-token" content="{{ csrf_token() }}" />
-  <title>Admin Dashboard | Archana Saree Emporium</title>
+  <title>Admin Dashboard | Parijaat Handicraft</title>
 
   @php
       $favicon = $general?->favicon;
@@ -226,7 +226,7 @@ body {
             <!-- Logo -->
             <div class="admin-logo">
                 <div class="admin-logo-text">
-                    <span class="admin-logo-brand">Archana Saree Emporium</span>
+                    <span class="admin-logo-brand">Parijaat Handicraft</span>
                     <span class="admin-logo-sub">Admin Panel</span>
                 </div>
             </div>

@@ -610,7 +610,7 @@
                                     <label class="field-label">Author</label>
                                     <input type="text" name="author" class="field-input"
                                         value="{{ old('author', $blog->author ?? '') }}"
-                                        placeholder="Archana Style Team">
+                                        placeholder="Parijaat Style Team">
                                     <div class="field-hint">Leave empty to use the site name.</div>
                                 </div>
 

@@ -1455,8 +1455,8 @@
         '{customer_name}': 'Rahul Sharma',
         '{email}': 'rahul@example.com',
 
-        '{store_name}': 'Oudhyana Chikankaari Store',
-        '{brand_name}': 'Oudhyana Chikankaari',
+        '{store_name}': 'Parijaat Handicraft Store',
+        '{brand_name}': 'Parijaat Handicraft',
 
         '{logo_url}': APP_URL + '/assets/images/logo.png',
         '{tagline}': 'Handcrafted, with heart.',
@@ -1464,7 +1464,7 @@
         '{shop_url}': APP_URL,
         '{login_url}': APP_URL + '/user/login',
 
-        '{support_email}': 'support@oudhyana.com',
+        '{support_email}': 'support@parijaat .com',
         '{support_number}': '+91 0000000000',
 
         '{order_number}': 'ORD-1089',

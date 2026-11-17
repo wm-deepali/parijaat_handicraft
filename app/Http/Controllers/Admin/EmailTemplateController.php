@@ -121,15 +121,15 @@ class EmailTemplateController extends Controller
             '{email}' => $email,
 
             // Store (global)
-            '{store_name}' => 'Oudhyana Chikankaari Store',
-            '{brand_name}' => 'Oudhyana Chikankaari',
+            '{store_name}' => 'Parijaat Handicraft Store',
+            '{brand_name}' => 'Parijaat Handicraft',
             '{logo_url}' => $appUrl .'/assets/images/logo.png',
             '{tagline}' => 'Handcrafted, with heart.',
             '{shop_url}' => $appUrl, 
             '{login_url}' => $appUrl . '/user/login',
 
             // Support (global)
-            '{support_email}' => 'support@oudhyana.com',
+            '{support_email}' => 'support@parijaat .com',
             '{support_number}' => '+91 0000000000',
 
             // Order

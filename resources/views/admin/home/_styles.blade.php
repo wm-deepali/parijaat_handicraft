@@ -8,6 +8,10 @@
         --text-hint: #8c9196;
         --accent: #303d89;
         --accent-light: #f0f1fc;
+        --green: #007a5e;
+        --green-bg: #e3f1ec;
+        --amber: #8a5a00;
+        --amber-bg: #fff4dc;
         --red: #b22222;
         --red-bg: #fce8e8;
         --radius-sm: 8px;
@@ -16,6 +20,312 @@
         --font: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
     }
 
+    /* ══════════════ LIST PAGES (index screens) ══════════════ */
+    .list-page {
+        background: var(--bg);
+        padding: 24px 28px;
+        min-height: 100vh;
+        font-family: var(--font);
+        color: var(--text-primary);
+    }
+
+    .list-page * {
+        box-sizing: border-box;
+    }
+
+    .list-page-header {
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        flex-wrap: wrap;
+        gap: 12px;
+        margin-bottom: 20px;
+    }
+
+    .list-page-header h1 {
+        font-size: 20px;
+        font-weight: 650;
+        color: var(--text-primary);
+        margin: 0;
+    }
+
+    .list-card {
+        background: var(--surface);
+        border: 1px solid var(--border);
+        border-radius: var(--radius-md);
+        box-shadow: var(--shadow-card);
+        overflow: hidden;
+    }
+
+    .list-card .table-responsive {
+        overflow-x: auto;
+        border: 0;
+        margin: 0;
+    }
+
+    .alert-box {
+        background: var(--green-bg);
+        color: var(--green);
+        border: 1px solid #b7dccf;
+        border-radius: var(--radius-sm);
+        padding: 12px 16px;
+        margin-bottom: 16px;
+        font-size: 13px;
+        font-weight: 500;
+    }
+
+    /* Table */
+    .list-card .data-table {
+        width: 100%;
+        border-collapse: collapse;
+        font-size: 13px;
+        margin: 0;
+    }
+
+    .list-card .data-table thead th {
+        font-size: 11px;
+        font-weight: 600;
+        letter-spacing: .06em;
+        text-transform: uppercase;
+        color: var(--text-hint);
+        padding: 10px 16px;
+        border-bottom: 1px solid var(--border);
+        background: #fafafa;
+        text-align: left;
+        white-space: nowrap;
+    }
+
+    .list-card .data-table tbody tr {
+        border-bottom: 1px solid var(--border);
+        transition: background .1s;
+    }
+
+    .list-card .data-table tbody tr:last-child {
+        border-bottom: none;
+    }
+
+    .list-card .data-table tbody tr:hover {
+        background: #fafbfc;
+    }
+
+    .list-card .data-table tbody td {
+        padding: 12px 16px;
+        color: var(--text-primary);
+        vertical-align: middle;
+        border-bottom: none;
+    }
+
+    /* Slider image */
+    .slider-img {
+        width: 96px;
+        height: 54px;
+        object-fit: cover;
+        border-radius: var(--radius-sm);
+        border: 1px solid var(--border);
+        display: block;
+    }
+
+    .slider-img-placeholder {
+        width: 96px;
+        height: 54px;
+        border-radius: var(--radius-sm);
+        background: var(--bg);
+        border: 1px solid var(--border);
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        color: var(--text-hint);
+        font-size: 18px;
+    }
+
+    /* Content cell */
+    .txt-eyebrow {
+        font-size: 10.5px;
+        font-weight: 700;
+        letter-spacing: .08em;
+        text-transform: uppercase;
+        color: var(--accent);
+        margin-bottom: 3px;
+    }
+
+    .txt-title {
+        font-size: 13px;
+        font-weight: 600;
+        color: var(--text-primary);
+        max-width: 340px;
+        line-height: 1.4;
+        display: -webkit-box;
+        -webkit-line-clamp: 2;
+        -webkit-box-orient: vertical;
+        overflow: hidden;
+    }
+
+    .txt-muted {
+        font-size: 12px;
+        color: var(--text-hint);
+        font-style: italic;
+    }
+
+    /* Chips */
+    .id-chip {
+        display: inline-block;
+        background: var(--bg);
+        color: var(--text-secondary);
+        font-size: 11px;
+        font-weight: 700;
+        padding: 2px 7px;
+        border-radius: 6px;
+        font-family: 'SF Mono', 'Fira Code', monospace;
+    }
+
+    .btn-chip {
+        display: inline-block;
+        background: var(--accent-light);
+        color: var(--accent);
+        font-size: 11.5px;
+        font-weight: 600;
+        padding: 3px 10px;
+        border-radius: 6px;
+        margin: 0 4px 4px 0;
+        max-width: 150px;
+        overflow: hidden;
+        text-overflow: ellipsis;
+        white-space: nowrap;
+        vertical-align: middle;
+    }
+
+    .btn-chip.warn {
+        background: var(--amber-bg);
+        color: var(--amber);
+    }
+
+    .theme-chip {
+        display: inline-block;
+        background: var(--bg);
+        color: var(--text-secondary);
+        font-size: 11.5px;
+        font-weight: 600;
+        padding: 3px 10px;
+        border-radius: 6px;
+        text-transform: capitalize;
+    }
+
+    .sort-chip {
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+        min-width: 28px;
+        height: 24px;
+        padding: 0 8px;
+        background: var(--surface);
+        border: 1px solid var(--border);
+        color: var(--text-primary);
+        font-size: 12px;
+        font-weight: 700;
+        border-radius: 6px;
+    }
+
+    /* Status pills */
+    .pill {
+        display: inline-flex;
+        align-items: center;
+        gap: 5px;
+        font-size: 11.5px;
+        font-weight: 600;
+        padding: 3px 9px;
+        border-radius: 20px;
+    }
+
+    .pill::before {
+        content: '';
+        width: 5px;
+        height: 5px;
+        border-radius: 50%;
+        display: inline-block;
+        background: currentColor;
+    }
+
+    .pill-active,
+    .pill-on {
+        background: var(--green-bg);
+        color: var(--green);
+    }
+
+    .pill-inactive,
+    .pill-off {
+        background: var(--red-bg);
+        color: var(--red);
+    }
+
+    /* Action buttons */
+    .action-btn {
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+        width: 30px;
+        height: 30px;
+        border-radius: var(--radius-sm);
+        border: 1px solid var(--border);
+        background: var(--surface);
+        color: var(--text-secondary);
+        font-size: 12px;
+        cursor: pointer;
+        transition: all .12s;
+        text-decoration: none;
+        padding: 0;
+    }
+
+    .action-btn:hover {
+        background: var(--bg);
+        color: var(--text-primary);
+        text-decoration: none;
+    }
+
+    .action-btn-danger:hover {
+        background: var(--red-bg);
+        border-color: #f5c6c6;
+        color: var(--red);
+    }
+
+    /* Empty state */
+    .empty-state {
+        text-align: center;
+        padding: 64px 20px;
+    }
+
+    .empty-state .empty-icon {
+        width: 56px;
+        height: 56px;
+        border-radius: 50%;
+        background: var(--bg);
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+        font-size: 22px;
+        color: var(--text-hint);
+        margin-bottom: 14px;
+    }
+
+    .empty-state p {
+        font-size: 14px;
+        color: var(--text-secondary);
+        margin: 6px 0 16px;
+    }
+
+    /* Pagination */
+    .pagination-bar {
+        padding: 14px 20px;
+        border-top: 1px solid var(--border);
+        display: flex;
+        justify-content: center;
+        background: var(--surface);
+    }
+
+    .pagination-bar .pagination {
+        margin: 0;
+    }
+
+    /* ══════════════ DETAIL / FORM PAGES ══════════════ */
     .detail-page {
         background: var(--bg);
         padding: 24px 28px;
@@ -303,6 +613,17 @@
         padding-left: 18px;
     }
 
+    .ok-box {
+        background: #e3f1ec;
+        color: #007a5e;
+        border: 1px solid #b7dccf;
+        border-radius: var(--radius-sm);
+        padding: 12px 16px;
+        margin-bottom: 18px;
+        font-size: 13px;
+    }
+
+    /* ══════════════ SHARED BUTTONS ══════════════ */
     .btn-primary-dash {
         display: inline-flex;
         align-items: center;
@@ -359,22 +680,7 @@
         margin-top: 20px;
     }
 
-    @media(max-width:768px) {
-        .detail-page {
-            padding: 16px;
-        }
-    }
-
-    .ok-box {
-        background: #e3f1ec;
-        color: #007a5e;
-        border: 1px solid #b7dccf;
-        border-radius: var(--radius-sm);
-        padding: 12px 16px;
-        margin-bottom: 18px;
-        font-size: 13px;
-    }
-
+    /* ══════════════ LEGACY HELPERS (other home pages) ══════════════ */
     .toolbar {
         display: flex;
         align-items: center;
@@ -385,58 +691,12 @@
         border-bottom: 1px solid var(--border);
     }
 
-    .data-table {
-        width: 100%;
-        border-collapse: collapse;
-    }
-
-    .data-table th {
-        text-align: left;
-        font-size: 11.5px;
-        font-weight: 600;
-        color: var(--text-secondary);
-        text-transform: uppercase;
-        letter-spacing: .03em;
-        padding: 10px 16px;
-        background: #fafafa;
-        border-bottom: 1px solid var(--border);
-    }
-
-    .data-table td {
-        padding: 12px 16px;
-        font-size: 13px;
-        border-bottom: 1px solid var(--bg);
-        vertical-align: middle;
-    }
-
-    .data-table tr:last-child td {
-        border-bottom: none;
-    }
-
     .thumb {
         width: 54px;
         height: 72px;
         object-fit: cover;
         border-radius: 6px;
         border: 1px solid var(--border);
-    }
-
-    .pill {
-        display: inline-block;
-        font-size: 11px;
-        font-weight: 600;
-        padding: 2px 9px;
-        border-radius: 20px;
-    }
-
-    .pill-on {
-        background: #e3f1ec;
-        color: #007a5e;
-    }
-
-    .pill-off {
-        background: #fce8e8;
-        color: #b22222;
     }
 
     .row-actions {
@@ -474,5 +734,12 @@
 
     .stat-chip b {
         color: var(--text-primary);
+    }
+
+    @media(max-width:768px) {
+        .list-page,
+        .detail-page {
+            padding: 16px;
+        }
     }
 </style>

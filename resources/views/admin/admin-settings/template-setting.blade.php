@@ -364,7 +364,7 @@
                                         <div class="sp-preview-body">
                                             <div class="sp-sms-sender">OUDHYA</div>
                                             <div class="sp-sms-bubble" id="sms-preview-bubble">
-                                                Your OTP for <strong>Oudhyana Store</strong> is <strong>847291</strong>. Valid for <strong>10</strong> minutes. Do not share with anyone. - Oudhyana
+                                                Your OTP for <strong>Parijaat Store</strong> is <strong>847291</strong>. Valid for <strong>10</strong> minutes. Do not share with anyone. - Parijaat
                                             </div>
                                             <div class="sp-sms-char-count">
                                                 <span>115 chars</span>
@@ -438,7 +438,7 @@
                                 </div>
                                 <div class="sp-preview-wrap">
                                     <div class="sp-preview-header"><span class="sp-preview-label"><i class="fa fa-mobile-alt"></i>SMS Preview</span></div>
-                                    <div class="sp-preview-body"><div class="sp-sms-bubble">Hi <strong>Rahul</strong>, your order <strong>#ORD-1089</strong> worth <strong>₹3,450</strong> has been placed successfully! Track: oudhyana.com/track/1089 - Oudhyana</div></div>
+                                    <div class="sp-preview-body"><div class="sp-sms-bubble">Hi <strong>Rahul</strong>, your order <strong>#ORD-1089</strong> worth <strong>₹3,450</strong> has been placed successfully! Track: parijaat.com/track/1089 - Parijaat</div></div>
                                 </div>
                             </div>
                         </div>
@@ -508,22 +508,22 @@
                                 <div class="sp-grid-2" style="margin-bottom:20px">
                                     <div class="sp-field" style="margin:0">
                                         <label class="sp-label">From Name <span class="sp-req">*</span></label>
-                                        <input type="text" class="sp-input" value="Oudhyana Chikankaari">
+                                        <input type="text" class="sp-input" value="Parijaat Handicraft">
                                     </div>
                                     <div class="sp-field" style="margin:0">
                                         <label class="sp-label">From Email <span class="sp-req">*</span></label>
-                                        <input type="email" class="sp-input" value="noreply@oudhyana.com">
+                                        <input type="email" class="sp-input" value="noreply@parijaat.com">
                                     </div>
                                 </div>
 
                                 <div class="sp-grid-2" style="margin-bottom:20px">
                                     <div class="sp-field" style="margin:0">
                                         <label class="sp-label">Reply-To Email</label>
-                                        <input type="email" class="sp-input" value="support@oudhyana.com">
+                                        <input type="email" class="sp-input" value="support@parijaat.com">
                                     </div>
                                     <div class="sp-field" style="margin:0">
                                         <label class="sp-label">CC (optional)</label>
-                                        <input type="email" class="sp-input" placeholder="e.g. sales@oudhyana.com">
+                                        <input type="email" class="sp-input" placeholder="e.g. sales@parijaat.com">
                                     </div>
                                 </div>
 
@@ -556,7 +556,7 @@
                                         </div>
                                         <textarea class="sp-editor-area" style="min-height:200px">&lt;p&gt;Hi {customer_name},&lt;/p&gt;
 &lt;p&gt;Welcome to &lt;strong&gt;{store_name}&lt;/strong&gt;! We're thrilled to have you with us.&lt;/p&gt;
-&lt;p&gt;Your account is now active. Start exploring our handcrafted Chikankari collections.&lt;/p&gt;
+&lt;p&gt;Your account is now active. Start exploring our handcrafted collections.&lt;/p&gt;
 &lt;a href="{shop_url}" style="display:inline-block;background:#303d89;color:#fff;padding:12px 28px;border-radius:6px;text-decoration:none;font-weight:600;margin:16px 0"&gt;Shop Now&lt;/a&gt;
 &lt;p&gt;Need help? Reply to this email or call {support_number}.&lt;/p&gt;
 &lt;p&gt;Warm regards,&lt;br&gt;Team {brand_name}&lt;/p&gt;</textarea>
@@ -583,17 +583,17 @@
                                     <label class="sp-label"><i class="fa fa-eye" style="margin-right:5px"></i>Email Preview</label>
                                     <div class="sp-email-preview">
                                         <div class="sp-email-header-bar">
-                                            <div><span>From:</span><span>Oudhyana Chikankaari &lt;noreply@oudhyana.com&gt;</span></div>
+                                            <div><span>From:</span><span>Parijaat Handicraft &lt;noreply@parijaat.com&gt;</span></div>
                                             <div><span>To:</span><span>rahul.sharma@gmail.com</span></div>
-                                            <div><span>Sub:</span><span>Welcome to Oudhyana Store, Rahul! 🎉</span></div>
+                                            <div><span>Sub:</span><span>Welcome to Parijaat Store, Rahul! 🎉</span></div>
                                         </div>
                                         <div class="sp-email-html-body">
                                             <p>Hi <strong>Rahul</strong>,</p>
-                                            <p>Welcome to <strong>Oudhyana Store</strong>! We're thrilled to have you with us.</p>
-                                            <p>Your account is now active. Start exploring our handcrafted Chikankari collections.</p>
+                                            <p>Welcome to <strong>Parijaat Store</strong>! We're thrilled to have you with us.</p>
+                                            <p>Your account is now active. Start exploring our handcrafted collections.</p>
                                             <a href="#" style="display:inline-block;background:#303d89;color:#fff;padding:12px 28px;border-radius:6px;text-decoration:none;font-weight:600;margin:12px 0" onclick="return false">Shop Now</a>
                                             <p>Need help? Reply to this email or call +91-9876543210.</p>
-                                            <p>Warm regards,<br><strong>Team Oudhyana</strong></p>
+                                            <p>Warm regards,<br><strong>Team Parijaat</strong></p>
                                         </div>
                                     </div>
                                 </div>
@@ -666,8 +666,8 @@
                                 <div class="sp-callout info"><i class="fa fa-info-circle"></i><span>WhatsApp templates must be pre-approved by Meta via the WhatsApp Business Manager. Template status will show <strong>Pending / Approved / Rejected</strong>. Only Approved templates can be sent to customers outside 24-hour window.</span></div>
 
                                 <div class="sp-grid-2" style="margin-bottom:20px">
-                                    <div class="sp-field" style="margin:0"><label class="sp-label">WA Business Account <span class="sp-req">*</span></label><select class="sp-select"><option>Oudhyana Official (+91-9876543210)</option></select></div>
-                                    <div class="sp-field" style="margin:0"><label class="sp-label">Meta Template Name <span class="sp-req">*</span></label><input type="text" class="sp-input" value="oudhyana_otp_v2"><div class="sp-help">Exact name registered in Meta Business Manager</div></div>
+                                    <div class="sp-field" style="margin:0"><label class="sp-label">WA Business Account <span class="sp-req">*</span></label><select class="sp-select"><option>Parijaat Official (+91-9876543210)</option></select></div>
+                                    <div class="sp-field" style="margin:0"><label class="sp-label">Meta Template Name <span class="sp-req">*</span></label><input type="text" class="sp-input" value="Parijaat_otp_v2"><div class="sp-help">Exact name registered in Meta Business Manager</div></div>
                                 </div>
 
                                 <div class="sp-grid-3" style="margin-bottom:20px">
@@ -740,7 +740,7 @@ Team {brand_name}</textarea>
                                     <div class="sp-wa-preview">
                                         <div class="sp-wa-bubble">
                                             <div class="sp-wa-bubble-header">OTP Verification</div>
-                                            <div class="sp-wa-bubble-body">Your OTP for <strong>Oudhyana Store</strong> is <strong>847291</strong>.<br><br>This OTP is valid for <strong>10 minutes</strong> only.<br><br><em>Do not share this OTP with anyone.</em><br><br>Team Oudhyana</div>
+                                            <div class="sp-wa-bubble-body">Your OTP for <strong>Parijaat Store</strong> is <strong>847291</strong>.<br><br>This OTP is valid for <strong>10 minutes</strong> only.<br><br><em>Do not share this OTP with anyone.</em><br><br>Team Parijaat</div>
                                             <div class="sp-wa-bubble-footer">Not you? Ignore this message.</div>
                                             <div class="sp-wa-btn">Resend OTP</div>
                                         </div>
@@ -754,7 +754,7 @@ Team {brand_name}</textarea>
                         <div class="sp-panel" id="wa-order-placed" style="display:none">
                             <div class="sp-panel-header"><div><p class="sp-panel-title"><i class="fa fa-shopping-bag" style="margin-right:7px;color:#128c7e"></i>WhatsApp Order Confirmation</p><p class="sp-panel-desc">Interactive order confirmation message with tracking CTA.</p></div></div>
                             <div class="sp-panel-body">
-                                <div class="sp-grid-2" style="margin-bottom:20px"><div class="sp-field" style="margin:0"><label class="sp-label">Meta Template Name</label><input class="sp-input" type="text" value="oudhyana_order_confirm_v1"></div><div class="sp-field" style="margin:0"><label class="sp-label">Status</label><div style="height:38px;display:flex;align-items:center"><span style="font-size:12.5px;font-weight:650;padding:4px 12px;border-radius:20px;background:var(--green-bg);color:var(--green);border:1px solid var(--green-border)"><i class="fa fa-check-circle" style="margin-right:5px"></i>Approved</span></div></div></div>
+                                <div class="sp-grid-2" style="margin-bottom:20px"><div class="sp-field" style="margin:0"><label class="sp-label">Meta Template Name</label><input class="sp-input" type="text" value="Parijaat_order_confirm_v1"></div><div class="sp-field" style="margin:0"><label class="sp-label">Status</label><div style="height:38px;display:flex;align-items:center"><span style="font-size:12.5px;font-weight:650;padding:4px 12px;border-radius:20px;background:var(--green-bg);color:var(--green);border:1px solid var(--green-border)"><i class="fa fa-check-circle" style="margin-right:5px"></i>Approved</span></div></div></div>
                                 <div class="sp-field"><label class="sp-label">Body <span class="sp-req">*</span></label><div class="sp-editor-wrap"><textarea class="sp-editor-area">Hi *{customer_name}* 👋
 
 Your order *#{order_id}* worth *{order_amount}* has been placed successfully!

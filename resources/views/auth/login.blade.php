@@ -3,21 +3,15 @@
 @section('content')
 
     <style>
-        /* =====================================================
-           ARCHANA SAREE EMPORIUM - THEME VARIABLES
-           Sirf yahin se poori login theme control hoti hai.
-           --aw-primary ki value site ke :root (--primary) se match kar do.
-           ===================================================== */
+        /* Theme variables: poori login theme yahin se control hoti hai.
+           --aw-primary ko site ke --primary ki hex se match kar lena. */
         :root {
             --aw-primary: #B08D57;
-            /* TODO: site ke --primary ki asli hex yahan daalo */
+            --aw-primary-dark: #8F6F3F;
             --aw-bg: #FAF6EE;
-            /* site ka cream background (home.css overlay se confirmed) */
             --aw-black: #0A0806;
-            /* site ka dark tone (home.css overlay se) */
             --aw-white: #FFFFFF;
             --aw-line: rgba(0, 0, 0, 0.12);
-            /* site ke divider lines */
         }
 
         body {
@@ -59,24 +53,18 @@
         .login-left {
             position: relative;
             width: 45%;
-            background: linear-gradient(135deg, #63364d, #63364d);
+            background: linear-gradient(135deg, var(--aw-black), var(--aw-primary-dark));
             color: var(--aw-white);
             text-align: center;
             padding: 40px 20px;
         }
 
-        /* site jaisa thin inset border */
         .login-left::after {
             content: "";
             position: absolute;
             inset: 16px;
             border: 1px solid rgba(255, 255, 255, 0.28);
             pointer-events: none;
-        }
-
-        .login-left img {
-            width: 120px;
-            margin-bottom: 20px;
         }
 
         .login-left h2 {
@@ -112,7 +100,7 @@
         }
 
         .form-control:focus {
-            box-shadow: none;
+            box-shadow: 0 0 0 3px rgba(176, 141, 87, 0.18);
             border: 1px solid var(--aw-primary);
             background: var(--aw-white);
         }
@@ -122,14 +110,14 @@
             padding: 12px;
             border-radius: 12px;
             border: none;
-            background: #63364d;
+            background: var(--aw-primary);
             color: var(--aw-white);
             font-weight: 500;
             transition: all 0.3s ease;
         }
 
         .btn-login:hover {
-            background: #b888a1;
+            background: var(--aw-primary-dark);
             color: var(--aw-white);
         }
 
@@ -149,6 +137,7 @@
         }
 
         .forgot-link:hover {
+            color: var(--aw-primary-dark);
             text-decoration: underline;
         }
 
@@ -163,46 +152,43 @@
             }
 
             .login-left {
-                background: linear-gradient(135deg, var(--aw-black), var(--aw-black));
+                background: var(--aw-black);
             }
         }
     </style>
 
     @php
         $loginLogo = $general?->admin_login_logo;
-        $siteName = $general?->site_name ?? 'Archana Saree Emporium';
-        $tagline = $general?->tagline ?? 'Premium Sarees · Designer Lehengas · Bridal Wear';
+        $siteName = $general?->site_name ?? 'Admin Panel';
+        $tagline = $general?->tagline;
     @endphp
 
     <div class="login-wrapper">
         <div class="login-card">
 
-            <!-- LEFT SIDE -->
+            {{-- LEFT SIDE --}}
             <div class="login-left">
 
                 <div class="logo-box">
-                    <!--  @if($loginLogo)
-                <img src="{{ asset('storage/' . $loginLogo) }}" alt="{{ $siteName }}">
-            @else
-
-            @endif -->
-                    <img src="{{ asset('assets/images/logo.png') }}" alt="{{ $siteName }}">
+                    <img src="{{ $loginLogo ? asset('storage/' . $loginLogo) : asset('assets/images/logo.png') }}"
+                        alt="{{ $siteName }}">
                 </div>
 
                 <h2>{{ $siteName }}</h2>
-                <p>{{ $tagline }}</p>
+                @if($tagline)
+                    <p>{{ $tagline }}</p>
+                @endif
             </div>
 
-            <!-- RIGHT SIDE -->
+            {{-- RIGHT SIDE --}}
             <div class="login-right">
                 <h4 class="login-title">Admin Login</h4>
 
                 <form method="POST" action="{{ route('login.post') }}">
                     @csrf
 
-                    <!-- EMAIL -->
                     <div class="mb-3">
-                        <label>Email Address</label>
+                        <label for="email">Email Address</label>
                         <input id="email" type="email" class="form-control @error('email') is-invalid @enderror"
                             name="email" value="{{ old('email') }}" required autofocus>
 
@@ -213,9 +199,8 @@
                         @enderror
                     </div>
 
-                    <!-- PASSWORD -->
                     <div class="mb-3">
-                        <label>Password</label>
+                        <label for="password">Password</label>
                         <input id="password" type="password" class="form-control @error('password') is-invalid @enderror"
                             name="password" required>
 
@@ -226,27 +211,18 @@
                         @enderror
                     </div>
 
-                    <!-- REMEMBER -->
                     <div class="mb-3 d-flex justify-content-between align-items-center">
                         <div class="form-check">
                             <input class="form-check-input" type="checkbox" name="remember" id="remember" {{ old('remember') ? 'checked' : '' }}>
-                            <label class="form-check-label">
-                                Remember Me
-                            </label>
+                            <label class="form-check-label" for="remember">Remember Me</label>
                         </div>
 
                         @if (Route::has('password.request'))
-                            <a class="forgot-link" href="{{ route('password.request') }}">
-                                Forgot Password?
-                            </a>
+                            <a class="forgot-link" href="{{ route('password.request') }}">Forgot Password?</a>
                         @endif
                     </div>
 
-                    <!-- BUTTON -->
-                    <button type="submit" class="btn btn-login">
-                        Login
-                    </button>
-
+                    <button type="submit" class="btn btn-login">Login</button>
                 </form>
             </div>
 
