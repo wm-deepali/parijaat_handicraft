@@ -10,6 +10,7 @@ class Category extends Model
     use SoftDeletes;
 
     protected $fillable = [
+        'tax_class_id',
         'name',
         'slug',
         'parent_id',
@@ -50,6 +51,11 @@ class Category extends Model
     | RELATIONS
     |--------------------------------------------------------------------------
     */
+
+    public function taxClass()
+    {
+        return $this->belongsTo(TaxClass::class);
+    }
 
     // Parent
     public function parent()

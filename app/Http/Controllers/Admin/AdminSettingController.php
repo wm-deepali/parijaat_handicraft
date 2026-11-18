@@ -7,6 +7,7 @@ use App\Models\City;
 use App\Models\State;
 use App\Models\Setting;
 use App\Models\Courier;
+use App\Models\TaxClass;
 use App\Models\SmtpSetting;
 use App\Models\ShippingSlab;
 use Illuminate\Http\Request;
@@ -30,6 +31,7 @@ class AdminSettingController extends Controller
         $shipping = ShippingSetting::first();
         $google_setting = GoogleSetting::current();
         $invoice_setting = InvoiceSetting::first();
+        $taxClasses = TaxClass::orderBy('name')->get();
         $activeTab = $request->tab ?? 'general';
 
         return view(
@@ -44,6 +46,7 @@ class AdminSettingController extends Controller
                 'activeTab',
                 'google_setting',
                 'invoice_setting',
+                'taxClasses',
             )
         );
     }
@@ -62,6 +65,8 @@ class AdminSettingController extends Controller
             // Invoice
             'invoice_prefix' => 'required|string|max:20',
             'invoice_serial' => 'required|integer|min:1',
+            'export_invoice_prefix' => 'required|string|max:20|different:invoice_prefix',
+            'export_invoice_serial' => 'required|integer|min:1',
             'invoice_year_format' => 'nullable|in:none,slash,year',
             'invoice_separator' => 'nullable|string|max:5',
             'invoice_date_format' => 'nullable|in:d/m/Y,d M Y,m-d-Y',
@@ -72,27 +77,55 @@ class AdminSettingController extends Controller
             'terms_conditions' => 'nullable|string',
         ];
 
-        // GST Validation Only For Registered
-        if ($request->business_type == 'registered') {
+        $registered = $request->business_type == 'registered';
+
+        if ($registered) {
             $rules['company_gstin'] = 'required|string|max:15';
             $rules['company_pan'] = 'required|string|max:10';
-            $rules['cgst'] = 'required|numeric|min:0|max:100';
-            $rules['sgst'] = 'required|numeric|min:0|max:100';
-            $rules['igst'] = 'required|numeric|min:0|max:100';
+            $rules['classes'] = 'required|array|min:1';
+            $rules['classes.*.name'] = 'required|string|max:100';
+            $rules['classes.*.gst_rate'] = 'required|numeric|min:0|max:100';
+            $rules['default_class'] = 'required';
         }
 
         $validated = $request->validate($rules);
 
+        // Tax classes ko InvoiceSetting ke data se alag karo
+        $classes = $validated['classes'] ?? [];
+        $defaultKey = (string) ($validated['default_class'] ?? '');
+        unset($validated['classes'], $validated['default_class']);
+
+        $removeIds = collect();
+
+        if ($registered) {
+            if (!array_key_exists($defaultKey, $classes)) {
+                return back()->withInput()->withErrors(['Please select a Default tax class.']);
+            }
+
+            $names = collect($classes)->pluck('name')->map(fn($n) => mb_strtolower(trim($n)));
+            if ($names->count() !== $names->unique()->count()) {
+                return back()->withInput()->withErrors(['Tax class names must be unique.']);
+            }
+
+            // jo class list se hata di gayi hai, wo agar use me hai to delete nahi hogi
+            $keepIds = collect(array_keys($classes))->filter(fn($k) => is_numeric($k))->map(fn($k) => (int) $k);
+            $removed = TaxClass::whereNotIn('id', $keepIds)->withCount(['categories', 'products'])->get();
+
+            foreach ($removed as $r) {
+                if ($r->categories_count || $r->products_count) {
+                    return back()->withInput()->withErrors(["Tax class '{$r->name}' is used by categories/products. Change them first, then remove it."]);
+                }
+            }
+            $removeIds = $removed->pluck('id');
+        }
+
         // Checkboxes
-        $validated['show_gst_breakup'] =
-            $request->has('show_gst_breakup');
-        $validated['auto_generate_invoice'] =
-            $request->has('auto_generate_invoice');
-        $validated['email_invoice_customer'] =
-            $request->has('email_invoice_customer');
+        $validated['show_gst_breakup'] = $request->has('show_gst_breakup');
+        $validated['auto_generate_invoice'] = $request->has('auto_generate_invoice');
+        $validated['email_invoice_customer'] = $request->has('email_invoice_customer');
 
         // Unregistered Business
-        if ($request->business_type == 'unregistered') {
+        if (!$registered) {
             $validated['company_gstin'] = null;
             $validated['company_pan'] = null;
             $validated['cgst'] = 0;
@@ -103,15 +136,30 @@ class AdminSettingController extends Controller
 
         // Logo Upload
         if ($request->hasFile('company_logo')) {
-            $validated['company_logo'] = $request
-                ->file('company_logo')
-                ->store('company', 'public');
+            $validated['company_logo'] = $request->file('company_logo')->store('company', 'public');
         }
 
-        InvoiceSetting::updateOrCreate(
-            ['id' => 1],
-            $validated
-        );
+        DB::transaction(function () use ($validated, $classes, $defaultKey, $removeIds) {
+            InvoiceSetting::updateOrCreate(['id' => 1], $validated);
+
+            foreach ($classes as $key => $row) {
+                $data = [
+                    'name' => trim($row['name']),
+                    'gst_rate' => $row['gst_rate'],
+                    'is_default' => (string) $key === $defaultKey,
+                ];
+
+                if (is_numeric($key)) {
+                    TaxClass::whereKey($key)->update($data);
+                } else {
+                    TaxClass::create($data);
+                }
+            }
+
+            if ($removeIds->isNotEmpty()) {
+                TaxClass::whereIn('id', $removeIds)->delete();
+            }
+        });
 
         return redirect()
             ->route('admin.admin-setting.index', ['tab' => 'gst'])

@@ -2,6 +2,7 @@
 
 namespace App\Models;
 
+use App\Support\Region;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\SoftDeletes;
 
@@ -19,7 +20,7 @@ class Product extends Model
     ];
 
     protected $fillable = [
-
+        'tax_class_id',
         'category_id',
         'subcategory_id',
         'brand_id',
@@ -59,6 +60,11 @@ class Product extends Model
         'specifications' => 'array',
         'status' => 'boolean',
     ];
+
+    public function taxClass()
+    {
+        return $this->belongsTo(TaxClass::class);
+    }
 
     public function priceTiers()
     {
@@ -110,8 +116,8 @@ class Product extends Model
             'brand' => $this->brand?->name,
             'url' => url('product/' . $this->slug), // swap for route('product.show', $this->slug) once that route exists
             'img' => $this->display_image,           // already a full asset() URL
-            'now' => '₹' . number_format($this->price),
-            'old' => $this->mrp > $this->price ? '₹' . number_format($this->mrp) : null,
+            'now' => app(Region::class)->format($this->price),
+            'old' => $this->mrp > $this->price ? app(Region::class)->format($this->mrp) : null,
             'off' => $this->discount_percent,
             'badge' => null,                           // decide badge rule later (New / Bestseller / collection)
         ];
@@ -286,6 +292,41 @@ class Product extends Model
         $text = html_entity_decode(strip_tags((string) $html), ENT_QUOTES, 'UTF-8');
 
         return trim(str_replace("\xC2\xA0", ' ', $text)) !== '';
+    }
+
+    /** Quantity ke hisaab se unit price (default currency). Range product me tier jeetta hai, warna $fallback. */
+    public function unitPriceFor(int $qty, ?float $fallback = null): float
+    {
+        if ($this->price_type === 'range' && $this->priceTiers->isNotEmpty()) {
+            $tiers = $this->priceTiers;
+            $hit = $tiers->first(fn($t) => $qty >= $t->min_qty && ($t->max_qty === null || $qty <= $t->max_qty))
+                ?? ($qty < $tiers->first()->min_qty ? $tiers->first() : $tiers->last());
+
+            return (float) $hit->price;
+        }
+
+        return (float) ($fallback ?? $this->price);
+    }
+
+    public function minOrderQty(): int
+    {
+        $min = max(1, (int) $this->min_qty);
+
+        if ($this->price_type === 'range' && $first = $this->priceTiers->first()) {
+            $min = max($min, (int) $first->min_qty);
+        }
+
+        return $min;
+    }
+
+    /** null = koi cap nahi */
+    public function maxOrderQty(): ?int
+    {
+        if ($this->price_type === 'range' && $last = $this->priceTiers->last()) {
+            return $last->max_qty ? (int) $last->max_qty : null;
+        }
+
+        return null;
     }
 
 }

@@ -5,8 +5,8 @@ namespace App\Http\Controllers;
 use App\Models\Cart;
 use App\Models\Coupon;
 use App\Models\Product;
+use App\Support\Region;
 use App\Models\CartItem;
-use Illuminate\Support\Str;
 use App\Models\ProductAddon;
 use Illuminate\Http\Request;
 use App\Models\ProductVariant;
@@ -33,15 +33,16 @@ class CartController extends Controller
 
             'addon_ids' => 'nullable|array',
             'addon_ids.*' => 'integer|exists:product_addons,id',
-            
+
             'quantity' => 'nullable|integer|min:1|max:1000',
         ]);
 
-        $product = Product::with('variants.values')
+        $product = Product::with(['variants.values', 'priceTiers'])
             ->where('status', 1)
             ->findOrFail($request->product_id);
 
-        $minQty = max(1, (int) $product->min_qty);
+        $minQty = $product->minOrderQty();
+        $maxQty = $product->maxOrderQty();
         $quantity = (int) ($request->quantity ?? $minQty);
 
         if ($quantity < $minQty) {
@@ -49,6 +50,10 @@ class CartController extends Controller
                 'status' => false,
                 'message' => "Minimum order quantity is {$minQty}."
             ], 422);
+        }
+
+        if ($maxQty && $quantity > $maxQty) {
+            return response()->json(['status' => false, 'message' => "Maximum order quantity is {$maxQty}."], 422);
         }
 
         // Listing-page add (no variant ids sent): pick a default in-stock combination
@@ -106,7 +111,8 @@ class CartController extends Controller
         $stockVariant = $this->resolveVariant($product, $request->stock_variant_id, ProductVariant::TYPE_STOCK, $selectedValueIds);
         $skuVariant = $this->resolveVariant($product, $request->sku_variant_id, ProductVariant::TYPE_SKU, $selectedValueIds);
 
-        $price = $priceVariant->price ?? $product->price;
+        $basePrice = (float) ($priceVariant->price ?? $product->price);
+        $price = $product->unitPriceFor($quantity, $basePrice);   // range product me tier price
         $stock = $stockVariant->stock ?? $product->stock;
 
         if ($stock < $minQty) {
@@ -204,6 +210,9 @@ class CartController extends Controller
 
             $newQty = $item->quantity + $quantity;
 
+            if ($maxQty && $newQty > $maxQty) {
+                return response()->json(['status' => false, 'message' => "Maximum order quantity is {$maxQty}."], 422);
+            }
             if ($newQty > $stock) {
                 return response()->json([
                     'status' => false,
@@ -212,6 +221,7 @@ class CartController extends Controller
             }
 
             $item->quantity = $newQty;
+            $item->price = $product->unitPriceFor($newQty, $basePrice);   // quantity badli to tier bhi badal sakta hai
             $item->total = $item->quantity * ($item->price + $addonUnitTotal);
             $item->save();
 
@@ -271,6 +281,8 @@ class CartController extends Controller
             'coupon_message' => $couponResult['message'] ?? null,
             'discount' => $cart->discount,
             'tracking_events' => $trackingEvents,
+            'cart_total_formatted' => app(Region::class)->format($cart->grand_total),
+            'discount_formatted' => app(Region::class)->format($cart->discount)
         ]);
     }
 
@@ -321,6 +333,7 @@ class CartController extends Controller
         $cart = $this->currentCart();
 
         if ($cart) {
+            $cart->refreshPrices();
             $cart->recalculateTotals();
             $cart->refresh();
 
@@ -407,11 +420,13 @@ class CartController extends Controller
         $subtotal = (float) $cart->items()->sum('total');
 
         if ($coupon->minimum_order_amount && $subtotal < $coupon->minimum_order_amount) {
-            $short = number_format($coupon->minimum_order_amount - $subtotal);
+
+            $region = app(Region::class);
+            $short = $region->format($coupon->minimum_order_amount - $subtotal);
 
             return response()->json([
                 'status' => false,
-                'message' => "Add ₹{$short} more to use this coupon (minimum order ₹" . number_format($coupon->minimum_order_amount) . ")."
+                'message' => "Add {$short} more to use this coupon (minimum order " . $region->format($coupon->minimum_order_amount) . ")."
             ]);
         }
 
@@ -584,6 +599,8 @@ class CartController extends Controller
             'coupon_message' => $couponResult['message'] ?? null,
             'discount' => $cart->discount,
             'tracking_events' => $trackingEvents,
+            'cart_total_formatted' => app(Region::class)->format($cart->grand_total),
+            'discount_formatted' => app(Region::class)->format($cart->discount)
         ]);
     }
 
@@ -603,7 +620,9 @@ class CartController extends Controller
             ? $item->stockVariant->stock
             : $item->product->stock;
 
-        $minQty = max(1, (int) $item->product->min_qty);
+        $product = $item->product->loadMissing('priceTiers');
+        $minQty = $product->minOrderQty();
+        $maxQty = $product->maxOrderQty();
         $oldQty = (int) $item->quantity;
 
         if ($request->action == 'plus') {
@@ -616,6 +635,10 @@ class CartController extends Controller
                 ], 422);
             }
 
+            if ($maxQty && $item->quantity + 1 > $maxQty) {
+                return response()->json(['status' => false, 'message' => "Maximum order quantity is {$maxQty}."], 422);
+            }
+
             $item->quantity++;
 
         } elseif ($request->action == 'minus') {
@@ -625,6 +648,7 @@ class CartController extends Controller
             }
         }
 
+        $item->price = $product->unitPriceFor($item->quantity, (float) ($item->priceVariant->price ?? $product->price));
         $addonUnitTotal = $item->addons->sum('price');
 
         $item->total = $item->quantity * ($item->price + $addonUnitTotal);
@@ -667,6 +691,8 @@ class CartController extends Controller
             'coupon_message' => $couponResult['message'] ?? null,
             'discount' => $cart->discount,
             'tracking_events' => $trackingEvents,
+            'cart_total_formatted' => app(Region::class)->format($cart->grand_total),
+            'discount_formatted' => app(Region::class)->format($cart->discount)
         ]);
     }
 
@@ -680,12 +706,14 @@ class CartController extends Controller
             'items.priceVariant',
             'items.stockVariant',
             'items.addons',
+            'items.product.priceTiers'
         ];
     }
 
     private function miniCartRelations(): array
     {
         return [
+            'items.product.images',
             'items.product.category',
             'items.product.subcategory',
             'items.imageVariant',

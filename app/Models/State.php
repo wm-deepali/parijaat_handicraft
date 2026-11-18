@@ -8,7 +8,12 @@ class State extends Model
 {
     public $timestamps = false;
 
-    protected $fillable = ['name'];
+    protected $fillable = ['name', 'country_id'];
+
+    public function country()
+    {
+        return $this->belongsTo(Country::class);
+    }
 
     public function cities()
     {

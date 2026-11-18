@@ -1031,8 +1031,8 @@
                                     <select name="category_id" id="category_id" class="field-select" required>
                                         <option value="">Select Category</option>
                                         @foreach($categories as $category)
-                                            <option value="{{ $category->id }}" {{ old('category_id', $product->category_id) == $category->id ? 'selected' : '' }}>
-                                                {{ $category->name }}
+                                            <option value="{{ $category->id }}" data-tax="{{ $category->tax_class_id }}" {{ old('category_id', $product->category_id) == $category->id ? 'selected' : '' }}></option>
+                                            {{ $category->name }}
                                             </option>
                                         @endforeach
                                     </select>
@@ -1044,7 +1044,8 @@
                                     <select name="subcategory_id" id="subcategory_id" class="field-select">
                                         <option value="">Select Sub Category</option>
                                         @foreach($subcategories as $subcategory)
-                                            <option value="{{ $subcategory->id }}" {{ old('subcategory_id', $product->subcategory_id) == $subcategory->id ? 'selected' : '' }}>
+                                            <option value="{{ $subcategory->id }}"
+                                                data-tax="{{ $subcategory->tax_class_id }}" {{ old('subcategory_id', $product->subcategory_id) == $subcategory->id ? 'selected' : '' }}>
                                                 {{ $subcategory->name }}
                                             </option>
                                         @endforeach
@@ -1168,6 +1169,8 @@
                             </div>
                             <div class="section-card-body">
 
+                                @include('admin.products._tax-class-field')
+
                                 <div class="field-group">
                                     <label class="field-label">Price Type</label>
                                     <select name="price_type" id="price_type" class="field-select">
@@ -1191,7 +1194,8 @@
                                     <div class="field-group single-only" style="margin:0">
                                         <label class="field-label">Discount Type</label>
                                         <select name="discount_type" id="discount_type" class="field-select">
-                                            <option value="amount" {{ old('discount_type', $product->discount_type) == 'amount' ? 'selected' : '' }}>Amount (₹)
+                                            <option value="amount" {{ old('discount_type', $product->discount_type) == 'amount' ? 'selected' : '' }}>
+                                                Amount{{ $currencySymbol !== '' ? ' (' . $currencySymbol . ')' : '' }}
                                             </option>
                                             <option value="percentage" {{ old('discount_type', $product->discount_type) == 'percentage' ? 'selected' : '' }}>Percentage
                                                 (%)</option>
@@ -1206,11 +1210,12 @@
 
                                 <div class="final-price-box single-only">
                                     <span class="fp-label">Final Price</span>
-                                    <span class="fp-value">₹<span
-                                            id="price-display">{{ old('price', $product->price) }}</span></span>
+                                    <span class="fp-value">{{ $currencySymbol }}<span id="price-display">{{ old('price', $product->price) }}</span></span>
                                     <input type="hidden" name="price" id="price"
                                         value="{{ old('price', $product->price) }}">
                                 </div>
+
+                                @include('admin.products._price-currency-note')
 
                                 <div id="range-block" style="display:none;margin-top:16px">
                                     <div
@@ -1220,7 +1225,7 @@
                                                 <tr>
                                                     <th>From Qty</th>
                                                     <th>To Qty</th>
-                                                    <th>Price per piece (₹)</th>
+                                                    <th>Price per piece{{ $currencySymbol !== '' ? ' (' . $currencySymbol . ')' : '' }}</th>
                                                     <th style="width:40px"></th>
                                                 </tr>
                                             </thead>
@@ -1870,7 +1875,7 @@
         $.get(window.subCategoryUrl + '/' + categoryId, function (response) {
             if (response.length > 0) {
                 let html = '<option value="">Select Sub Category</option>';
-                $.each(response, function (i, item) { html += `<option value="${item.id}">${item.name}</option>`; });
+                $.each(response, function (i, item) { html += `<option value="${item.id}" data-tax="${item.tax_class_id ?? ''}">${item.name}</option>`; });
                 $('#subcategory_id').html(html);
                 $('#subcategory-wrapper').show();
             } else {

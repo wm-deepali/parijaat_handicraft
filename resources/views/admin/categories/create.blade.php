@@ -458,6 +458,8 @@
                                     <div class="field-hint">Lower numbers appear first.</div>
                                 </div>
 
+                                @include('admin.categories._tax-class-field')
+                                
                             </div>
                         </div>
 

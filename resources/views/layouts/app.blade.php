@@ -4,6 +4,7 @@
 <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <meta name="csrf-token" content="{{ csrf_token() }}">
     <title>Home | Parijaat Handicraft</title>
     <!-- ================= Google Fonts ================= -->
     <link rel="preconnect" href="https://fonts.googleapis.com" />
@@ -92,15 +93,23 @@
                             <a href="{{ route('contact') }}">Help &amp; Support</a>
                         </li>
                         <li><a href="tel:+910000000000">+91 00000 00000</a></li>
-                        <li class="currency">
-                            <select class="currency-select" aria-label="Currency">
-                                <option value="INR" selected>INR ₹</option>
-                                <option value="USD">USD $</option>
-                                <option value="GBP">GBP £</option>
-                                <option value="EUR">EUR €</option>
-                            </select>
-                            <i class="fa-solid fa-chevron-down fi currency-arrow"></i>
-                        </li>
+                        @if (($regionOptions ?? collect())->count() > 1)
+                            <li class="currency">
+                                <form action="{{ route('region.set') }}" method="post">
+                                    @csrf
+                                    <select name="country" class="currency-select" aria-label="Country and currency"
+                                        onchange="this.form.submit()">
+                                        @foreach ($regionOptions as $rc)
+                                            <option value="{{ $rc->iso2 }}" @selected($regionCurrent && $regionCurrent->id === $rc->id)>
+                                                {{ $rc->name }}
+                                                ({{ $rc->currency_code }}{{ $rc->currency?->symbol && $rc->currency->symbol !== $rc->currency_code ? ' ' . $rc->currency->symbol : '' }})
+                                            </option>
+                                        @endforeach
+                                    </select>
+                                </form>
+                                <i class="fa-solid fa-chevron-down fi currency-arrow"></i>
+                            </li>
+                        @endif
                     </ul>
                 </div>
             </div>
@@ -233,7 +242,7 @@
                                     <path d="M3 6h18" />
                                     <path d="M16 10a4 4 0 0 1-8 0" />
                                 </svg>
-                                <span class="count cart-count">0</span>
+                                <span class="count cart-count">{{ $miniCart?->items->sum('quantity') ?? 0 }}</span>
                             </span>
                         </button>
 
@@ -578,7 +587,7 @@
             <a href="javascript:void()" data-model=".login-pop" class="float-link"><i
                     class="fa-regular fa-heart"></i><span>Wishlist</span><b class="f-count">0</b></a>
             <a href="{{ route('cart') }}" class="float-link"><i class="fa-solid fa-bag-shopping"></i><span>Cart</span><b
-                    class="f-count">0</b></a>
+                    class="f-count">{{ $miniCart?->items->sum('quantity') ?? 0 }}</b></a>
             <a href="dashboard.html#tab-1" class="float-link"><i class="fa-regular fa-user"></i><span>Account</span></a>
         </nav>
     </footer>
@@ -1007,132 +1016,8 @@
             </svg>
         </button>
 
-        <div class="model-body">
-            <div class="cp-head">
-                <h3>My Cart <span>3 items</span></h3>
-            </div>
-
-            <ul class="cp-list">
-                <li class="cp-item">
-                    <a class="cp-img" href="javascript:void(0);">
-                        <img src="{{ asset('assets/images/home/cat4.png')}}" alt="Handmade Brass Oil Lamp" width="96"
-                            height="128" loading="lazy" />
-                    </a>
-                    <div class="cp-info">
-                        <span class="cp-cat">Diyas &amp; Lamps</span>
-                        <h4 class="cp-name">
-                            <a href="javascript:void(0);">Handmade Brass Oil Lamp</a>
-                        </h4>
-                        <span class="cp-variant">Brass · Medium · Antique Finish</span>
-                        <div class="cp-price">
-                            <strong>Rs. 1,299</strong><del>Rs. 1,599</del><span class="cp-off">19% off</span>
-                        </div>
-                        <div class="cp-actions">
-                            <div class="qty" role="group" aria-label="Quantity for Handmade Brass Oil Lamp">
-                                <button type="button" class="qty-minus" aria-label="Decrease quantity">
-                                    <i class="fa-solid fa-minus" aria-hidden="true"></i>
-                                </button>
-                                <input type="text" inputmode="numeric" value="1" aria-label="Quantity" />
-                                <button type="button" class="qty-plus" aria-label="Increase quantity">
-                                    <i class="fa-solid fa-plus" aria-hidden="true"></i>
-                                </button>
-                            </div>
-                            <button type="button" class="cp-remove">
-                                <i class="fa-regular fa-trash-can" aria-hidden="true"></i>
-                                Remove
-                            </button>
-                        </div>
-                    </div>
-                </li>
-
-                <li class="cp-item">
-                    <a class="cp-img" href="javascript:void(0);">
-                        <img src="{{ asset('assets/images/home/cat1.png')}}" alt="Brass Lotus Kuber Diya" width="96"
-                            height="128" loading="lazy" />
-                    </a>
-                    <div class="cp-info">
-                        <span class="cp-cat">Pooja Essentials</span>
-                        <h4 class="cp-name">
-                            <a href="javascript:void(0);">Brass Lotus Kuber Diya</a>
-                        </h4>
-                        <span class="cp-variant">Brass · Small · Polished Finish</span>
-                        <div class="cp-price">
-                            <strong>Rs. 1,099</strong><del>Rs. 1,299</del><span class="cp-off">15% off</span>
-                        </div>
-                        <div class="cp-actions">
-                            <div class="qty" role="group" aria-label="Quantity for Brass Lotus Kuber Diya">
-                                <button type="button" class="qty-minus" aria-label="Decrease quantity">
-                                    <i class="fa-solid fa-minus" aria-hidden="true"></i>
-                                </button>
-                                <input type="text" inputmode="numeric" value="1" aria-label="Quantity" />
-                                <button type="button" class="qty-plus" aria-label="Increase quantity">
-                                    <i class="fa-solid fa-plus" aria-hidden="true"></i>
-                                </button>
-                            </div>
-                            <button type="button" class="cp-remove">
-                                <i class="fa-regular fa-trash-can" aria-hidden="true"></i>
-                                Remove
-                            </button>
-                        </div>
-                    </div>
-                </li>
-
-                <li class="cp-item">
-                    <a class="cp-img" href="javascript:void(0);">
-                        <img src="{{ asset('assets/images/home/cat3.png')}}" alt="Hammered Copper Goblet" width="96"
-                            height="128" loading="lazy" />
-                    </a>
-                    <div class="cp-info">
-                        <span class="cp-cat">Copper Drinkware</span>
-                        <h4 class="cp-name">
-                            <a href="javascript:void(0);">Hammered Copper Goblet</a>
-                        </h4>
-                        <span class="cp-variant">Copper · Hammered Finish</span>
-                        <div class="cp-price">
-                            <strong>Rs. 749</strong><del>Rs. 899</del><span class="cp-off">17% off</span>
-                        </div>
-                        <div class="cp-actions">
-                            <div class="qty" role="group" aria-label="Quantity for Hammered Copper Goblet">
-                                <button type="button" class="qty-minus" aria-label="Decrease quantity">
-                                    <i class="fa-solid fa-minus" aria-hidden="true"></i>
-                                </button>
-                                <input type="text" inputmode="numeric" value="1" aria-label="Quantity" />
-                                <button type="button" class="qty-plus" aria-label="Increase quantity">
-                                    <i class="fa-solid fa-plus" aria-hidden="true"></i>
-                                </button>
-                            </div>
-                            <button type="button" class="cp-remove">
-                                <i class="fa-regular fa-trash-can" aria-hidden="true"></i>
-                                Remove
-                            </button>
-                        </div>
-                    </div>
-                </li>
-            </ul>
-
-            <!-- empty state: cart khali ho to ise dikhao, .cp-list aur .cp-foot hide karo -->
-            <div class="cp-empty" hidden>
-                <span class="cp-empty-icon"><i class="fa-solid fa-bag-shopping" aria-hidden="true"></i></span>
-                <h4>Your cart is empty</h4>
-                <p>Explore brass decor, pooja essentials and copper drinkware.</p>
-                <a href="{{ route('products') }}" class="btn btn-primary">Shop Now</a>
-            </div>
-
-            <div class="cp-foot">
-                <div class="cp-total">
-                    <span>Subtotal</span>
-                    <strong>Rs. 3,147</strong>
-                </div>
-                <p class="cp-note">
-                    <i class="fa-solid fa-truck-fast" aria-hidden="true"></i>
-                    You have unlocked FREE shipping. Taxes, coupons and customs duties
-                    (for international orders) are shown at checkout.
-                </p>
-                <div class="cp-btns">
-                    <a href="{{ route('cart') }}" class="btn btn-outline-primary">View Cart</a>
-                    <a href="{{ route('checkout') }}" class="btn btn-primary">Checkout</a>
-                </div>
-            </div>
+        <div class="model-body" id="miniCartBody">
+            @include('layouts.mini-cart', ['miniCart' => $miniCart])
         </div>
     </div>
 
@@ -1354,6 +1239,14 @@
     <script type="text/javascript" src="{{ asset('assets/js/fancybox.js')}}"></script>
     <script type="text/javascript" src="{{ asset('assets/js/function.js')}}"></script>
     <script type="text/javascript" src="{{ asset('assets/js/main.js')}}"></script>
+    <script>
+        window.APP = {
+            cartAdd: "{{ route('cart.add') }}",
+            cartQty: "{{ route('cart.update') }}",
+            cartRemove: "{{ route('cart.remove', ':id') }}"
+        };
+    </script>
+    <script src="{{ asset('assets/js/cart.js') }}"></script>
 
     <script>
         (function () {

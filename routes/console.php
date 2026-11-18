@@ -9,6 +9,10 @@ Artisan::command('inspire', function () {
     $this->comment(Inspiring::quote());
 })->purpose('Display an inspiring quote');
 
+Schedule::command('rates:update')
+    ->dailyAt('02:00')
+    ->withoutOverlapping();
+
 Schedule::call(function () {
     app(StockAlertService::class)->sendAlertEmailIfNeeded();
 })

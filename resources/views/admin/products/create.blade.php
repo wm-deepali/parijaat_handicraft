@@ -855,7 +855,8 @@
                                     <select name="category_id" id="category_id" class="field-select" required>
                                         <option value="">— Select Category —</option>
                                         @foreach($categories as $category)
-                                            <option value="{{ $category->id }}" {{ old('category_id') == $category->id ? 'selected' : '' }}>{{ $category->name }}</option>
+                                            <option value="{{ $category->id }}" data-tax="{{ $category->tax_class_id }}" {{ old('category_id') == $category->id ? 'selected' : '' }}>{{ $category->name }}
+                                            </option>
                                         @endforeach
                                     </select>
                                 </div>
@@ -991,6 +992,8 @@
                             </div>
                             <div class="section-card-body">
 
+                                @include('admin.products._tax-class-field')
+
                                 <div class="field-group">
                                     <label class="field-label">Price Type</label>
                                     <select name="price_type" id="price_type" class="field-select">
@@ -1017,7 +1020,7 @@
                                     <div class="field-group single-only" style="margin:0">
                                         <label class="field-label">Discount Type</label>
                                         <select name="discount_type" id="discount_type" class="field-select">
-                                            <option value="amount" {{ old('discount_type') == 'amount' ? 'selected' : '' }}>Amount (₹)</option>
+                                            <option value="amount" {{ old('discount_type') == 'amount' ? 'selected' : '' }}>Amount{{ $currencySymbol !== '' ? ' (' . $currencySymbol . ')' : '' }}</option>
                                             <option value="percentage" {{ old('discount_type') == 'percentage' ? 'selected' : '' }}>Percentage (%)</option>
                                         </select>
                                     </div>
@@ -1030,9 +1033,11 @@
 
                                 <div class="final-price-box single-only">
                                     <span class="label">Final Price</span>
-                                    <span class="value" id="price-display">₹0.00</span>
+                                    <span class="value" id="price-display">{{ $currencySymbol }}0.00</span>
                                     <input type="hidden" name="price" id="price" value="0">
                                 </div>
+
+                                @include('admin.products._price-currency-note')
 
                                 {{-- Quantity range --}}
                                 <div id="range-block" style="display:none;margin-top:16px">
@@ -1043,7 +1048,7 @@
                                                 <tr>
                                                     <th>From Qty</th>
                                                     <th>To Qty</th>
-                                                    <th>Price per piece (₹)</th>
+                                                    <th>Price per piece{{ $currencySymbol !== '' ? ' (' . $currencySymbol . ')' : '' }}</th>
                                                     <th style="width:40px"></th>
                                                 </tr>
                                             </thead>
@@ -1319,7 +1324,7 @@
         let p = t === 'percentage' ? m - (m * d / 100) : m - d;
         if (p < 0) p = 0;
         $('#price').val(p.toFixed(2));
-        $('#price-display').text('₹' + p.toFixed(2));
+        $('#price-display').text(@json($currencySymbol) + p.toFixed(2));
     }
     $('#mrp, #discount, #discount_type').on('keyup change', calcPrice);
     calcPrice(); // ✅ run once on load — keeps hidden #price populated even if MRP/Discount are never touched
@@ -1545,7 +1550,7 @@
             if (response.length > 0) {
                 let html = '<option value="">Select Sub Category</option>';
                 $.each(response, function (i, item) {
-                    html += `<option value="${item.id}">${item.name}</option>`;
+                    html += `<option value="${item.id}" data-tax="${item.tax_class_id ?? ''}">${item.name}</option>`;
                 });
                 $('#subcategory_id').html(html);
                 $('#subcategory-wrapper').show();

@@ -50,9 +50,9 @@
         </div>
 
         <div class="prod-btns">
-            <button type="button" class="btn btn-outline-black" data-id="{{ $id }}"
-                data-name="{{ $name }}" data-toast-title="Added to Cart"
-                data-toast-text="{{ $name }} has been added to your cart." data-toast-type="success">
+            <button type="button" class="btn btn-outline-black js-add-cart" data-id="{{ $id }}" data-name="{{ $name }}"
+                data-toast-title="Added to Cart" data-toast-text="{{ $name }} has been added to your cart."
+                data-toast-type="success">
                 Add to Cart
             </button>
             <a href="{{ $href }}" class="btn btn-primary">Buy Now</a>

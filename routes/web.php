@@ -10,7 +10,9 @@ use App\Http\Controllers\Admin\{
     LogoutController,
     RefundController,
     ProductController,
+    CountryController,
     PaymentController,
+    TaxClassController,
     RedirectController,
     HomePageController,
     CustomerController,
@@ -64,8 +66,11 @@ use App\Http\Controllers\CustomerAuthController;
 use App\Http\Controllers\ProductReviewController;
 use App\Http\Controllers\UserDashboardController;
 use App\Http\Controllers\RazorpayWebhookController;
+use App\Http\Controllers\RegionController;
 
 Route::middleware('maintenance.mode')->group(function () {
+
+    Route::post('/set-country', [RegionController::class, 'set'])->name('region.set');
 
     Route::controller(FrontController::class)->group(function () {
         Route::get('/', 'home')->name('home');
@@ -92,7 +97,7 @@ Route::middleware('maintenance.mode')->group(function () {
     Route::post('/cart/add', [CartController::class, 'add'])->name('cart.add');
     Route::get('/cart', [CartController::class, 'cart'])->name('cart');
     Route::delete('/cart/remove/{id}', [CartController::class, 'remove'])->name('cart.remove');
-    Route::post('/cart/update-quantity', [CartController::class, 'updateQuantity'])->name('cart.update.quantity');
+    Route::post('/cart/update-quantity', [CartController::class, 'updateQuantity'])->name('cart.update');
     Route::post('/cart/apply-coupon', [CartController::class, 'applyCoupon'])->name('cart.apply.coupon');
     Route::post('/cart/remove-coupon', [CartController::class, 'removeCoupon'])->name('cart.remove.coupon');
 
@@ -175,6 +180,14 @@ Route::prefix('admin')->name('admin.')->group(function () {
         Route::resource('blogs', BlogController::class)->names('blogs');
 
         Route::resource('affiliate-links', AffiliateLinkController::class)->except('show')->names('affiliate-links');
+
+        Route::get('settings/countries', [CountryController::class, 'index'])->name('countries.index');
+        Route::post('settings/countries', [CountryController::class, 'update'])->name('countries.update');
+        Route::post('settings/countries/rates', [CountryController::class, 'refreshRates'])->name('countries.rates');
+
+        Route::get('tax-classes', [TaxClassController::class, 'index'])->name('tax-classes.index');
+        Route::post('tax-classes', [TaxClassController::class, 'update'])->name('tax-classes.update');
+        Route::delete('tax-classes/{taxClass}', [TaxClassController::class, 'destroy'])->name('tax-classes.destroy');
 
         Route::get('contact-enquiries', [ContactEnquiryController::class, 'index'])->name('contact-enquiries.index');
         Route::get('contact-enquiries/export', [ContactEnquiryController::class, 'export'])->name('contact-enquiries.export');

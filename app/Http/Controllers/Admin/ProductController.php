@@ -4,23 +4,25 @@ namespace App\Http\Controllers\Admin;
 use App\Http\Controllers\Controller;
 
 use App\Models\Brand;
+use App\Models\Country;
 use App\Models\Product;
+use App\Models\TaxClass;
 use App\Models\Category;
 use App\Models\Collection;
 use Illuminate\Support\Str;
-use Illuminate\Http\Request;
-use App\Models\ProductImage;
 use App\Models\ProductVideo;
 use App\Models\ProductAddon;
+use Illuminate\Http\Request;
+use App\Models\ProductImage;
 use Intervention\Image\Format;
 use App\Models\ProductVariant;
 use App\Models\AttributeValue;
 use App\Models\GiftingOccasion;
-use App\Models\CategoryAttribute;
 use Illuminate\Http\UploadedFile;
+use App\Models\CategoryAttribute;
 use Illuminate\Support\Facades\DB;
-use App\Models\ProductVariantImage;
 use App\Models\ProductVariantValue;
+use App\Models\ProductVariantImage;
 use Intervention\Image\ImageManager;
 use App\Models\ProductAttributeValue;
 use Illuminate\Support\Facades\Storage;
@@ -172,13 +174,12 @@ class ProductController extends Controller
         // ✅ Brand dropdown (Inventory card)
         $brands = Brand::orderBy('name')->get();
 
-        return view('admin.products.create', compact(
-            'categories',
-            'occasions',
-            'collections',
-            'brands'
-        ));
+        $taxClasses = TaxClass::orderBy('name')->get();
 
+        return view('admin.products.create', array_merge(
+            compact('categories', 'occasions', 'collections', 'brands', 'taxClasses'),
+            $this->defaultCurrencyData()
+        ));
     }
 
     public function subcategories(Category $category)
@@ -190,7 +191,8 @@ class ProductController extends Controller
                 ->orderBy('name')
                 ->get([
                     'id',
-                    'name'
+                    'name',
+                    'tax_class_id'
                 ])
 
         );
@@ -224,6 +226,7 @@ class ProductController extends Controller
             'min_qty' => 'nullable|integer|min:1',
             'sku' => 'nullable|string|max:255',
             'images.*' => 'nullable|image|max:2048',
+            'tax_class_id' => 'nullable|exists:tax_classes,id',
 
             // ✅ videos + addon options
             'videos.*' => 'nullable|mimes:mp4,webm,mov,avi|max:20480',
@@ -250,6 +253,7 @@ class ProductController extends Controller
                 'category_id' => $request->category_id,
                 'subcategory_id' => $request->subcategory_id,
                 'brand_id' => $request->brand_id ?: null,
+                'tax_class_id' => $request->tax_class_id ?: null,
                 'name' => $request->name,
                 'slug' => $request->slug
                     ? $this->generateUniqueSlug($request->slug)
@@ -545,19 +549,26 @@ class ProductController extends Controller
         // ✅ Brand dropdown (Inventory card)
         $brands = Brand::orderBy('name')->get();
 
+        $taxClasses = TaxClass::orderBy('name')->get();
+        $currencyData = $this->defaultCurrencyData();
+
         return view(
             'admin.products.edit',
-            compact(
-                'product',
-                'categories',
-                'subcategories',
-                'attributes',
-                'selectedAttributeValues',
-                'selectedOccasions',
-                'occasions',
-                'existingVariantsByType',
-                'collections',
-                'brands',
+            array_merge(
+                compact(
+                    'product',
+                    'categories',
+                    'subcategories',
+                    'attributes',
+                    'selectedAttributeValues',
+                    'selectedOccasions',
+                    'occasions',
+                    'existingVariantsByType',
+                    'collections',
+                    'brands',
+                    'taxClasses',
+                ),
+                $currencyData
             )
         );
     }
@@ -578,6 +589,7 @@ class ProductController extends Controller
             'min_qty' => 'nullable|integer|min:1',
             'sku' => 'nullable|string|max:255',
             'images.*' => 'nullable|image|max:2048',
+            'tax_class_id' => 'nullable|exists:tax_classes,id',
 
             // ✅ videos + addon options
             'videos.*' => 'nullable|mimes:mp4,webm,mov,avi|max:20480',
@@ -607,6 +619,7 @@ class ProductController extends Controller
                 'category_id' => $request->category_id,
                 'subcategory_id' => $request->subcategory_id,
                 'brand_id' => $request->brand_id ?: null,
+                'tax_class_id' => $request->tax_class_id ?: null,
 
                 'name' => $request->name,
                 'slug' => $this->resolveSlugOnUpdate($product, $request->slug, $request->name),
@@ -899,6 +912,16 @@ class ProductController extends Controller
     |   [ 'id' => (existing variant id, edit only), 'values' => [attrValueId, ...], ...type-specific fields ]
     */
 
+    /** Default country ki currency + uska symbol (form me price note ke liye). */
+    private function defaultCurrencyData(): array
+    {
+        $currency = Country::where('is_default', true)->with('currency')->first()?->currency;
+
+        return [
+            'defaultCurrency' => $currency,
+            'currencySymbol' => (string) ($currency?->symbol ?: $currency?->code ?? ''),
+        ];
+    }
 
     protected function cleanTiers(Request $request): array
     {

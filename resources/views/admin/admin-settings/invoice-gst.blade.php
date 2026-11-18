@@ -48,12 +48,12 @@
 
                                 <img src="{{ asset('storage/' . $invoice_setting->company_logo) }}" alt="Company Logo"
                                     style="
-                                                                        max-width:100%;
-                                                                        max-height:120px;
-                                                                        border-radius:8px;
-                                                                        border:1px solid #ddd;
-                                                                        padding:5px;
-                                                                    ">
+                                                                                max-width:100%;
+                                                                                max-height:120px;
+                                                                                border-radius:8px;
+                                                                                border:1px solid #ddd;
+                                                                                padding:5px;
+                                                                            ">
 
                             </div>
 
@@ -92,7 +92,8 @@
                     <div class="field-group col-full">
                         <label class="field-label">Full Registered Address <span class="req">*</span></label>
                         <textarea class="field-textarea" name="company_address" rows="3"
-                            placeholder="House / Building No., Street, Area" required>{{ old('company_address', $invoice_setting->company_address ?? '') }}</textarea>
+                            placeholder="House / Building No., Street, Area"
+                            required>{{ old('company_address', $invoice_setting->company_address ?? '') }}</textarea>
                     </div>
                     <div class="field-group">
                         <label class="field-label">Country</label>
@@ -136,8 +137,8 @@
 
                     <div class="field-group">
                         <label class="field-label">Pin Code <span class="req">*</span></label>
-                        <input type="text" name="company_pincode" class="field-input" placeholder="226001" maxlength="6" required
-                            value="{{ old('company_pincode', $invoice_setting->company_pincode ?? '') }}">
+                        <input type="text" name="company_pincode" class="field-input" placeholder="226001" maxlength="6"
+                            required value="{{ old('company_pincode', $invoice_setting->company_pincode ?? '') }}">
                     </div>
 
                     <div class="field-group gst-field">
@@ -175,52 +176,18 @@
             <hr class="section-divider">
 
             <!-- Tax / GST -->
+            <!-- Tax / GST -->
             <div class="settings-section" id="inv-tax">
                 <div class="settings-section-title"><i class="fa-solid fa-percent"></i> Tax / GST Settings</div>
                 <p class="settings-section-desc">Define how GST is applied to orders and displayed on invoices.</p>
 
                 <div class="form-grid">
-
-                    <div class="field-group gst-field">
-
-                        <label class="field-label">
-                            CGST (%)
-                        </label>
-
-                        <input type="number" step="0.01" name="cgst" class="field-input"
-                            value="{{ old('cgst', $invoice_setting->cgst ?? 9) }}">
-
-                    </div>
-
-                    <div class="field-group gst-field">
-
-                        <label class="field-label">
-                            SGST (%)
-                        </label>
-
-                        <input type="number" step="0.01" name="sgst" class="field-input"
-                            value="{{ old('sgst', $invoice_setting->sgst ?? 9) }}">
-
-                    </div>
-
-                    <div class="field-group gst-field">
-
-                        <label class="field-label">
-                            IGST (%)
-                        </label>
-
-                        <input type="number" step="0.01" name="igst" class="field-input"
-                            value="{{ old('igst', $invoice_setting->igst ?? 18) }}">
-
-                    </div>
-
                     <div class="field-group">
                         <label class="field-label">Tax Inclusive / Exclusive</label>
                         <select class="field-select" name="tax_type">
                             <option value="inclusive" {{ old('tax_type', $invoice_setting->tax_type ?? 'inclusive') == 'inclusive' ? 'selected' : '' }}>
                                 Tax Inclusive (prices include GST)
                             </option>
-
                             <option value="exclusive" {{ old('tax_type', $invoice_setting->tax_type ?? '') == 'exclusive' ? 'selected' : '' }}>
                                 Tax Exclusive (GST added on checkout)
                             </option>
@@ -233,13 +200,111 @@
                             <option value="registered" {{ old('business_type', $invoice_setting->business_type ?? 'registered') == 'registered' ? 'selected' : '' }}>
                                 Registered
                             </option>
-
                             <option value="unregistered" {{ old('business_type', $invoice_setting->business_type ?? '') == 'unregistered' ? 'selected' : '' }}>
                                 Unregistered
                             </option>
                         </select>
                     </div>
                 </div>
+
+                {{-- Tax Classes --}}
+                @php
+                    $taxRows = old('classes') ?? $taxClasses->mapWithKeys(fn($c) => [$c->id => ['name' => $c->name, 'gst_rate' => $c->gst_rate + 0]])->all();
+                    $taxDefault = (string) old('default_class', optional($taxClasses->firstWhere('is_default', true))->id);
+                @endphp
+
+                <div class="gst-field" style="margin-top:20px">
+                    <label class="field-label">Tax Classes (India GST)</label>
+                    <span class="field-hint" style="display:block;margin-bottom:8px">
+                        Har class ka GST %. Category par class set hoti hai, product me wahi auto-select hoti hai. Jab
+                        kuch set na ho to <b>Default</b> lagti hai.
+                        CGST/SGST (aadha-aadha) aur IGST is rate se apne aap nikalte hain. Rate badalne se sirf naye
+                        orders par asar padta hai.
+                    </span>
+
+                    <div style="overflow-x:auto">
+                        <table style="width:100%;border-collapse:collapse;font-size:13px" id="taxTable">
+                            <thead>
+                                <tr style="text-align:left;font-size:11px;text-transform:uppercase;color:#8c9196">
+                                    <th style="padding:8px">Class name</th>
+                                    <th style="padding:8px;width:130px">GST %</th>
+                                    <th style="padding:8px;width:80px">Default</th>
+                                    <th style="padding:8px;width:60px"></th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                @foreach ($taxRows as $key => $row)
+                                    <tr>
+                                        <td style="padding:6px 8px">
+                                            <input type="text" class="field-input" name="classes[{{ $key }}][name]"
+                                                value="{{ $row['name'] ?? '' }}" placeholder="e.g. Saree" maxlength="100">
+                                        </td>
+                                        <td style="padding:6px 8px">
+                                            <input type="number" class="field-input" step="0.01" min="0" max="100"
+                                                name="classes[{{ $key }}][gst_rate]" value="{{ $row['gst_rate'] ?? '' }}">
+                                        </td>
+                                        <td style="padding:6px 8px;text-align:center">
+                                            <input type="radio" name="default_class" value="{{ $key }}" {{ (string) $key === $taxDefault ? 'checked' : '' }}>
+                                        </td>
+                                        <td style="padding:6px 8px">
+                                            <button type="button" class="js-tax-remove"
+                                                style="color:#b22222;background:none;border:none;cursor:pointer"><i
+                                                    class="fa fa-times"></i></button>
+                                        </td>
+                                    </tr>
+                                @endforeach
+                            </tbody>
+                        </table>
+                    </div>
+
+                    <button type="button" id="addTaxClass" class="btn-secondary-dash" style="margin-top:10px">
+                        <i class="fa fa-plus"></i> Add Tax Class
+                    </button>
+                </div>
+
+                <template id="taxRowTpl">
+                    <tr>
+                        <td style="padding:6px 8px">
+                            <input type="text" class="field-input" name="classes[__K__][name]"
+                                placeholder="e.g. Leather Bag" maxlength="100">
+                        </td>
+                        <td style="padding:6px 8px">
+                            <input type="number" class="field-input" step="0.01" min="0" max="100"
+                                name="classes[__K__][gst_rate]">
+                        </td>
+                        <td style="padding:6px 8px;text-align:center">
+                            <input type="radio" name="default_class" value="__K__">
+                        </td>
+                        <td style="padding:6px 8px">
+                            <button type="button" class="js-tax-remove"
+                                style="color:#b22222;background:none;border:none;cursor:pointer"><i
+                                    class="fa fa-times"></i></button>
+                        </td>
+                    </tr>
+                </template>
+
+                <script>
+                    (function () {
+                        var n = 0, body = document.querySelector('#taxTable tbody');
+
+                        document.getElementById('addTaxClass').addEventListener('click', function () {
+                            n++;
+                            var html = document.getElementById('taxRowTpl').innerHTML.replace(/__K__/g, 'n' + n);
+                            body.insertAdjacentHTML('beforeend', html);
+                        });
+
+                        body.addEventListener('click', function (e) {
+                            var btn = e.target.closest('.js-tax-remove');
+                            if (!btn) return;
+                            if (body.rows.length <= 1) { alert('At least one tax class is required.'); return; }
+
+                            var tr = btn.closest('tr');
+                            var wasDefault = tr.querySelector('input[type=radio]').checked;
+                            tr.remove();
+                            if (wasDefault) body.querySelector('input[type=radio]').checked = true;
+                        });
+                    })();
+                </script>
 
                 <div style="margin-top:16px">
                     <div class="toggle-row gst-field">
@@ -253,7 +318,6 @@
                     </div>
                 </div>
             </div>
-
             <hr class="section-divider">
 
             <!-- Invoice Settings -->
@@ -276,6 +340,24 @@
                             oninput="updatePreview()" required>
                         <span class="field-hint">Next invoice will use this number.</span>
                     </div>
+                    <div class="field-group">
+                        <label class="field-label">Export Invoice Prefix <span class="req">*</span></label>
+                        <input type="text" name="export_invoice_prefix" class="field-input monospace"
+                            placeholder="e.g. EXP"
+                            value="{{ old('export_invoice_prefix', $invoice_setting->export_invoice_prefix ?? 'EXP') }}"
+                            required>
+                        <span class="field-hint">Foreign country orders ke invoice par lagega. India prefix se alag hona
+                            chahiye.</span>
+                    </div>
+                    <div class="field-group">
+                        <label class="field-label">Export Starting Serial Number <span class="req">*</span></label>
+                        <input type="number" name="export_invoice_serial" class="field-input monospace" min="1"
+                            value="{{ old('export_invoice_serial', $invoice_setting->export_invoice_serial ?? 1) }}"
+                            required>
+                        <span class="field-hint">Next export invoice is number se banega. Year format aur separator
+                            India wale hi use honge.</span>
+                    </div>
+
                     <div class="field-group">
                         <label class="field-label">Year in Invoice No.</label>
                         <select class="field-select" id="invYear" name="invoice_year_format" onchange="updatePreview()">

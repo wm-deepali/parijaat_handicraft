@@ -3,6 +3,7 @@
 namespace App\Http\Controllers;
 
 use App\Models\Coupon;
+use App\Support\Region;
 use App\Models\Product;
 use App\Models\Category;
 use App\Models\Attribute;
@@ -48,11 +49,7 @@ class FrontController extends Controller
 
         // price slider bounds (rounded up to the next 1000)
         $maxPrice = (float) Product::visible()->max('price');
-        $priceCeil = $maxPrice > 0 ? (int) (ceil($maxPrice / 1000) * 1000) : 10000;
-        $priceMin = max(0, min((int) $request->input('price_min', 0), $priceCeil));
-        $priceMax = $request->filled('price_max')
-            ? max($priceMin, min((int) $request->input('price_max'), $priceCeil))
-            : $priceCeil;
+        [$priceCeil, $priceMin, $priceMax, $priceStep] = $this->priceBounds($request);
 
         $sort = array_key_exists((string) $request->input('sort'), Product::SORT_OPTIONS)
             ? $request->input('sort')
@@ -77,7 +74,8 @@ class FrontController extends Controller
             'priceMin',
             'priceMax',
             'recent',
-            'related'
+            'related',
+            'priceStep'
         ));
     }
 
@@ -96,11 +94,7 @@ class FrontController extends Controller
 
         // price slider bounds for this category only
         $maxPrice = (float) Product::visible()->where('category_id', $category->id)->max('price');
-        $priceCeil = $maxPrice > 0 ? (int) (ceil($maxPrice / 1000) * 1000) : 10000;
-        $priceMin = max(0, min((int) $request->input('price_min', 0), $priceCeil));
-        $priceMax = $request->filled('price_max')
-            ? max($priceMin, min((int) $request->input('price_max'), $priceCeil))
-            : $priceCeil;
+        [$priceCeil, $priceMin, $priceMax, $priceStep] = $this->priceBounds($request, $category->id);
 
         $sort = array_key_exists((string) $request->input('sort'), Product::SORT_OPTIONS)
             ? $request->input('sort')
@@ -132,7 +126,8 @@ class FrontController extends Controller
             'priceMin',
             'priceMax',
             'recent',
-            'related'
+            'related',
+            'priceStep'
         ));
     }
 
@@ -172,12 +167,15 @@ class FrontController extends Controller
             $query->whereIn('subcategory_id', $ids);
         }
 
-        // price
+        // price (request values are in the customer's currency -> convert to default for the query)
+        $region = app(Region::class);
+        $tol = 0.5 / (10 ** $region->decimals()); // card prices are rounded, so allow half a unit at the edges
+
         if ($priceMin > 0) {
-            $query->where('price', '>=', $priceMin);
+            $query->where('price', '>=', $region->toBase($priceMin - $tol));
         }
         if ($priceMax < $priceCeil) {
-            $query->where('price', '<=', $priceMax);
+            $query->where('price', '<=', $region->toBase($priceMax + $tol));
         }
 
         // collections
@@ -449,6 +447,7 @@ class FrontController extends Controller
                 'subcategory:id,name,slug',
                 'collections:id,name,slug',
                 'occasions',
+                'priceTiers',
             ])
             ->withAvg('approvedReviews as avg_rating', 'rating')
             ->withCount('approvedReviews as reviews_count')
@@ -576,17 +575,20 @@ class FrontController extends Controller
             })
             ->values();
 
+        $region = app(Region::class);
+        $regionJs = $region->js();
+
         // real coupons -> [icon, title, desc, code]
         $coupons = Coupon::available()
             ->latest('id')
             ->limit(3)
             ->get()
-            ->map(function ($c) {
+            ->map(function ($c) use ($region) {
                 $v = rtrim(rtrim(number_format((float) $c->discount_value, 2, '.', ''), '0'), '.');
 
                 return [
                     $c->is_percent ? 'fa-percent' : 'fa-tag',
-                    $c->is_percent ? "{$v}% Off" : '₹' . number_format((float) $c->discount_value) . ' Off',
+                    $c->is_percent ? "{$v}% Off" : $region->format($c->discount_value) . ' Off',
                     $c->offer_text,
                     $c->code,
                 ];
@@ -616,9 +618,31 @@ class FrontController extends Controller
             'variantData',
             'coupons',
             'freeShipFrom',
-            'reviewState'
+            'reviewState',
+            'regionJs'
         ));
     }
 
+    /** Price slider bounds, in the CUSTOMER's currency. Returns [ceil, min, max, step]. */
+    private function priceBounds(Request $request, ?int $categoryId = null): array
+    {
+        $region = app(Region::class);
+
+        $maxShown = $region->convert((float) Product::visible()
+            ->when($categoryId, fn($q) => $q->where('category_id', $categoryId))
+            ->max('price'));
+
+        $power = $maxShown >= 1 ? (int) floor(log10($maxShown)) : 0;
+        $step = (int) max(1, 10 ** max(0, $power - 2));    // 12000 -> 100, 144 -> 1
+        $unit = (int) max(10, 10 ** max(0, $power - 1));   // 12000 -> 1000, 144 -> 10
+        $ceil = $maxShown > 0 ? (int) (ceil($maxShown / $unit) * $unit) : $unit * 10;
+
+        $min = max(0, min((int) $request->input('price_min', 0), $ceil));
+        $max = $request->filled('price_max')
+            ? max($min, min((int) $request->input('price_max'), $ceil))
+            : $ceil;
+
+        return [$ceil, $min, $max, $step];
+    }
 
 }

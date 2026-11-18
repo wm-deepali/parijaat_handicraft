@@ -103,6 +103,6 @@ class CartItem extends Model
 
         return $img
             ? asset('storage/' . ($img->thumb ?? $img->image))
-            : asset('assets/images/home/tab1.png');
+            : asset('assets/images/home/cat4.png');
     }
 }

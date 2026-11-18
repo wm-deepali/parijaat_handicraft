@@ -160,8 +160,8 @@ $tiersJs = $tiers->map(fn ($t) => ['from' => $t->min_qty, 'to' => $t->max_qty, '
                 <div class="range-tier" data-from="{{ $t->min_qty }}">
                     <small>{{ $t->max_qty ? $t->min_qty . ' - ' . $t->max_qty : $t->min_qty . '+' }} Pieces</small>
                     <div class="range-price">
-                        <b>₹{{ number_format($t->price) }}</b>
-                        @if ($product->mrp > $t->price)<del>₹{{ number_format($product->mrp) }}</del>@endif
+                        <b>@money($t->price)</b>
+                        @if ($product->mrp > $t->price)<del>@money($product->mrp)</del>@endif
                     </div>
                 </div>
             @endforeach
@@ -170,11 +170,11 @@ $tiersJs = $tiers->map(fn ($t) => ['from' => $t->min_qty, 'to' => $t->max_qty, '
     </div>
 @else
     <div class="info-price">
-        <span class="price-now" id="priceNow">₹{{ number_format($product->price) }}</span>
-        <span class="price-old" id="priceOld" @unless ($hasDiscount) style="display:none" @endunless>₹{{ number_format($product->mrp) }}</span>
+        <span class="price-now" id="priceNow">@money($product->price)</span>
+        <span class="price-old" id="priceOld" @unless ($hasDiscount) style="display:none" @endunless>@money($product->mrp)</span>
         <span class="price-off" id="priceOff" @unless ($hasDiscount) style="display:none" @endunless>{{ $product->discount_percent }}% OFF</span>
         <p class="price-tax" id="priceTax">
-            Inclusive of all taxes.@if ($hasDiscount) You save ₹{{ number_format($product->mrp - $product->price) }}.@endif
+            Inclusive of all taxes.@if ($hasDiscount) You save @money($product->mrp - $product->price).@endif
         </p>
     </div>
 @endif
@@ -248,7 +248,7 @@ $tiersJs = $tiers->map(fn ($t) => ['from' => $t->min_qty, 'to' => $t->max_qty, '
                     <small>{{ $addon->description }}</small>
                 @endif
             </span>
-            <strong>+ ₹{{ number_format($addon->price) }}</strong>
+            <strong>+ @money($addon->price)</strong>
             <span class="os-track"></span>
         </label>
     </div>
@@ -285,7 +285,7 @@ $tiersJs = $tiers->map(fn ($t) => ['from' => $t->min_qty, 'to' => $t->max_qty, '
     data-selection="{}">
     Add to Cart
 </button>
-<a href="{{ route('cart') }}" class="btn btn-primary js-buy-now">Buy Now</a>
+<a href="{{ route('checkout') }}" class="btn btn-primary js-buy-now">Buy Now</a>
                             </div>
                         </div>
 
@@ -330,8 +330,8 @@ $tiersJs = $tiers->map(fn ($t) => ['from' => $t->min_qty, 'to' => $t->max_qty, '
 </p>
                             <ul class="del-points">
                                 @if ($freeShipFrom > 0)
-    <li><i class="fa-solid fa-truck-fast"></i> Free shipping on orders above ₹{{ number_format($freeShipFrom) }}</li>
-@endif
+                                <li><i class="fa-solid fa-truck-fast"></i> Free shipping on orders above @money($freeShipFrom)</li>
+                                @endif
                                 <li><i class="fa-solid fa-earth-asia"></i> Worldwide shipping with tracking</li>
                                 <li><i class="fa-solid fa-box-open"></i> Packed to protect metal and finish</li>
                             </ul>
@@ -697,7 +697,7 @@ $tiersJs = $tiers->map(fn ($t) => ['from' => $t->min_qty, 'to' => $t->max_qty, '
         <div class="ds-text">
             <b>{{ $product->name }}</b>
             <span>
-                <strong class="ds-price">₹{{ number_format($product->price) }}</strong>
+                <strong class="ds-price">@money($product->price)</strong>
                 <em class="ds-off" @unless ($hasDiscount) style="display:none" @endunless>{{ $product->discount_percent }}% OFF</em>
             </span>
         </div>
@@ -712,7 +712,7 @@ $tiersJs = $tiers->map(fn ($t) => ['from' => $t->min_qty, 'to' => $t->max_qty, '
             data-name="{{ $product->name }}" data-toast-title="Added to Cart"
             data-toast-text="{{ $product->name }} has been added to your cart." data-toast-type="success"
             data-selection="{}">Add to Cart</button>
-       <a href="{{ route('cart') }}" class="btn btn-primary js-buy-now">Buy Now</a>
+       <a href="{{ route('checkout') }}" class="btn btn-primary js-buy-now">Buy Now</a>
     </div>
 </div>
 
@@ -806,6 +806,7 @@ $tiersJs = $tiers->map(fn ($t) => ['from' => $t->min_qty, 'to' => $t->max_qty, '
         'mrp'   => (float) $product->mrp,
         'stock' => (int) $product->stock,
         'sku'   => $product->sku,
+        'minQty' => $product->minOrderQty(),
     ];
 @endphp
 
@@ -814,6 +815,7 @@ $tiersJs = $tiers->map(fn ($t) => ['from' => $t->min_qty, 'to' => $t->max_qty, '
         $(function () {
             var pad = function (n) { return ("0" + n).slice(-2); };
 
+            var REGION = @json($regionJs);
             var BASE = @json($jsBase);
             var VARIANTS = @json($variantData);
             var PRODUCT_NAME = @json($product->name);
@@ -899,7 +901,7 @@ $tiersJs = $tiers->map(fn ($t) => ['from' => $t->min_qty, 'to' => $t->max_qty, '
 
             var MAX_QTY = 10;
 var TIERS = @json($tiersJs);
-var MIN_QTY = TIERS.length ? TIERS[0].from : 1;
+var MIN_QTY = Math.max(BASE.minQty || 1, TIERS.length ? TIERS[0].from : 1);
 
 function tierFor(qty) {
     if (!TIERS.length) return null;
@@ -922,24 +924,33 @@ function match(type, sel) {
 }
 
 
-            function money(n) { return "₹" + Math.round(n).toLocaleString("en-IN"); }
+            function conv(n) {
+    var d = REGION.decimals, p = Math.pow(10, d);
+    return Math.round(n * REGION.factor * p) / p;
+}
+function fmt(v) {
+    var s = v.toLocaleString("en-US", {
+        minimumFractionDigits: REGION.decimals,
+        maximumFractionDigits: REGION.decimals
+    });
+    return REGION.symbol + (REGION.space ? " " : "") + s;
+}
+function money(n) { return fmt(conv(n)); }
 
-            function cartPayload() {
-                var sel = selection();
-                var pv = match("price", sel), sv = match("stock", sel), kv = match("sku", sel), iv = match("image", sel);
-                return {
-                    product_id: PRODUCT_ID,
-                    qty: parseInt($(".qty-input").first().val(), 10) || 1,
-                    attrs: sel,
-                    price_variant_id: pv ? pv.id : null,
-                    image_variant_id: iv ? iv.id : null,
-                    stock_variant_id: sv ? sv.id : null,
-                    sku_variant_id: kv ? kv.id : null,
-                    addons: $('input[name="addons[]"]:checked').map(function () {
-                        return parseInt(this.value, 10);
-                    }).get()
-                };
-            }
+           function cartPayload() {
+    var sel = selection();
+    var pv = match("price", sel), sv = match("stock", sel), kv = match("sku", sel), iv = match("image", sel);
+    return {
+        product_id: PRODUCT_ID,
+        quantity: parseInt($(".qty-input").first().val(), 10) || MIN_QTY,
+        selected_values: Object.keys(sel).map(function (k) { return sel[k]; }),
+        price_variant_id: pv ? pv.id : null,
+        image_variant_id: iv ? iv.id : null,
+        stock_variant_id: sv ? sv.id : null,
+        sku_variant_id: kv ? kv.id : null,
+        addon_ids: $('input[name="addons[]"]:checked').map(function () { return parseInt(this.value, 10); }).get()
+    };
+}
             window.getCartPayload = cartPayload;
 
            function apply() {
@@ -960,36 +971,40 @@ function match(type, sel) {
     if (qty < MIN_QTY) qty = MIN_QTY;
     $(".qty-input").val(qty);
 
-    // range tier price wins over the variant price
+    // range tier price wins over the variant price (all values here are in the DEFAULT currency)
     var tier  = tierFor(qty);
     var price = tier ? tier.price : (pv ? pv.price : BASE.price);
     var mrp   = tier ? BASE.mrp : (pv ? (pv.mrp || pv.price) : BASE.mrp);
 
-    var addonTotal = 0;
+    // convert each piece on its own and round it, exactly like PHP's @money does,
+    // so the page shows the same amounts as the cards, the add-on labels and the cart
+    var addonC = 0;
     $('input[name="addons[]"]:checked').each(function () {
-        addonTotal += parseFloat($(this).data("price")) || 0;
+        addonC += conv(parseFloat($(this).data("price")) || 0);
     });
 
-    var unit = price + addonTotal, unitMrp = Math.max(mrp, price) + addonTotal;
-    var total = unit * qty, totalMrp = unitMrp * qty;
+    var cUnit    = conv(price) + addonC;
+    var cUnitMrp = conv(Math.max(mrp, price)) + addonC;
+    var total    = cUnit * qty;
+    var totalMrp = cUnitMrp * qty;
     var off = mrp > price ? Math.round((mrp - price) / mrp * 100) : 0;
 
-    $("#priceNow").text(money(total));
-    $("#priceOld").text(money(totalMrp)).toggle(off > 0);
+    $("#priceNow").text(fmt(total));
+    $("#priceOld").text(fmt(totalMrp)).toggle(off > 0);
     $("#priceOff").text(off + "% OFF").toggle(off > 0);
-    $(".ds-price").text(money(total));
+    $(".ds-price").text(fmt(total));
     $(".ds-off").text(off + "% OFF").toggle(off > 0);
 
     if (TIERS.length) {
         $(".range-tier").each(function () {
             $(this).toggleClass("active", !!tier && +$(this).data("from") === tier.from);
         });
-        $("#priceTax").text("Inclusive of all taxes. " + money(unit) + " per piece × " + qty + " = " + money(total));
+        $("#priceTax").text("Inclusive of all taxes. " + fmt(cUnit) + " per piece × " + qty + " = " + fmt(total));
     } else {
         $("#priceTax").text(
             "Inclusive of all taxes." +
-            (off > 0 ? " You save " + money(totalMrp - total) + "." : "") +
-            (qty > 1 ? " (" + money(unit) + " each)" : "")
+            (off > 0 ? " You save " + fmt(totalMrp - total) + "." : "") +
+            (qty > 1 ? " (" + fmt(cUnit) + " each)" : "")
         );
     }
 
@@ -1000,27 +1015,31 @@ function match(type, sel) {
     $(".stock-dispatch").toggle(!out);
     $("#stockNote").text(!out && stock <= 10 ? "Only " + stock + (stock === 1 ? " piece" : " pieces") + " left" : "");
     $("#stockPill").html('<i class="fa-solid fa-circle"></i> ' + (out ? "Out of Stock" : "In Stock"));
-    $(".js-add-cart").prop("disabled", out);
-    $(".js-buy-now")
-        .toggleClass("disabled", out)
-        .css({ "pointer-events": out ? "none" : "", "opacity": out ? ".5" : "" });
 
+    var $cartBtns = $(".info-actions .js-add-cart, .detail-sticky .js-add-cart");
+    var $buyBtns  = $(".info-actions .js-buy-now, .detail-sticky .js-buy-now");
+
+    $cartBtns.prop("disabled", out);
+    $buyBtns.toggleClass("disabled", out)
+        .css({ "pointer-events": out ? "none" : "", "opacity": out ? ".5" : "" });
     setGallery(iv);
-    $(".js-add-cart").attr("data-selection", JSON.stringify(cartPayload()));
+    $cartBtns.attr("data-selection", JSON.stringify(cartPayload()));
+
 }
 
-
-$(document).on("click", ".qty-plus, .qty-minus", function () {
+var QTY = ".detail-secA, .detail-sticky";
+$(document).on("click", ".detail-secA .qty-plus, .detail-secA .qty-minus, .detail-sticky .qty-plus, .detail-sticky .qty-minus", function () {
     var v = parseInt($(this).siblings(".qty-input").val(), 10) || MIN_QTY;
     v = $(this).hasClass("qty-plus") ? Math.min(MAX_QTY, v + 1) : Math.max(MIN_QTY, v - 1);
     $(".qty-input").val(v);
     apply();
 });
-$(document).on("change", ".qty-input", function () {
+$(document).on("change", ".detail-secA .qty-input, .detail-sticky .qty-input", function () {
     var v = parseInt($(this).val(), 10) || MIN_QTY;
     $(".qty-input").val(Math.min(MAX_QTY, Math.max(MIN_QTY, v)));
     apply();
 });
+
 
             $(document).on("change", "input[data-attr]", function () {
                 $(this).closest(".opt-group").find(".opt-value").text($(this).data("name"));

@@ -2,19 +2,20 @@
 
 namespace App\Http\Controllers\Admin;
 
-use App\Models\Category;
-use App\Http\Controllers\Controller;
-use Illuminate\Http\Request;
-use Illuminate\Http\UploadedFile;
-use Illuminate\Support\Facades\Storage;
-use Illuminate\Support\Str;
-use App\Imports\CategoryImport;
-use Maatwebsite\Excel\Facades\Excel;
-use Symfony\Component\HttpFoundation\StreamedResponse;
 use ZipArchive;
-use Intervention\Image\ImageManager;
-use Intervention\Image\Drivers\Gd\Driver;
+use App\Models\TaxClass;
+use App\Models\Category;
+use Illuminate\Support\Str;
+use Illuminate\Http\Request;
 use Intervention\Image\Format;
+use App\Imports\CategoryImport;
+use Illuminate\Http\UploadedFile;
+use App\Http\Controllers\Controller;
+use Intervention\Image\ImageManager;
+use Maatwebsite\Excel\Facades\Excel;
+use Illuminate\Support\Facades\Storage;
+use Intervention\Image\Drivers\Gd\Driver;
+use Symfony\Component\HttpFoundation\StreamedResponse;
 
 class CategoryController extends Controller
 {
@@ -77,8 +78,9 @@ class CategoryController extends Controller
     public function create()
     {
         $parents = Category::whereNull('parent_id')->get();
+        $taxClasses = TaxClass::orderBy('name')->get();
 
-        return view('admin.categories.create', compact('parents'));
+        return view('admin.categories.create', compact('parents', 'taxClasses'));
     }
 
     /**
@@ -147,6 +149,7 @@ class CategoryController extends Controller
             'art_points' => 'nullable|array|max:6',
             'art_points.*.title' => 'nullable|string|max:100',
             'art_points.*.text' => 'nullable|string|max:300',
+            'tax_class_id' => 'nullable|exists:tax_classes,id',
         ];
     }
 
@@ -208,6 +211,7 @@ class CategoryController extends Controller
             'size_chart' => $this->cleanRichText($request->size_chart),
 
             'parent_id' => $request->parent_id ?: null,
+            'tax_class_id' => $request->tax_class_id ?: null,
 
             'is_popular' => $request->is_popular ?? 0,
             'is_featured' => $request->is_featured ?? 0,
@@ -231,11 +235,14 @@ class CategoryController extends Controller
             ->where('id', '!=', $id)
             ->get();
 
+        $taxClasses = TaxClass::orderBy('name')->get();
+
         $redirect = $request->redirect;
 
         return view('admin.categories.edit', compact(
             'category',
             'parents',
+            'taxClasses',
             'redirect'
         ));
     }
@@ -289,6 +296,7 @@ class CategoryController extends Controller
             'size_chart' => $this->cleanRichText($request->size_chart),
 
             'parent_id' => $request->parent_id ?: null,
+            'tax_class_id' => $request->tax_class_id ?: null,
 
             'is_popular' => $request->is_popular ?? 0,
             'is_featured' => $request->is_featured ?? 0,

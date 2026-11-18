@@ -5,7 +5,9 @@ namespace App\Providers;
 use App\Models\Setting;
 use App\Models\SeoPage;
 use App\Support\NavMenu;
+use App\Support\Region;
 use App\Models\GoogleSetting;
+use Illuminate\Support\Facades\Blade;
 use Illuminate\Support\Facades\View;
 use Illuminate\Support\Facades\Route;
 use Illuminate\Support\ServiceProvider;
@@ -14,11 +16,23 @@ class AppServiceProvider extends ServiceProvider
 {
     public function register(): void
     {
-        //
+        // ek request me ek hi baar country/rates load hon
+        $this->app->singleton(Region::class);
     }
 
     public function boot(): void
     {
+        // @money($amount): default currency ka amount, customer ki currency me
+        Blade::directive('money', function ($expression) {
+            $expression = trim((string) $expression);
+
+            if ($expression === '') {
+                return '';   // galat jagah likha @money page nahi todega, bas khali dikhega
+            }
+
+            return "<?php echo e(app(\\App\\Support\\Region::class)->format($expression)); ?>";
+        });
+
         View::composer('*', function ($view) {
             // Built once per request, then reused for every view / partial
             static $shared = null;
@@ -37,9 +51,26 @@ class AppServiceProvider extends ServiceProvider
         });
 
         View::composer('layouts.app', function ($view) {
+            $region = app(Region::class);
+
+            $cartQuery = auth('customer')->check()
+                ? \App\Models\Cart::where('customer_id', auth('customer')->id())
+                : \App\Models\Cart::where('session_id', session()->getId());
+
             $view->with([
                 'googleSetting' => GoogleSetting::first() ?? new GoogleSetting(),
                 'navMenu' => NavMenu::build(),
+                'regionOptions' => $region->options(),
+                'regionCurrent' => $region->current(),
+                'miniCart' => $cartQuery->with([
+                    'items.product.images',
+                    'items.product.category',
+                    'items.product.subcategory',
+                    'items.imageVariant',
+                    'items.priceVariant',
+                    'items.stockVariant',
+                    'items.addons',
+                ])->first(),
             ]);
         });
     }

@@ -181,7 +181,9 @@
         <li class="{{ request()->routeIs(
     'admin.settings.*',
     'admin.notifications.index',
-    'admin.security.*'
+    'admin.security.*',
+    'admin.countries.*',
+    'admin.tax-classes.*'
 ) ? 'active' : '' }}">
             <a href="#"><i class="fa-solid fa-gear"></i> Settings</a>
             <ul>
@@ -195,6 +197,8 @@
                 <li><a href="{{ route('admin.admin-setting.index', ['tab' => 'couriers']) }}">Courier Management</a>
                 </li>
                 <li><a href="{{ route('admin.admin-setting.index', ['tab' => 'tracking']) }}">Tracking & Pixels</a></li>
+                <li><a href="{{ route('admin.countries.index') }}">Countries & Currency</a></li>
+                <li><a href="{{ route('admin.tax-classes.index') }}">Tax Classes</a></li>
                 <li><a href="{{ route('admin.notifications.index') }}">Notification Centre</a></li>
                 <li><a href="{{ route('admin.security.system-logs') }}">System Logs</a></li>
                 <li><a href="{{ route('admin.redirect-settings.index') }}">Re-Direction Setting</a></li>

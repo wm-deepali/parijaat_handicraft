@@ -29,10 +29,13 @@ return new class extends Migration {
             $table->decimal('discount', 12, 2)->default(0);
             $table->decimal('shipping_charge', 10, 2)->default(0);
             $table->decimal('tax_amount', 12, 2)->default(0);
+            $table->decimal('tax_rate', 5, 2)->default(0);
 
             $table->enum('gst_type', [
                 'cgst_sgst',
-                'igst'
+                'igst',
+                'vat',
+                'export'
             ])->nullable();
 
             $table->decimal('cgst_rate', 5, 2)

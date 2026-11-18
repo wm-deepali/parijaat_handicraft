@@ -10,10 +10,15 @@ use Illuminate\Support\Facades\Cache;
 /**
  * Data for the header mega menus ("Shop All" + "Shop by Collection").
  * Plain arrays only (safe to cache). Cache key: nav_menu
+ *
+ * "Shop by Price" is NOT cached: its labels and values depend on the visitor's currency.
  */
 class NavMenu
 {
     public const CACHE_KEY = 'nav_menu';
+
+    /** Price shortcut cut points, in the DEFAULT currency. */
+    private const PRICE_CUTS = [999, 2999, 5999];
 
     public static function forget(): void
     {
@@ -23,12 +28,17 @@ class NavMenu
     public static function build(): array
     {
         try {
-            return Cache::remember(self::CACHE_KEY, now()->addMinutes(10), fn () => self::query());
+            $menu = Cache::remember(self::CACHE_KEY, now()->addMinutes(10), fn () => self::query());
         } catch (\Throwable $e) {
             report($e);
 
-            return ['shop' => [], 'footer' => [], 'collection' => ['occasions' => [], 'prices' => [], 'collections' => [], 'attributes' => []]];
+            $menu = ['shop' => [], 'footer' => [], 'collection' => ['occasions' => [], 'prices' => [], 'collections' => [], 'attributes' => []]];
         }
+
+        // prices depend on the visitor's currency, so they are computed per request
+        $menu['collection']['prices'] = self::prices();
+
+        return $menu;
     }
 
     private static function query(): array
@@ -73,23 +83,68 @@ class NavMenu
             ])
             ->filter(fn ($a) => !empty($a['values']))->values()->all();
 
-        // price shortcuts: label, min, max (null = open ended)
-        $prices = [
-            ['Under ₹999',        null, 999],
-            ['₹1,000 – ₹2,999',   1000, 2999],
-            ['₹3,000 – ₹5,999',   3000, 5999],
-            ['₹6,000 & Above',    6000, null],
-        ];
-
         return [
             'shop'       => $shop,
             'footer'     => $footer,
             'collection' => [
                 'occasions'   => $occasions,
-                'prices'      => $prices,
+                'prices'      => [],            // filled per request in build()
                 'collections' => $collections,
                 'attributes'  => $attributes,
             ],
         ];
+    }
+
+    /**
+     * Price shortcuts in the visitor's currency: [label, min, max] (null = open ended).
+     * min/max are whole numbers in the visitor's currency, which is what the listing filter expects.
+     */
+    private static function prices(): array
+    {
+        try {
+            $region = app(Region::class);
+            $cuts = self::PRICE_CUTS;
+
+            if (abs($region->factor() - 1) < 1e-9) {
+                // default currency, no extra %: same numbers as the defaults (999 / 1,000 – 2,999 ...)
+                $starts = array_map(fn ($c) => $c + 1, $cuts);
+            } else {
+                $prev = 0;
+                $converted = [];
+                foreach ($cuts as $c) {
+                    $n = max(self::nice($region->convert($c)), $prev + 1);   // always increasing
+                    $converted[] = $n;
+                    $prev = $n;
+                }
+                $cuts = $starts = $converted;
+            }
+
+            $sym = $region->symbol();
+            $gap = $region->symbolNeedsSpace() ? ' ' : '';
+            $fmt = fn (int $n) => $sym . $gap . number_format($n);
+
+            return [
+                ['Under ' . $fmt($cuts[0]), null, $cuts[0]],
+                [$fmt($starts[0]) . ' – ' . $fmt($cuts[1]), $starts[0], $cuts[1]],
+                [$fmt($starts[1]) . ' – ' . $fmt($cuts[2]), $starts[1], $cuts[2]],
+                [$fmt($starts[2]) . ' & Above', $starts[2], null],
+            ];
+        } catch (\Throwable $e) {
+            report($e);
+
+            return [];   // menu column just hides itself
+        }
+    }
+
+    /** Round a converted amount to a clean number: 11.9 -> 12, 71.4 -> 72, 1234 -> 1240. */
+    private static function nice(float $v): int
+    {
+        if ($v < 10) {
+            return max(1, (int) round($v));
+        }
+
+        $step = max(1, 10 ** floor(log10($v)) / 5);
+
+        return (int) (round($v / $step) * $step);
     }
 }

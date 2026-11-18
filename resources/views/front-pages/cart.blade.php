@@ -7,29 +7,67 @@
 
 @section('content')
     @php
-        // Static data for now – swap with the real cart (session/DB) later.
-        // meta: [label, value, dot colour|null]
-        $cartItems = [
-            ['name' => 'Handmade Brass Oil Lamp', 'img' => 'assets/images/home/cat4.png', 'cat' => 'Brass Diyas & Lamps',
-                'meta' => [['Finish', 'Polished Gold', '#d9a93a'], ['Height', '6 in', null], ['Gift Packaging', 'Yes', null]],
-                'price' => '$199', 'old' => '$249', 'off' => '20% OFF', 'qty' => 1, 'total' => '$208',
-                'extra' => '+ $9 gift packaging with message card', 'stock' => 'Only 6 pieces left in Polished Gold', 'delivery' => null],
-            ['name' => 'Brass Elephant Diya Stand', 'img' => 'assets/images/home/cat1.png', 'cat' => 'Brass Diyas & Lamps',
-                'meta' => [['Finish', 'Antique Brass', '#a8782a'], ['Height', '8 in', null]],
-                'price' => '$249', 'old' => '$299', 'off' => '17% OFF', 'qty' => 1, 'total' => '$249',
-                'extra' => null, 'stock' => null, 'delivery' => 'Ready to ship, dispatched in 2–4 working days'],
-            ['name' => 'Brass Aladdin Incense Burner', 'img' => 'assets/images/home/cat2.png', 'cat' => 'Pooja Essentials',
-                'meta' => [['Finish', 'Polished Gold', '#d9a93a'], ['Material', 'Solid Brass', null]],
-                'price' => '$149', 'old' => '$179', 'off' => '17% OFF', 'qty' => 2, 'total' => '$298',
-                'extra' => null, 'stock' => null, 'delivery' => 'Ready to ship, dispatched in 2–4 working days'],
-        ];
+        $region = app(\App\Support\Region::class);
+        $money = fn ($v) => $region->format($v);
 
-        $priceRows = [
-            ['Total MRP', '$906', ''],
-            ['Discount on MRP', '−$160', 'is-green'],
-            ['Gift Packaging', '+$9', ''],
-            ['Coupon (PARIJAAT10)', '−$75', 'is-green'],
-        ];
+        $items = ($cart?->items ?? collect())->filter(fn ($i) => $i->product)->values();
+
+        // meta: [label, value, dot colour|null]  (same shape as before, now from the real cart)
+        $cartItems = $items->map(function ($item) use ($money) {
+            $p = $item->product;
+            $unit = (float) $item->price;
+            $mrp = max((float) (($item->priceVariant->mrp ?? $p->mrp) ?: $unit), $unit);
+            $off = $mrp > $unit ? (int) round((($mrp - $unit) / $mrp) * 100) : 0;
+
+            $meta = collect($item->selected_attributes ?? [])
+                ->map(fn ($a) => [$a['attribute'] ?? '', $a['value'] ?? '', !empty($a['hex']) ? $a['hex'] : null])
+                ->filter(fn ($m) => $m[0] !== '' && $m[1] !== '')
+                ->values()
+                ->all();
+
+            foreach ($item->addons as $a) {
+                $meta[] = [$a->detail, 'Yes', null];
+            }
+
+            $extra = $item->addons->isNotEmpty()
+                ? $item->addons->map(fn ($a) => '+ ' . ($a->price > 0 ? $money($a->price) . ' ' : '') . $a->detail)->implode(' · ')
+                : null;
+
+            $stock = (int) ($item->stockVariant->stock ?? $p->stock);
+
+            return [
+                'id' => $item->id,
+                'pid' => $p->id,
+                'url' => route('product.show', $p->slug),
+                'name' => $p->name,
+                'img' => $item->display_image,
+                'cat' => $p->subcategory?->name ?: $p->category?->name,
+                'meta' => $meta,
+                'price' => $money($unit),
+                'old' => $off > 0 ? $money($mrp) : null,
+                'off' => $off > 0 ? $off . '% OFF' : null,
+                'qty' => (int) $item->quantity,
+                'total' => $money($item->total),
+                'extra' => $extra,
+                'stock' => ($stock > 0 && $stock <= 10) ? 'Only ' . $stock . ' ' . \Illuminate\Support\Str::plural('piece', $stock) . ' left' : null,
+                'delivery' => filled($p->delivery_time) ? 'Ready to ship, dispatched in ' . $p->delivery_time : null,
+            ];
+        })->all();
+
+        $priceRows = [];
+        $priceRows[] = ['Total MRP', $money($summary['total_mrp']), ''];
+        if ($summary['mrp_discount'] > 0) {
+            $priceRows[] = ['Discount on MRP', '−' . $money($summary['mrp_discount']), 'is-green'];
+        }
+        foreach ($summary['addons'] as $addonLabel => $addonAmount) {
+            $priceRows[] = [$addonLabel, '+' . $money($addonAmount), ''];
+        }
+        if ($summary['coupon'] > 0) {
+            $priceRows[] = ['Coupon (' . $summary['coupon_code'] . ')', '−' . $money($summary['coupon']), 'is-green'];
+        }
+        if ($summary['tax'] > 0) {
+            $priceRows[] = ['GST', '+' . $money($summary['tax']), ''];
+        }
 
         $payMethods = [
             ['Visa', 'fa-brands fa-cc-visa'],
@@ -40,6 +78,7 @@
     @endphp
 
     <main>
+        @if (count($cartItems))
         <section class="cart-secA">
             <div class="container">
                 {{-- TOP : title + steps --}}
@@ -47,7 +86,7 @@
                     <div class="cart-head">
                         <span class="eyebrow">Your Selection</span>
                         <h1>My Cart</h1>
-                        <p>4 items · <b>$680</b></p>
+                        <p>{{ $summary['count'] }} {{ \Illuminate\Support\Str::plural('item', $summary['count']) }} · <b>@money($summary['total'])</b></p>
                     </div>
 
                     <ol class="cart-steps" aria-label="Checkout progress">
@@ -69,12 +108,19 @@
                 <div class="cart-layout">
                     {{-- ============ LEFT : ITEMS ============ --}}
                     <div class="cart-main">
-                        <div class="ship-progress is-done" style="--p: 100%">
-                            <span class="ship-icon"><i class="fa-solid fa-truck-fast" aria-hidden="true"></i></span>
-                            <p><b>Free shipping unlocked</b><span>Your order is above $149</span></p>
-                            <em>$15 saved</em>
-                            <div class="ship-bar"><span></span></div>
-                        </div>
+                        @if ($freeShip)
+                            <div @class(['ship-progress', 'is-done' => $freeShip['done']]) style="--p: {{ $freeShip['percent'] }}%">
+                                <span class="ship-icon"><i class="fa-solid fa-truck-fast" aria-hidden="true"></i></span>
+                                @if ($freeShip['done'])
+                                    <p><b>Free shipping unlocked</b><span>Your order is above @money($freeShip['threshold'])</span></p>
+                                    <em>Free delivery</em>
+                                @else
+                                    <p><b>Add @money($freeShip['remaining']) more for free shipping</b><span>Free shipping on orders above @money($freeShip['threshold'])</span></p>
+                                    <em>{{ $freeShip['percent'] }}%</em>
+                                @endif
+                                <div class="ship-bar"><span></span></div>
+                            </div>
+                        @endif
 
                         <div class="cart-card">
                             <div class="cart-cols" aria-hidden="true">
@@ -84,14 +130,16 @@
 
                             <ul class="cart-list">
                                 @foreach ($cartItems as $item)
-                                    <li class="cart-item">
-                                        <a class="item-img" href="product-detail.html">
+                                    <li class="cart-item" data-id="{{ $item['id'] }}" data-product-id="{{ $item['pid'] }}">
+                                        <a class="item-img" href="{{ $item['url'] }}">
                                             <img src="{{ asset($item['img']) }}" alt="{{ $item['name'] }}" width="120"
                                                 height="120" loading="lazy" />
                                         </a>
                                         <div class="item-info">
-                                            <span class="item-cat">{{ $item['cat'] }}</span>
-                                            <h2 class="item-name"><a href="product-detail.html">{{ $item['name'] }}</a></h2>
+                                            @if ($item['cat'])
+                                                <span class="item-cat">{{ $item['cat'] }}</span>
+                                            @endif
+                                            <h2 class="item-name"><a href="{{ $item['url'] }}">{{ $item['name'] }}</a></h2>
                                             <ul class="item-meta">
                                                 @foreach ($item['meta'] as [$mLabel, $mValue, $mColor])
                                                     <li>
@@ -106,8 +154,11 @@
                                                 @endforeach
                                             </ul>
                                             <div class="item-price">
-                                                <strong>{{ $item['price'] }}</strong><del>{{ $item['old'] }}</del><span
-                                                    class="item-off">{{ $item['off'] }}</span>
+                                                <strong>{{ $item['price'] }}</strong>
+                                                @if ($item['old'])
+                                                    <del>{{ $item['old'] }}</del><span
+                                                        class="item-off">{{ $item['off'] }}</span>
+                                                @endif
                                             </div>
                                             @if ($item['extra'])
                                                 <p class="item-extra">{{ $item['extra'] }}</p>
@@ -155,7 +206,7 @@
                             </ul>
                         </div>
 
-                        <a href="all-categories-listing.html" class="continue-link">
+                        <a href="{{ route('products') }}" class="continue-link">
                             <i class="fa-solid fa-arrow-left-long" aria-hidden="true"></i>
                             Continue Shopping
                         </a>
@@ -165,69 +216,86 @@
                     <aside class="cart-summary" aria-label="Order summary">
                         <div class="sum-head">
                             <h4>Order Summary</h4>
-                            <span>4 items</span>
+                            <span>{{ $summary['count'] }} {{ \Illuminate\Support\Str::plural('item', $summary['count']) }}</span>
                         </div>
 
                         {{-- Coupons --}}
                         <div class="box coupon-box">
                             <h5><i class="fa-solid fa-ticket" aria-hidden="true"></i> Coupons &amp; Offers</h5>
-                            <form class="form coupon-form" action="#" method="post" novalidate>
+                            <form class="form coupon-form" action="{{ route('cart.apply.coupon') }}" method="post" novalidate>
                                 @csrf
                                 <div class="form-group">
-                                    <input type="text" id="couponInput" name="coupon" placeholder=" "
+                                    <input type="text" id="couponInput" name="coupon_code" placeholder=" "
                                         autocomplete="off" />
                                     <label for="couponInput">Enter coupon code</label>
                                 </div>
                                 <button type="submit" class="btn btn-outline-primary">Apply</button>
                             </form>
 
-                            <div class="coupon-applied">
-                                <span class="applied-icon"><i class="fa-solid fa-check" aria-hidden="true"></i></span>
-                                <div class="applied-text">
-                                    <strong>PARIJAAT10 applied</strong>
-                                    <span>You saved $75 with this coupon</span>
+                            @if ($summary['coupon_code'])
+                                <div class="coupon-applied">
+                                    <span class="applied-icon"><i class="fa-solid fa-check" aria-hidden="true"></i></span>
+                                    <div class="applied-text">
+                                        <strong>{{ $summary['coupon_code'] }} applied</strong>
+                                        <span>You saved @money($summary['coupon']) with this coupon</span>
+                                    </div>
+                                    <button type="button" class="applied-remove"
+                                        aria-label="Remove coupon {{ $summary['coupon_code'] }}">
+                                        Remove
+                                    </button>
                                 </div>
-                                <button type="button" class="applied-remove" aria-label="Remove coupon PARIJAAT10">
-                                    Remove
-                                </button>
-                            </div>
+                            @endif
 
-                            <p class="offers-title">Available Offers</p>
-                            <ul class="offer-list">
-                                <li class="is-applied">
-                                    <span class="offer-icon"><i class="fa-solid fa-tag" aria-hidden="true"></i></span>
-                                    <div class="offer-text">
-                                        <span class="offer-code">PARIJAAT10</span>
-                                        <p>Extra 10% off on your first order</p>
-                                    </div>
-                                    <span class="offer-state">Applied</span>
-                                </li>
-                                <li class="is-applied">
-                                    <span class="offer-icon"><i class="fa-solid fa-truck-fast" aria-hidden="true"></i></span>
-                                    <div class="offer-text">
-                                        <span class="offer-code">FREESHIP</span>
-                                        <p>Free shipping on orders above $149</p>
-                                    </div>
-                                    <span class="offer-state">Unlocked</span>
-                                </li>
-                            </ul>
+                            @if ($offers->isNotEmpty() || $freeShip)
+                                <p class="offers-title">Available Offers</p>
+                                <ul class="offer-list">
+                                    @foreach ($offers as $offer)
+                                        @php $isOn = $summary['coupon_code'] && strcasecmp($summary['coupon_code'], $offer->code) === 0; @endphp
+                                        <li @class(['is-applied' => $isOn])>
+                                            <span class="offer-icon"><i class="fa-solid fa-tag" aria-hidden="true"></i></span>
+                                            <div class="offer-text">
+                                                <span class="offer-code">{{ $offer->code }}</span>
+                                                @if (filled($offer->offer_text))
+                                                    <p>{{ $offer->offer_text }}</p>
+                                                @endif
+                                            </div>
+                                            @if ($isOn)
+                                                <span class="offer-state">Applied</span>
+                                            @else
+                                                <span class="offer-state js-apply-offer" role="button" tabindex="0"
+                                                    data-code="{{ $offer->code }}" style="cursor:pointer">Apply</span>
+                                            @endif
+                                        </li>
+                                    @endforeach
+
+                                    @if ($freeShip)
+                                        <li @class(['is-applied' => $freeShip['done']])>
+                                            <span class="offer-icon"><i class="fa-solid fa-truck-fast" aria-hidden="true"></i></span>
+                                            <div class="offer-text">
+                                                <span class="offer-code">FREESHIP</span>
+                                                <p>Free shipping on orders above @money($freeShip['threshold'])</p>
+                                            </div>
+                                            <span class="offer-state">{{ $freeShip['done'] ? 'Unlocked' : 'Locked' }}</span>
+                                        </li>
+                                    @endif
+                                </ul>
+                            @endif
                         </div>
 
                         {{-- Delivery --}}
                         <div class="box delivery-box">
                             <h5><i class="fa-solid fa-location-dot" aria-hidden="true"></i> Delivery Details</h5>
-                            <form class="form pin-form" action="#" method="post" novalidate>
-                                @csrf
+                            <form class="form pin-form" action="{{ route('pincode.check') }}" method="get" novalidate>
                                 <div class="form-group">
                                     <input type="text" id="cartPin" name="pincode" inputmode="numeric" maxlength="6"
-                                        placeholder=" " value="110001" />
+                                        placeholder=" " value="" />
                                     <label for="cartPin">Pincode</label>
                                 </div>
                                 <button type="submit" class="btn btn-outline-primary">Check</button>
                             </form>
                             <p class="pin-result">
-                                <i class="fa-solid fa-circle-check" aria-hidden="true"></i>
-                                Delivery available. Estimated by <b>Wed, 18 Nov</b>.
+                                <i class="fa-solid fa-circle-info" aria-hidden="true"></i>
+                                <span>Enter your pincode to check delivery. Ordering from outside India? Delivery time and charges are shown at checkout.</span>
                             </p>
                             <ul class="del-points">
                                 <li><i class="fa-solid fa-box" aria-hidden="true"></i> Dispatch in 2–4 working days</li>
@@ -248,16 +316,24 @@
                                 @endforeach
                                 <div class="row">
                                     <dt>Shipping Fee</dt>
-                                    <dd class="is-green"><del>$15</del> Free</dd>
+                                    @if ($summary['shipping'] > 0)
+                                        <dd>@money($summary['shipping'])</dd>
+                                    @elseif ($summary['shipping_known'])
+                                        <dd class="is-green">Free</dd>
+                                    @else
+                                        <dd>Calculated at checkout</dd>
+                                    @endif
                                 </div>
                                 <div class="row row-total">
                                     <dt>Total Amount<small>Inclusive of all taxes</small></dt>
-                                    <dd>$680</dd>
+                                    <dd>@money($summary['total'])</dd>
                                 </div>
                             </dl>
-                            <p class="save-chip">
-                                <i class="fa-solid fa-piggy-bank" aria-hidden="true"></i> You are saving $235 on this order
-                            </p>
+                            @if ($summary['saved'] > 0)
+                                <p class="save-chip">
+                                    <i class="fa-solid fa-piggy-bank" aria-hidden="true"></i> You are saving @money($summary['saved']) on this order
+                                </p>
+                            @endif
                             <a href="{{ route('checkout') }}" class="btn btn-primary place-btn">
                                 Proceed to Address
                                 <i class="fa-solid fa-arrow-right-long" aria-hidden="true"></i>
@@ -289,7 +365,7 @@
                 <div class="cart-bar">
                     <div class="bar-total">
                         <span>Total</span>
-                        <strong>$680</strong>
+                        <strong>@money($summary['total'])</strong>
                     </div>
                     <a href="{{ route('checkout') }}" class="btn btn-primary">
                         Proceed to Address
@@ -298,9 +374,10 @@
                 </div>
             </div>
         </section>
-
-        {{-- Show this and hide .cart-secA when the cart has no items --}}
-        <div class="cart-empty" hidden>
+        @else
+        {{-- cart has no items: .cart-secA is not rendered, this is shown instead --}}
+        @php $emptyLinks = array_slice(\App\Support\NavMenu::build()['footer'] ?? [], 0, 4); @endphp
+        <div class="cart-empty">
             <span class="empty-ico"><i class="fa-solid fa-bag-shopping" aria-hidden="true"></i></span>
             <h2>Your cart is empty</h2>
             <p>
@@ -309,14 +386,151 @@
             </p>
             <div class="empty-btns">
                 <a href="{{ route('products') }}" class="btn btn-primary">Shop Now</a>
-                <a href="javascript:void(0)" class="btn btn-outline-primary">View New Arrivals</a>
+                <a href="{{ route('products', ['collection' => ['new-arrivals']]) }}" class="btn btn-outline-primary">View New Arrivals</a>
             </div>
-            <ul class="empty-links">
-                <li><a href="javascript:void(0)">Brass Diyas &amp; Lamps</a></li>
-                <li><a href="javascript:void(0)">Pooja Essentials</a></li>
-                <li><a href="javascript:void(0)">Brass Decor</a></li>
-                <li><a href="javascript:void(0)">Gifting</a></li>
-            </ul>
+            @if ($emptyLinks)
+                <ul class="empty-links">
+                    @foreach ($emptyLinks as $el)
+                        <li><a href="{{ route('category.show', $el['slug']) }}">{{ $el['name'] }}</a></li>
+                    @endforeach
+                </ul>
+            @endif
         </div>
+        @endif
     </main>
 @endsection
+
+@push('scripts')
+    @php
+        $cartRoutes = [
+            'applyCoupon' => route('cart.apply.coupon'),
+            'removeCoupon' => route('cart.remove.coupon'),
+            'pincode' => route('pincode.check'),
+        ];
+    @endphp
+    <script>
+        $(function () {
+            var CP = @json($cartRoutes);
+            var ui = window.cartUI || {};
+
+            function notify(type, title, text) {
+                if (ui.notify) return ui.notify(type, title, text);
+                if (type === 'error') alert(text || title);
+            }
+            function errText(xhr) {
+                if (ui.errorText) return ui.errorText(xhr);
+                var j = xhr.responseJSON || {};
+                return (j.errors && Object.values(j.errors)[0][0]) || j.message || 'Something went wrong. Please try again.';
+            }
+            function post(url, method, payload) {
+                return $.ajax({
+                    url: url, method: method, dataType: 'json',
+                    contentType: 'application/json', data: JSON.stringify(payload || {})
+                });
+            }
+
+            // page ko dobara fetch karke <main> badal do: items, summary, free-shipping bar sab ek saath sahi rahenge
+            function refresh() {
+                $.ajax({ url: window.location.href, method: 'GET', dataType: 'html', headers: { Accept: 'text/html' } })
+                    .done(function (html) {
+                        var $m = $('<div>').append($.parseHTML(html)).find('main').first();
+                        if ($m.length) { $('main').first().html($m.html()); }
+                        else { window.location.reload(); }
+                    })
+                    .fail(function () { window.location.reload(); });
+            }
+
+            // ── quantity + / - ──
+            $(document).on('click', '.cart-item .qty-plus, .cart-item .qty-minus', function () {
+                var $b = $(this), $row = $b.closest('.cart-item');
+                if ($row.data('busy')) return;
+                $row.data('busy', true);
+
+                post(window.APP.cartQty, 'POST', {
+                    item_id: $row.data('id'),
+                    action: $b.hasClass('qty-plus') ? 'plus' : 'minus'
+                })
+                    .done(function (res) {
+                        if (ui.updateCartUI) ui.updateCartUI(res);
+                        if (res.coupon_message) notify('error', 'Coupon', res.coupon_message);
+                        refresh();
+                    })
+                    .fail(function (xhr) { $row.data('busy', false); notify('error', 'Could not update', errText(xhr)); });
+            });
+
+            // ── remove item ──
+            $(document).on('click', '.cart-item .item-link.is-remove', function () {
+                var $row = $(this).closest('.cart-item');
+                if ($row.data('busy')) return;
+                $row.data('busy', true);
+
+                post(window.APP.cartRemove.replace(':id', $row.data('id')), 'DELETE')
+                    .done(function (res) {
+                        if (ui.updateCartUI) ui.updateCartUI(res);
+                        if (res.coupon_message) notify('error', 'Coupon', res.coupon_message);
+                        refresh();
+                    })
+                    .fail(function (xhr) { $row.data('busy', false); notify('error', 'Could not remove', errText(xhr)); });
+            });
+
+            // ── coupon ──
+            function applyCoupon(code) {
+                code = $.trim(code || '');
+                if (!code) { notify('error', 'Coupon', 'Please enter a coupon code.'); return; }
+
+                post(CP.applyCoupon, 'POST', { coupon_code: code })
+                    .done(function (r) {
+                        if (r.status) { notify('success', 'Coupon', r.message); refresh(); }
+                        else { notify('error', 'Coupon', r.message); }
+                    })
+                    .fail(function (xhr) { notify('error', 'Coupon', errText(xhr)); });
+            }
+
+            $(document).on('submit', '.coupon-form', function (e) {
+                e.preventDefault();
+                applyCoupon($(this).find('[name="coupon_code"]').val());
+            });
+
+            $(document).on('click', '.js-apply-offer', function () { applyCoupon($(this).data('code')); });
+            $(document).on('keydown', '.js-apply-offer', function (e) {
+                if (e.key === 'Enter' || e.key === ' ') { e.preventDefault(); applyCoupon($(this).data('code')); }
+            });
+
+            $(document).on('click', '.applied-remove', function () {
+                post(CP.removeCoupon, 'POST')
+                    .done(function () { refresh(); })
+                    .fail(function (xhr) { notify('error', 'Coupon', errText(xhr)); });
+            });
+
+            // ── pincode check ──
+            $(document).on('submit', '.cart-summary .pin-form', function (e) {
+                e.preventDefault();
+                var $f = $(this), pin = $.trim($f.find('[name="pincode"]').val());
+                var $res = $f.closest('.delivery-box').find('.pin-result'), $txt = $res.find('span'), $ic = $res.find('i');
+
+                function show(ok, msg) {
+                    $res.removeClass('ok err').addClass(ok ? 'ok' : 'err');
+                    $ic.attr('class', 'fa-solid ' + (ok ? 'fa-circle-check' : 'fa-circle-exclamation'));
+                    $txt.text(msg);
+                }
+
+                if (!/^\d{6}$/.test(pin)) { show(false, 'Enter a valid 6-digit pincode.'); return; }
+
+                $f.find('button').prop('disabled', true);
+                $.getJSON(CP.pincode, { pincode: pin })
+                    .done(function (r) {
+                        if (!r.status) { show(false, r.message); return; }
+                        var place = [r.district, r.state].filter(Boolean).join(', ');
+                        var msg = 'Delivery available' + (place ? ' to ' + place : '');
+                        if (r.eta) msg += '. Estimated ' + r.eta + (r.eta_date ? ' (by ' + r.eta_date + ')' : '');
+                        show(true, msg + '.');
+                    })
+                    .fail(function (xhr) {
+                        var err = xhr.responseJSON && xhr.responseJSON.errors && xhr.responseJSON.errors.pincode;
+                        show(false, err ? err[0] : 'Could not check right now. Please try again.');
+                    })
+                    .always(function () { $f.find('button').prop('disabled', false); });
+            });
+        });
+    </script>
+@endpush
