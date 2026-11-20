@@ -1471,12 +1471,12 @@
         '{order_date}': '24 Jun 2026',
         '{shipped_date}': '26 Jun 2026',
         '{delivered_date}': '28 Jun 2026',
-        '{grand_total}': '₹3,450',
+        '{grand_total}': '@defaultSymbol()3,450',
         '{item_count}': '3',
 
         '{payment_method}': 'UPI',
         '{payment_status}': 'Paid',
-        '{payment_amount}': '₹3,450',
+        '{payment_amount}': '@defaultSymbol()3,450',
         '{transaction_id}': 'TXN8472910',
 
         '{courier_name}': 'Delhivery',
@@ -1485,7 +1485,7 @@
         '{expected_delivery}': '28 Jun 2026',
 
         '{cancel_reason}': 'Out of stock',
-        '{refund_amount}': '₹3,450',
+        '{refund_amount}': '@defaultSymbol()3,450',
         '{refund_days}': '5-7',
         '{order_items}': `
     <div style="display:table;width:100%;border-bottom:1px solid #e6eae9;padding:14px 0;">
@@ -1497,7 +1497,7 @@
             <div style="font-size:11px;color:#7a9e9c;">Qty: 1</div>
         </div>
         <div style="display:table-cell;vertical-align:middle;text-align:right;font-size:14px;font-weight:700;color:#1F5552;white-space:nowrap;">
-            ₹ 3,450.00
+            @defaultSymbol() 3,450.00
         </div>
     </div>
     <div style="display:table;width:100%;border-bottom:1px solid #e6eae9;padding:14px 0;">
@@ -1509,7 +1509,7 @@
             <div style="font-size:11px;color:#7a9e9c;">Qty: 2</div>
         </div>
         <div style="display:table-cell;vertical-align:middle;text-align:right;font-size:14px;font-weight:700;color:#1F5552;white-space:nowrap;">
-            ₹ 1,200.00
+            @defaultSymbol() 1,200.00
         </div>
     </div>
 `,
@@ -1517,24 +1517,24 @@
     <div style="margin-top:16px;">
         <div style="display:table;width:100%;padding:5px 0;">
             <span style="display:table-cell;font-size:13px;color:#666;">Subtotal</span>
-            <span style="display:table-cell;text-align:right;font-size:13px;color:#333;">₹ 4,650.00</span>
+            <span style="display:table-cell;text-align:right;font-size:13px;color:#333;">@defaultSymbol() 4,650.00</span>
         </div>
         <div style="display:table;width:100%;padding:5px 0;">
             <span style="display:table-cell;font-size:13px;color:#2e7d32;font-weight:500;">Discount (SAVE20)</span>
-            <span style="display:table-cell;text-align:right;font-size:13px;color:#2e7d32;font-weight:500;">− ₹ 200.00</span>
+            <span style="display:table-cell;text-align:right;font-size:13px;color:#2e7d32;font-weight:500;">− @defaultSymbol() 200.00</span>
         </div>
         <div style="display:table;width:100%;padding:5px 0;">
             <span style="display:table-cell;font-size:13px;color:#666;">CGST (9%)</span>
-            <span style="display:table-cell;text-align:right;font-size:13px;color:#333;">₹ 200.25</span>
+            <span style="display:table-cell;text-align:right;font-size:13px;color:#333;">@defaultSymbol() 200.25</span>
         </div>
         <div style="display:table;width:100%;padding:5px 0;">
             <span style="display:table-cell;font-size:13px;color:#666;">SGST (9%)</span>
-            <span style="display:table-cell;text-align:right;font-size:13px;color:#333;">₹ 200.25</span>
+            <span style="display:table-cell;text-align:right;font-size:13px;color:#333;">@defaultSymbol() 200.25</span>
         </div>
         <hr style="border:none;border-top:1px solid #d4dbd9;margin:10px 0;">
         <div style="display:table;width:100%;padding:5px 0;">
             <span style="display:table-cell;font-size:15px;font-weight:600;color:#1a1a1a;">Grand Total</span>
-            <span style="display:table-cell;text-align:right;font-size:16px;font-weight:700;color:#1F5552;">₹ 4,850.50</span>
+            <span style="display:table-cell;text-align:right;font-size:16px;font-weight:700;color:#1F5552;">@defaultSymbol() 4,850.50</span>
         </div>
     </div>
 `,
@@ -1546,7 +1546,7 @@
         '{invoice_url}': APP_URL + '/user/orders/1089/invoice',
 
         '{coupon_code}': 'SAVE20',
-        '{discount_value}': '₹200',
+        '{discount_value}': '@defaultSymbol()200',
         '{expiry_date}': '30 Jun 2026',
         '{store_url}': APP_URL,
 

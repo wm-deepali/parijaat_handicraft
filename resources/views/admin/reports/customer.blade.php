@@ -949,7 +949,7 @@
                         <span class="kpi-label">Avg. LTV</span>
                         <div class="kpi-icon amber"><i class="fa fa-dollar"></i></div>
                     </div>
-                    <div class="kpi-value">₹{{ number_format($avgLtv) }}</div>
+                    <div class="kpi-value">@defaultSymbol(){{ number_format($avgLtv) }}</div>
                     <div class="kpi-badge neutral"><i class="fa fa-minus"></i> across all customers</div>
                 </div>
 
@@ -1249,8 +1249,8 @@
                                         </td>
                                         <td style="font-weight:600">{{ $c['orders'] }}</td>
                                         <td style="font-weight:700;color:var(--text-primary)">
-                                            ₹{{ number_format($c['total_spent']) }}</td>
-                                        <td style="color:var(--text-secondary)">₹{{ number_format($c['avg_order']) }}</td>
+                                            @defaultSymbol(){{ number_format($c['total_spent']) }}</td>
+                                        <td style="color:var(--text-secondary)">@defaultSymbol(){{ number_format($c['avg_order']) }}</td>
                                         <td style="color:var(--text-hint);font-size:12px">{{ $c['last_order'] }}</td>
                                     </tr>
                                 @empty
@@ -1264,7 +1264,7 @@
                                 <tr>
                                     <td colspan="3">Top {{ $topCustomersTable->count() }} Total</td>
                                     <td style="color:var(--text-secondary)">{{ number_format($top6Orders) }} orders</td>
-                                    <td style="color:var(--accent)">₹{{ number_format($top6Revenue) }}</td>
+                                    <td style="color:var(--accent)">@defaultSymbol(){{ number_format($top6Revenue) }}</td>
                                     <td colspan="2"></td>
                                 </tr>
                             </tfoot>
@@ -1346,7 +1346,7 @@
                         </div>
                         <div class="info-row">
                             <span class="info-label">Avg. Lifetime Value</span>
-                            <span class="info-value">₹{{ number_format($avgLtv) }}</span>
+                            <span class="info-value">@defaultSymbol(){{ number_format($avgLtv) }}</span>
                         </div>
                         <div class="info-row">
                             <span class="info-label">Avg. Days Between Orders</span>

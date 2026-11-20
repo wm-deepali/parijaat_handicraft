@@ -55,7 +55,7 @@
                 <td>{{ $o->customer_name }}</td>
                 <td>{{ $o->created_at->format('d M Y') }}</td>
                 <td>{{ $o->items->count() }}</td>
-                <td>₹{{ number_format($o->grand_total, 0) }}</td>
+                <td>@defaultSymbol(){{ number_format($o->grand_total, 0) }}</td>
                 <td>{{ strtoupper($o->payment_method) }}</td>
                 <td>{{ ucfirst($o->status) }}</td>
             </tr>
@@ -74,7 +74,7 @@
             <tr><td>Returned</td><td>{{ $returnedCount }} ({{ $returnRate }}%)</td></tr>
             <tr><td>Avg. Fulfilment Time</td><td>{{ $avgFulfilment }} days</td></tr>
             <tr><td>Orders via COD</td><td>{{ $codCount }}</td></tr>
-            <tr><td><strong>Avg. Order Value</strong></td><td><strong>₹{{ number_format($avgOrderValue) }}</strong></td></tr>
+            <tr><td><strong>Avg. Order Value</strong></td><td><strong>@defaultSymbol(){{ number_format($avgOrderValue) }}</strong></td></tr>
         </tbody>
     </table>
 </body>

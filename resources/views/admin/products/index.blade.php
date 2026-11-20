@@ -287,7 +287,7 @@
                                     </td>
 
                                     <td>
-                                        <span class="price-cell">₹{{ number_format($item->price, 2) }}</span>
+                                        <span class="price-cell">@defaultSymbol(){{ number_format($item->price, 2) }}</span>
                                     </td>
 
                                     <td>

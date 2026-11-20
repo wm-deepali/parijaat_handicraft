@@ -70,7 +70,7 @@
                 </div>
                 <div class="stat-card">
                     <div class="stat-label">Pending Amount</div>
-                    <div class="stat-value" style="color:var(--red)">₹{{ number_format($stats['pending_amount'], 0) }}</div>
+                    <div class="stat-value" style="color:var(--red)">@defaultSymbol(){{ number_format($stats['pending_amount'], 0) }}</div>
                 </div>
                 <div class="stat-card">
                     <div class="stat-label">Already Refunded</div>
@@ -115,7 +115,7 @@
                                         <div style="font-size:11.5px;color:var(--text-hint)">{{ $order->customer_email }}</div>
                                     </td>
                                     <td>{{ ucfirst(str_replace('_', ' ', $order->payment_method ?? '—')) }}</td>
-                                    <td style="font-weight:700">₹{{ number_format($done->amount ?? $order->grand_total, 2) }}</td>
+                                    <td style="font-weight:700">@defaultSymbol(){{ number_format($done->amount ?? $order->grand_total, 2) }}</td>
                                     <td style="color:var(--text-secondary)">{{ $order->updated_at->format('d M Y') }}</td>
                                     <td>
                                         @if($done)
@@ -175,7 +175,7 @@
                         <div id="cr-info" style="background:#f1f2f4;border:1px solid #e3e5e8;border-radius:8px;padding:12px;margin-bottom:16px;font-size:13px"></div>
 
                         <div style="margin-bottom:14px">
-                            <label class="mf-label">Refund Amount (₹) <span style="color:#b22222">*</span></label>
+                            <label class="mf-label">Refund Amount (@defaultSymbol()) <span style="color:#b22222">*</span></label>
                             <input type="number" step="0.01" min="1" name="amount" id="cr-amount" class="mf-input" required>
                         </div>
 
@@ -258,7 +258,7 @@ var CR_METHODS = ['neft_rtgs_imps', 'upi', 'payment_gateway'];
 function openCancelRefund(o) {
     document.getElementById('cr-info').innerHTML =
         '<div><b>Order:</b> #' + o.order + '</div><div><b>Customer:</b> ' + o.customer + '</div>' +
-        '<div><b>Order total:</b> ₹' + Number(o.amount).toLocaleString('en-IN') + '</div>';
+        '<div><b>Order total:</b> @defaultSymbol()' + Number(o.amount).toLocaleString('en-IN') + '</div>';
 
     var form = document.getElementById('cancelRefundForm');
     form.reset();

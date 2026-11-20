@@ -29,16 +29,16 @@ class SystemLogController extends Controller
             $search = $request->email_search;
             $emailQuery->where(function ($q) use ($search) {
                 $q->where('to_email', 'like', "%{$search}%")
-                  ->orWhere('subject', 'like', "%{$search}%")
-                  ->orWhere('reference', 'like', "%{$search}%");
+                    ->orWhere('subject', 'like', "%{$search}%")
+                    ->orWhere('reference', 'like', "%{$search}%");
             });
         }
 
         $emailLogs = $emailQuery->paginate(20)->withQueryString();
 
         $emailStats = [
-            'total'   => EmailLog::count(),
-            'failed'  => EmailLog::where('status', 'failed')->count(),
+            'total' => EmailLog::count(),
+            'failed' => EmailLog::where('status', 'failed')->count(),
             'blocked' => EmailLog::where('status', 'blocked')->count(),
         ];
 
@@ -56,18 +56,18 @@ class SystemLogController extends Controller
             $search = $request->payment_search;
             $paymentQuery->where(function ($q) use ($search) {
                 $q->where('order_number', 'like', "%{$search}%")
-                  ->orWhere('payment_id', 'like', "%{$search}%")
-                  ->orWhere('customer_email', 'like', "%{$search}%");
+                    ->orWhere('payment_id', 'like', "%{$search}%")
+                    ->orWhere('customer_email', 'like', "%{$search}%");
             });
         }
 
         $paymentLogs = $paymentQuery->paginate(20)->withQueryString();
 
         $paymentStats = [
-            'total'    => PaymentLog::count(),
+            'total' => PaymentLog::count(),
             'captured' => PaymentLog::where('status', 'captured')->count(),
-            'failed'   => PaymentLog::where('status', 'failed')->count(),
-            'pending'  => PaymentLog::whereIn('status', ['created', 'pending'])->count(),
+            'failed' => PaymentLog::where('status', 'failed')->count(),
+            'pending' => PaymentLog::whereIn('status', ['created', 'pending'])->count(),
         ];
 
         $authQuery = AuthLog::query()->latest();
@@ -84,16 +84,16 @@ class SystemLogController extends Controller
             $search = $request->auth_search;
             $authQuery->where(function ($q) use ($search) {
                 $q->where('email', 'like', "%{$search}%")
-                  ->orWhere('ip_address', 'like', "%{$search}%");
+                    ->orWhere('ip_address', 'like', "%{$search}%");
             });
         }
 
         $authLogs = $authQuery->paginate(20)->withQueryString();
 
         $authStats = [
-            'total'  => AuthLog::count(),
+            'total' => AuthLog::count(),
             'failed' => AuthLog::where('status', 'failed')->count(),
-            'admin'  => AuthLog::where('user_type', 'admin')->count(),
+            'admin' => AuthLog::where('user_type', 'admin')->count(),
         ];
 
         $orderEventQuery = OrderStatusHistory::query()->with('order')->latest();
@@ -106,17 +106,17 @@ class SystemLogController extends Controller
             $search = $request->order_search;
             $orderEventQuery->where(function ($q) use ($search) {
                 $q->where('remarks', 'like', "%{$search}%")
-                  ->orWhereHas('order', function ($oq) use ($search) {
-                      $oq->where('order_number', 'like', "%{$search}%")
-                         ->orWhere('customer_name', 'like', "%{$search}%");
-                  });
+                    ->orWhereHas('order', function ($oq) use ($search) {
+                        $oq->where('order_number', 'like', "%{$search}%")
+                            ->orWhere('customer_name', 'like', "%{$search}%");
+                    });
             });
         }
 
         $orderEvents = $orderEventQuery->paginate(20)->withQueryString();
 
         $orderEventStats = [
-            'total'     => OrderStatusHistory::count(),
+            'total' => OrderStatusHistory::count(),
             'cancelled' => OrderStatusHistory::where('status', 'cancelled')->count(),
         ];
 
@@ -148,19 +148,19 @@ class SystemLogController extends Controller
             $search = $request->api_search;
             $apiQuery->where(function ($q) use ($search) {
                 $q->where('endpoint', 'like', "%{$search}%")
-                  ->orWhere('ip_address', 'like', "%{$search}%")
-                  ->orWhere('service', 'like', "%{$search}%");
+                    ->orWhere('ip_address', 'like', "%{$search}%")
+                    ->orWhere('service', 'like', "%{$search}%");
             });
         }
 
         $apiLogs = $apiQuery->paginate(20)->withQueryString();
 
         $apiStats = [
-            'total'  => ApiLog::count(),
+            'total' => ApiLog::count(),
             'failed' => ApiLog::where(function ($q) {
                 $q->whereNull('status_code')
-                  ->orWhere('status_code', '>=', 400)
-                  ->orWhereNotNull('error_message');
+                    ->orWhere('status_code', '>=', 400)
+                    ->orWhereNotNull('error_message');
             })->count(),
         ];
 
@@ -172,16 +172,18 @@ class SystemLogController extends Controller
             ->orderBy('service')
             ->pluck('service');
 
-       /*
-        |--------------------------------------------------------------------------
-        | All Logs (unified feed — unions Email/Payment/Auth/Order/API logs)
-        |--------------------------------------------------------------------------
-        */
+        /*
+         |--------------------------------------------------------------------------
+         | All Logs (unified feed — unions Email/Payment/Auth/Order/API logs)
+         |--------------------------------------------------------------------------
+         */
         $allChannel = $request->input('all_channel');   // Payment | Email | API | Order | Auth
-        $allLevel   = $request->input('all_level');      // Success | Info | Warning | Error
-        $allSearch  = $request->input('all_search');
-        $allFrom    = $request->input('all_date_from');
-        $allTo      = $request->input('all_date_to');
+        $allLevel = $request->input('all_level');      // Success | Info | Warning | Error
+        $allSearch = $request->input('all_search');
+        $allFrom = $request->input('all_date_from');
+        $allTo = $request->input('all_date_to');
+
+        $curSym = DB::getPdo()->quote(app(\App\Support\Region::class)->defaultSymbol());
 
         $subQueries = [];
 
@@ -203,13 +205,16 @@ class SystemLogController extends Controller
             if ($allSearch) {
                 $q->where(function ($w) use ($allSearch) {
                     $w->where('to_email', 'like', "%{$allSearch}%")
-                      ->orWhere('subject', 'like', "%{$allSearch}%")
-                      ->orWhere('reference', 'like', "%{$allSearch}%");
+                        ->orWhere('subject', 'like', "%{$allSearch}%")
+                        ->orWhere('reference', 'like', "%{$allSearch}%");
                 });
             }
-            if ($allFrom) $q->whereDate('created_at', '>=', $allFrom);
-            if ($allTo)   $q->whereDate('created_at', '<=', $allTo);
-            if ($allLevel) $q->having('level', $allLevel);
+            if ($allFrom)
+                $q->whereDate('created_at', '>=', $allFrom);
+            if ($allTo)
+                $q->whereDate('created_at', '<=', $allTo);
+            if ($allLevel)
+                $q->having('level', $allLevel);
             $subQueries[] = $q;
         }
 
@@ -225,20 +230,23 @@ class SystemLogController extends Controller
                             WHEN 'refunded' THEN 'Info'
                             WHEN 'failed' THEN 'Error'
                             ELSE 'Warning' END as level"),
-                DB::raw("CONCAT('Payment ', status, ' — ', COALESCE(order_number, CONCAT('#', order_id)), ' · ₹', amount) as message"),
+                DB::raw("CONCAT('Payment ', status, ' — ', COALESCE(order_number, CONCAT('#', order_id)), ' · ', {$curSym}, amount) as message"),
                 DB::raw("COALESCE(payment_id, '—') as reference"),
                 DB::raw("COALESCE(customer_name, customer_email, '—') as ip_or_user")
             );
             if ($allSearch) {
                 $q->where(function ($w) use ($allSearch) {
                     $w->where('order_number', 'like', "%{$allSearch}%")
-                      ->orWhere('payment_id', 'like', "%{$allSearch}%")
-                      ->orWhere('customer_email', 'like', "%{$allSearch}%");
+                        ->orWhere('payment_id', 'like', "%{$allSearch}%")
+                        ->orWhere('customer_email', 'like', "%{$allSearch}%");
                 });
             }
-            if ($allFrom) $q->whereDate('created_at', '>=', $allFrom);
-            if ($allTo)   $q->whereDate('created_at', '<=', $allTo);
-            if ($allLevel) $q->having('level', $allLevel);
+            if ($allFrom)
+                $q->whereDate('created_at', '>=', $allFrom);
+            if ($allTo)
+                $q->whereDate('created_at', '<=', $allTo);
+            if ($allLevel)
+                $q->having('level', $allLevel);
             $subQueries[] = $q;
         }
 
@@ -257,12 +265,15 @@ class SystemLogController extends Controller
             if ($allSearch) {
                 $q->where(function ($w) use ($allSearch) {
                     $w->where('email', 'like', "%{$allSearch}%")
-                      ->orWhere('ip_address', 'like', "%{$allSearch}%");
+                        ->orWhere('ip_address', 'like', "%{$allSearch}%");
                 });
             }
-            if ($allFrom) $q->whereDate('created_at', '>=', $allFrom);
-            if ($allTo)   $q->whereDate('created_at', '<=', $allTo);
-            if ($allLevel) $q->having('level', $allLevel);
+            if ($allFrom)
+                $q->whereDate('created_at', '>=', $allFrom);
+            if ($allTo)
+                $q->whereDate('created_at', '<=', $allTo);
+            if ($allLevel)
+                $q->having('level', $allLevel);
             $subQueries[] = $q;
         }
 
@@ -287,13 +298,16 @@ class SystemLogController extends Controller
             if ($allSearch) {
                 $q->where(function ($w) use ($allSearch) {
                     $w->where('osh.remarks', 'like', "%{$allSearch}%")
-                      ->orWhere('o.order_number', 'like', "%{$allSearch}%")
-                      ->orWhere('o.customer_name', 'like', "%{$allSearch}%");
+                        ->orWhere('o.order_number', 'like', "%{$allSearch}%")
+                        ->orWhere('o.customer_name', 'like', "%{$allSearch}%");
                 });
             }
-            if ($allFrom) $q->whereDate('osh.created_at', '>=', $allFrom);
-            if ($allTo)   $q->whereDate('osh.created_at', '<=', $allTo);
-            if ($allLevel) $q->having('level', $allLevel);
+            if ($allFrom)
+                $q->whereDate('osh.created_at', '>=', $allFrom);
+            if ($allTo)
+                $q->whereDate('osh.created_at', '<=', $allTo);
+            if ($allLevel)
+                $q->having('level', $allLevel);
             $subQueries[] = $q;
         }
 
@@ -315,13 +329,16 @@ class SystemLogController extends Controller
             if ($allSearch) {
                 $q->where(function ($w) use ($allSearch) {
                     $w->where('endpoint', 'like', "%{$allSearch}%")
-                      ->orWhere('ip_address', 'like', "%{$allSearch}%")
-                      ->orWhere('service', 'like', "%{$allSearch}%");
+                        ->orWhere('ip_address', 'like', "%{$allSearch}%")
+                        ->orWhere('service', 'like', "%{$allSearch}%");
                 });
             }
-            if ($allFrom) $q->whereDate('created_at', '>=', $allFrom);
-            if ($allTo)   $q->whereDate('created_at', '<=', $allTo);
-            if ($allLevel) $q->having('level', $allLevel);
+            if ($allFrom)
+                $q->whereDate('created_at', '>=', $allFrom);
+            if ($allTo)
+                $q->whereDate('created_at', '<=', $allTo);
+            if ($allLevel)
+                $q->having('level', $allLevel);
             $subQueries[] = $q;
         }
 
@@ -340,9 +357,19 @@ class SystemLogController extends Controller
             + OrderStatusHistory::count() + ApiLog::count();
 
         return view('admin.security.system-logs', compact(
-            'emailLogs', 'emailStats', 'paymentLogs', 'paymentStats', 'authLogs', 'authStats',
-            'orderEvents', 'orderEventStats', 'apiLogs', 'apiStats', 'apiServices',
-            'allLogs', 'allLogsTotal'
+            'emailLogs',
+            'emailStats',
+            'paymentLogs',
+            'paymentStats',
+            'authLogs',
+            'authStats',
+            'orderEvents',
+            'orderEventStats',
+            'apiLogs',
+            'apiStats',
+            'apiServices',
+            'allLogs',
+            'allLogsTotal'
         ));
     }
 }

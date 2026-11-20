@@ -163,12 +163,12 @@
                 </div>
                 <div class="stat-card">
                     <div class="stat-label">Total Cart Value</div>
-                    <div class="stat-value" style="color:var(--orange)">₹{{ number_format($totalCartValue, 0) }}</div>
+                    <div class="stat-value" style="color:var(--orange)">@defaultSymbol(){{ number_format($totalCartValue, 0) }}</div>
                     <div class="stat-sub">Potential revenue</div>
                 </div>
                 <div class="stat-card">
                     <div class="stat-label">Avg Cart Value</div>
-                    <div class="stat-value" style="color:var(--accent)">₹{{ number_format($avgCartValue, 0) }}</div>
+                    <div class="stat-value" style="color:var(--accent)">@defaultSymbol(){{ number_format($avgCartValue, 0) }}</div>
                     <div class="stat-sub">Per stored cart</div>
                 </div>
                 <div class="stat-card">
@@ -360,7 +360,7 @@ if (!$u) {
                                     </td>
 
                                     <td>
-                                        <div class="cart-value">₹{{ number_format($cart->grand_total, 0) }}</div>
+                                        <div class="cart-value">@defaultSymbol(){{ number_format($cart->grand_total, 0) }}</div>
                                         <div class="cart-value-sub">incl. taxes</div>
                                     </td>
 
@@ -455,7 +455,7 @@ if (!$u) {
                                                             </div>
                                                         </div>
                                                         <div class="expanded-item-price">
-                                                            ₹{{ number_format($item->total, 0) }}
+                                                            @defaultSymbol(){{ number_format($item->total, 0) }}
                                                         </div>
                                                     </div>
                                                 @endforeach
@@ -464,7 +464,7 @@ if (!$u) {
                                                 <div style="margin-top:10px;font-size:12.5px;color:var(--green)">
                                                     <i class="fa fa-tag"></i>
                                                     Coupon applied: <strong>{{ $cart->coupon_code }}</strong>
-                                                    — Discount: ₹{{ number_format($cart->discount, 0) }}
+                                                    — Discount: @defaultSymbol(){{ number_format($cart->discount, 0) }}
                                                 </div>
                                             @endif
                                         </div>

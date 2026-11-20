@@ -491,7 +491,7 @@
                 <div class="stat-card">
                     <div class="stat-label">Refunded</div>
                     <div class="stat-value" style="color:var(--green)">
-                        ₹{{ number_format($stats['refunded_amount'], 0) }}</div>
+                        @defaultSymbol(){{ number_format($stats['refunded_amount'], 0) }}</div>
                     <div class="stat-sub">Total refunded</div>
                 </div>
             </div>
@@ -581,7 +581,7 @@
                                         {{ $return->orderItem->product->name ?? '—' }}</td>
                                     <td style="color:var(--text-secondary);font-size:12.5px">
                                         {{ $return->returnReason->title ?? $return->details ?? '—' }}</td>
-                                    <td style="font-weight:700">₹{{ number_format($return->refundable_amount, 0) }}</td>
+                                    <td style="font-weight:700">@defaultSymbol(){{ number_format($return->refundable_amount, 0) }}</td>
                                     <td>
                                         @php
                                             $pillMap = ['pending' => 'pill-pending', 'approved' => 'pill-approved', 'rejected' => 'pill-rejected', 'completed' => 'pill-refunded'];

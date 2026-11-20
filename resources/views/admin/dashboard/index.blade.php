@@ -506,7 +506,7 @@
           <div class="sub">Compared to last month across all channels</div>
         </div>
         <div class="rev-num">
-          <span>₹{{ number_format($revenueThisMonth) }}</span>
+          <span>@defaultSymbol(){{ number_format($revenueThisMonth) }}</span>
           <small class="kpi-badge {{ $revenueGrowth >= 0 ? 'up' : 'warn' }}" style="display:inline-flex;margin-top:4px;">
             <i class="fa fa-arrow-{{ $revenueGrowth >= 0 ? 'up' : 'down' }}"></i> {{ abs($revenueGrowth) }}% vs last month
           </small>
@@ -565,7 +565,7 @@
           <div class="kpi-card">
             <div class="kpi-icon amber"><i class="fa fa-wallet"></i></div>
             <div class="kpi-label">Pending Payments</div>
-            <div class="kpi-value">₹{{ number_format($pendingPayments) }}</div>
+            <div class="kpi-value">@defaultSymbol(){{ number_format($pendingPayments) }}</div>
             <div class="kpi-divider"></div>
             <div style="display:flex;align-items:center;gap:8px">
               <span class="kpi-badge warn"><i class="fa fa-clock"></i> Awaiting</span>
@@ -631,7 +631,7 @@
               <div
                 style="display:flex;justify-content:space-between;font-size:13px;color:var(--text-secondary);margin-top:10px">
                 <span>Avg. order value</span>
-                <span style="font-weight:600;color:var(--text-primary)">₹{{ number_format($avgOrderValue) }}</span>
+                <span style="font-weight:600;color:var(--text-primary)">@defaultSymbol(){{ number_format($avgOrderValue) }}</span>
               </div>
               <div
                 style="display:flex;justify-content:space-between;font-size:13px;color:var(--text-secondary);margin-top:8px">
@@ -681,7 +681,7 @@
                         {{ $order->customer_name }}
                       </div>
                     </td>
-                    <td style="font-weight:600">₹{{ number_format($order->grand_total) }}</td>
+                    <td style="font-weight:600">@defaultSymbol(){{ number_format($order->grand_total) }}</td>
                     <td><span class="status-pill {{ $order->status }}">{{ ucfirst($order->status) }}</span></td>
                   </tr>
                 @empty
@@ -731,7 +731,7 @@
       data: {
         labels: @json($chartLabels),
         datasets: [{
-          label: 'Revenue (₹)',
+          label: 'Revenue (@defaultSymbol())',
           data: @json($chartData),
           fill: true,
           tension: 0.45,
@@ -763,7 +763,7 @@
             padding: 10,
             cornerRadius: 8,
             callbacks: {
-              label: v => ' ₹' + v.parsed.y.toLocaleString('en-IN')
+              label: v => ' @defaultSymbol()' + v.parsed.y.toLocaleString('en-IN')
             }
           }
         },
@@ -778,7 +778,7 @@
             ticks: {
               color: '#8c9196',
               font: { size: 12 },
-              callback: v => '₹' + (v / 1000).toFixed(0) + 'k'
+              callback: v => '@defaultSymbol()' + (v / 1000).toFixed(0) + 'k'
             },
             border: { display: false }
           }

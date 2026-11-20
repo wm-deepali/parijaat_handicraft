@@ -679,7 +679,7 @@
                                     <td style="font-size:12px;white-space:nowrap">25 Jun 2025<br><span style="color:var(--text-hint)">11:42:08</span></td>
                                     <td><span class="badge badge-info">Payment</span></td>
                                     <td><span class="badge badge-success">Success</span></td>
-                                    <td class="log-msg">Razorpay payment captured<small>Order #10482 · ₹2,450.00</small></td>
+                                    <td class="log-msg">Razorpay payment captured<small>Order #10482 · @defaultSymbol()2,450.00</small></td>
                                     <td><span class="mono">pay_QxZ8k2mN9</span></td>
                                     <td style="font-size:12px;color:var(--text-hint)">103.21.x.x<br>Rahul Sharma</td>
                                     <td><button class="action-btn" onclick="openLogDetail('payment')" title="View Details"><i class="fa fa-eye"></i></button></td>
@@ -814,7 +814,7 @@
                                     <td><a href="#" style="color:var(--accent);font-weight:600;font-size:13px">#10482</a></td>
                                     <td><span class="mono">pay_QxZ8k2mN9</span></td>
                                     <td>Razorpay</td>
-                                    <td style="font-weight:700">₹2,450.00</td>
+                                    <td style="font-weight:700">@defaultSymbol()2,450.00</td>
                                     <td>UPI</td>
                                     <td><span class="badge badge-success">Captured</span></td>
                                     <td style="font-size:12.5px">Rahul Sharma</td>
@@ -826,7 +826,7 @@
                                     <td><a href="#" style="color:var(--accent);font-weight:600;font-size:13px">#10479</a></td>
                                     <td><span class="mono">pay_ERR_9912</span></td>
                                     <td>Razorpay</td>
-                                    <td style="font-weight:700">₹1,200.00</td>
+                                    <td style="font-weight:700">@defaultSymbol()1,200.00</td>
                                     <td>Card</td>
                                     <td><span class="badge badge-failed">Failed</span></td>
                                     <td style="font-size:12.5px">Priya Nair</td>
@@ -838,7 +838,7 @@
                                     <td><a href="#" style="color:var(--accent);font-weight:600;font-size:13px">#10476</a></td>
                                     <td><span class="mono">rfnd_7KLm3xP</span></td>
                                     <td>Razorpay</td>
-                                    <td style="font-weight:700">₹800.00</td>
+                                    <td style="font-weight:700">@defaultSymbol()800.00</td>
                                     <td>Refund</td>
                                     <td><span class="badge badge-info">Refunded</span></td>
                                     <td style="font-size:12.5px">Amit Verma</td>
@@ -1567,7 +1567,7 @@
                 { key:'Order ID',     val:'#10482' },
                 { key:'Payment ID',   val:'pay_QxZ8k2mN9' },
                 { key:'Gateway',      val:'Razorpay' },
-                { key:'Amount',       val:'₹2,450.00' },
+                { key:'Amount',       val:'@defaultSymbol()2,450.00' },
                 { key:'Method',       val:'UPI — Google Pay' },
                 { key:'Status',       val:'<span class="badge badge-success">Captured</span>' },
                 { key:'Customer',     val:'Rahul Sharma &lt;rahul@example.com&gt;' },
@@ -1684,7 +1684,7 @@
     "components": [
       { "type": "body", "parameters": [
           { "type": "text", "text": "#10480" },
-          { "type": "text", "text": "₹1,850.00" }
+          { "type": "text", "text": "@defaultSymbol()1,850.00" }
       ]}
     ]
   },

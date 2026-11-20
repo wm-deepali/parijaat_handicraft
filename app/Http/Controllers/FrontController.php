@@ -595,7 +595,10 @@ class FrontController extends Controller
             })
             ->all();
 
-        $freeShipFrom = (float) (ShippingSetting::first()?->free_delivery_threshold ?? 0);
+        $cur = $region->current();
+        $freeShipFrom = ($cur && !$cur->is_default)
+            ? 0.0
+            : (float) (ShippingSetting::first()?->free_delivery_threshold ?? 0);
 
         $customer = auth('customer')->user();
 

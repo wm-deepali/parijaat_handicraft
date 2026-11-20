@@ -7,6 +7,7 @@ use App\Models\CustomerAddress;
 use App\Models\InvoiceSetting;
 use App\Models\ShippingSetting;
 use App\Models\ShippingSlab;
+use App\Support\Region;
 
 class ShippingCalculator
 {
@@ -14,10 +15,21 @@ class ShippingCalculator
      * @param float|null $payable  Raw items total minus coupon discount. Pass it from
      *                             recalculateTotals(); if omitted it is computed here.
      * @return array{charge: float, known: bool, free: bool, zone: ?string}
-     * known = false when the zone can't be worked out yet (guest / no default address)
+     * known = false when the zone can't be worked out yet (guest without address) or
+     *         when shipping to the selected foreign country is not configured.
      */
     public static function forCart(Cart $cart, ?float $payable = null): array
     {
+        $country = app(Region::class)->current();
+
+        // International: country ka flat charge (default currency me). Free-delivery threshold
+        // yahan lagu nahi hota, aur address ka state India ke zones se compare nahi hota.
+        if ($country && !$country->is_default) {
+            return $country->shipping_charge === null
+                ? self::result(0, false, false, 'intl')
+                : self::result((float) $country->shipping_charge, true, false, 'intl');
+        }
+
         $s = ShippingSetting::first();
 
         if (!$s) {
@@ -33,9 +45,7 @@ class ShippingCalculator
             return self::result(0, true, true);
         }
 
-        $address = $cart->customer_id
-            ? CustomerAddress::where('customer_id', $cart->customer_id)->where('is_default', 1)->first()
-            : null;
+        $address = self::addressFor($cart);
 
         if (!$address) {
             return self::result(0, false);
@@ -54,6 +64,25 @@ class ShippingCalculator
         };
 
         return self::result($charge, true, false, $zone);
+    }
+
+    /** Customer ka default address; guest ke liye checkout page ne jo address session me rakha hai. */
+    protected static function addressFor(Cart $cart): ?CustomerAddress
+    {
+        if ($cart->customer_id) {
+            return CustomerAddress::where('customer_id', $cart->customer_id)->where('is_default', 1)->first();
+        }
+
+        $g = request()->hasSession() ? session('guest_checkout_address') : null;
+
+        if (!$g || empty($g['state_id'])) {
+            return null;
+        }
+
+        return (new CustomerAddress())->forceFill([
+            'state_id' => $g['state_id'],
+            'city_id' => $g['city_id'] ?? null,
+        ]);
     }
 
     protected static function zone(CustomerAddress $address): string

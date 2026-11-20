@@ -6,6 +6,7 @@ use App\Http\Controllers\Controller;
 use App\Models\InvoiceSetting;
 use App\Models\RefundTransaction;
 use App\Services\CreditNoteService;
+use App\Support\RefundMoney;
 use Barryvdh\DomPDF\Facade\Pdf;
 
 class CreditNoteController extends Controller
@@ -61,6 +62,10 @@ class CreditNoteController extends Controller
             'setting' => $setting,
             'logo_64' => $logo_64,
             'isPdf' => $isPdf,
+
+            // international orders: refund customer ki currency me ("AED 440.70"); credit-note blade me use hoga
+            'refundLabel' => RefundMoney::label($order, (float) $refund->amount),
+            'isForeign' => !in_array($order->tax_handling, [null, 'india_gst'], true),
         ];
     }
 }

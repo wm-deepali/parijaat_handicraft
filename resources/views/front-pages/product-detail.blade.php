@@ -27,14 +27,14 @@
     $inStock     = $product->stock > 0;
     
     $tiers   = $product->price_type === 'range' ? $product->priceTiers : collect();
-$isRange = $tiers->isNotEmpty();
-$tiersJs = $tiers->map(fn ($t) => ['from' => $t->min_qty, 'to' => $t->max_qty, 'price' => (float) $t->price])->values();
+    $isRange = $tiers->isNotEmpty();
+    $tiersJs = $tiers->map(fn ($t) => ['from' => $t->min_qty, 'to' => $t->max_qty, 'price' => (float) $t->price])->values();
 
     $shareUrl   = urlencode(url()->current());
     $shareTitle = urlencode($product->name . ' | ' . config('app.name'));
     $shareImg   = urlencode($product->display_image);
 
-  $specs = collect($product->specifications ?? [])
+    $specs = collect($product->specifications ?? [])
         ->filter(fn ($r) => filled($r['label'] ?? null) && filled($r['value'] ?? null));
 
     $accordions = [
@@ -48,6 +48,9 @@ $tiersJs = $tiers->map(fn ($t) => ['from' => $t->min_qty, 'to' => $t->max_qty, '
     $total = (int) $product->reviews_count;
     $avg   = (float) $product->avg_rating;
     $tabCounts = [1 => $total, 2 => count($reviewTabs[2]), 3 => (int) ($ratingBreakdown[5] ?? 0)];
+
+    $wishOn = (bool) ($general->wishlist ?? true);
+    $wished = $wishOn && in_array($product->id, \App\Models\Wishlist::currentProductIds());
 
     $arrowPrev = '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M15 5l-7 7 7 7" /></svg>';
     $arrowNext = '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M9 5l7 7-7 7" /></svg>';
@@ -81,10 +84,13 @@ $tiersJs = $tiers->map(fn ($t) => ['from' => $t->min_qty, 'to' => $t->max_qty, '
 <!-- GALLERY -->
 <div class="detail-gallery">
     <div class="gallery-main">
-        <button type="button" class="gallery-wish wish-btn" aria-label="Add to wishlist"
-            data-id="{{ $product->id }}">
-            <i class="fa-regular fa-heart"></i>
-        </button>
+        @if ($wishOn)
+            <button type="button" @class(['gallery-wish', 'wish-btn', 'is-wished' => $wished])
+                aria-label="{{ $wished ? 'Remove from wishlist' : 'Add to wishlist' }}"
+                aria-pressed="{{ $wished ? 'true' : 'false' }}" data-id="{{ $product->id }}">
+                <i class="{{ $wished ? 'fa-solid' : 'fa-regular' }} fa-heart"></i>
+            </button>
+        @endif
 
         <div class="swiper detailMain">
             <div class="swiper-wrapper">
@@ -274,9 +280,14 @@ $tiersJs = $tiers->map(fn ($t) => ['from' => $t->min_qty, 'to' => $t->max_qty, '
                                         <i class="fa-solid fa-plus"></i>
                                     </button>
                                 </div>
-                                <button type="button" class="wish-link">
-                                    <i class="fa-regular fa-heart"></i> Add to Wishlist
-                                </button>
+                                @if ($wishOn)
+                                    <button type="button" @class(['wish-link', 'is-wished' => $wished])
+                                        aria-pressed="{{ $wished ? 'true' : 'false' }}" data-id="{{ $product->id }}">
+                                        <i class="{{ $wished ? 'fa-solid' : 'fa-regular' }} fa-heart"></i>
+                                        <span class="wl-text">{{ $wished ? 'Added to Wishlist' : 'Add to Wishlist' }}</span>
+                                    </button>
+                                @endif
+                                
                             </div>
                             <div class="act-btns">
                                 <button type="button" class="btn btn-outline-black js-add-cart" data-id="{{ $product->id }}"

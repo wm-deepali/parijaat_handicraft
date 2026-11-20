@@ -987,7 +987,7 @@
                                             style="font-size:11.5px;color:var(--text-hint)">{{ $o->created_at->format('h:i A') }}</span>
                                     </td>
                                     <td class="units-cell">{{ $o->items->count() }}</td>
-                                    <td class="rev-cell">₹{{ number_format($o->grand_total, 0) }}</td>
+                                    <td class="rev-cell">@defaultSymbol(){{ number_format($o->grand_total, 0) }}</td>
                                     <td><span
                                             style="font-size:12.5px;color:var(--text-secondary)">{{ strtoupper($o->payment_method) }}</span>
                                     </td>
@@ -1026,7 +1026,7 @@
                             <tr>
                                 <td colspan="3">Period Total ({{ $orders->count() }} shown)</td>
                                 <td style="color:var(--text-secondary)">{{ $periodItemsTotal }} items</td>
-                                <td style="color:var(--accent)">₹{{ number_format($periodAmountTotal, 0) }}</td>
+                                <td style="color:var(--accent)">@defaultSymbol(){{ number_format($periodAmountTotal, 0) }}</td>
                                 <td colspan="4"></td>
                             </tr>
                         </tfoot>
@@ -1122,7 +1122,7 @@
                             <span style="font-size:14px;font-weight:650;color:var(--text-primary)">Avg. Order
                                 Value</span>
                             <span
-                                style="font-size:18px;font-weight:750;color:var(--accent)">₹{{ number_format($avgOrderValue) }}</span>
+                                style="font-size:18px;font-weight:750;color:var(--accent)">@defaultSymbol(){{ number_format($avgOrderValue) }}</span>
                         </div>
                     </div>
                 </div>

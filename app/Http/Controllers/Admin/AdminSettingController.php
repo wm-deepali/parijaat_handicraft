@@ -166,49 +166,43 @@ class AdminSettingController extends Controller
             ->with('success', 'Invoice & GST settings updated successfully.');
     }
 
-    public static function generateInvoiceNumber()
+    public static function generateInvoiceNumber(string $type = 'india')
     {
-        return DB::transaction(function () {
+        return DB::transaction(function () use ($type) {
             $setting = InvoiceSetting::lockForUpdate()->first();
 
+            $isExport = $type === 'export';
+            $prefixCol = $isExport ? 'export_invoice_prefix' : 'invoice_prefix';
+            $serialCol = $isExport ? 'export_invoice_serial' : 'invoice_serial';
+
             if (!$setting) {
-                return 'INV/00001';
+                return ($isExport ? 'EXP' : 'INV') . '/00001';
             }
 
-            $serial = $setting->invoice_serial;
-            $year = now()->year;
-            $nextYear = substr($year + 1, -2);
+            $serial = (int) ($setting->{$serialCol} ?: 1);
 
-            $yearPart = '';
-            switch ($setting->invoice_year_format) {
-                case 'slash':
-                    $yearPart = $year . '-' . $nextYear;
-                    break;
-                case 'year':
-                    $yearPart = $year;
-                    break;
-                case 'none':
-                default:
-                    $yearPart = '';
-                    break;
-            }
+            // Financial year: April se March (Jan-Mar me pichla saal start hota hai)
+            $fyStart = now()->month >= 4 ? now()->year : now()->year - 1;
+            $fyEnd = substr((string) ($fyStart + 1), -2);
+
+            $yearPart = match ($setting->invoice_year_format) {
+                'slash' => $fyStart . '-' . $fyEnd,
+                'year' => (string) $fyStart,
+                default => '',
+            };
 
             $parts = [];
-            if (!empty($setting->invoice_prefix)) {
-                $parts[] = $setting->invoice_prefix;
+            if (!empty($setting->{$prefixCol})) {
+                $parts[] = $setting->{$prefixCol};
             }
-            if (!empty($yearPart)) {
+            if ($yearPart !== '') {
                 $parts[] = $yearPart;
             }
             $parts[] = str_pad($serial, 5, '0', STR_PAD_LEFT);
 
-            $invoiceNumber = implode(
-                $setting->invoice_separator ?: '/',
-                $parts
-            );
+            $invoiceNumber = implode($setting->invoice_separator ?: '/', $parts);
 
-            // increment next invoice number
-            $setting->increment('invoice_serial');
+            $setting->increment($serialCol);
 
             return $invoiceNumber;
         });

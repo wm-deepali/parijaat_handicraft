@@ -157,7 +157,7 @@
                 </div>
                 <div class="sp-kpi">
                     <div class="sp-kpi-top"><span class="sp-kpi-label">Total Wishlist Value</span><div class="sp-kpi-icon ic-green"><i class="fa fa-rupee-sign"></i></div></div>
-                    <div class="sp-kpi-value">₹{{ number_format($totalValue / 100000, 1) }}L</div>
+                    <div class="sp-kpi-value">@defaultSymbol(){{ number_format($totalValue / 100000, 1) }}L</div>
                     <div class="sp-kpi-sub">Combined product value</div>
                 </div>
             </div>
@@ -240,8 +240,8 @@
                                 </td>
                                 <td class="center"><span class="sp-count-badge">{{ $row->itemCount }}</span></td>
                                 <td>
-                                    <div class="sp-value">₹{{ number_format($row->totalValue) }}</div>
-                                    <div class="sp-value-sub">avg ₹{{ number_format($row->avgValue) }}</div>
+                                    <div class="sp-value">@defaultSymbol(){{ number_format($row->totalValue) }}</div>
+                                    <div class="sp-value-sub">avg @defaultSymbol(){{ number_format($row->avgValue) }}</div>
                                 </td>
                                 <td>
                                     @if($row->heat === 'hot')

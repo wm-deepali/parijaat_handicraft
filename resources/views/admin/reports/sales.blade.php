@@ -235,7 +235,7 @@
                         <span class="kpi-tile-label">Total Revenue</span>
                         <div class="kpi-tile-icon green"><i class="fa fa-inr"></i></div>
                     </div>
-                    <div class="kpi-value">₹{{ number_format($revenueThis) }}</div>
+                    <div class="kpi-value">@defaultSymbol(){{ number_format($revenueThis) }}</div>
                     @if($revenueGrowth > 0)
                         <div class="kpi-badge up"><i class="fa fa-arrow-up"></i> {{ $revenueGrowth }}% vs prev period</div>
                     @elseif($revenueGrowth < 0)
@@ -267,7 +267,7 @@
                         <span class="kpi-tile-label">Avg. Order Value</span>
                         <div class="kpi-tile-icon purple"><i class="fa fa-bar-chart"></i></div>
                     </div>
-                    <div class="kpi-value">₹{{ number_format($aovThis) }}</div>
+                    <div class="kpi-value">@defaultSymbol(){{ number_format($aovThis) }}</div>
                     @if($aovGrowth > 0)
                         <div class="kpi-badge up"><i class="fa fa-arrow-up"></i> {{ $aovGrowth }}% vs prev period</div>
                     @elseif($aovGrowth < 0)
@@ -323,7 +323,7 @@
                         @if($bestSalesDay)
                             <div style="font-size:12px;color:var(--text-hint);margin-bottom:10px">
                                 📈 Best day: <strong style="color:var(--text-primary)">{{ \Carbon\Carbon::parse($bestSalesDay)->format('d M Y') }}</strong>
-                                — ₹{{ number_format($bestSalesAmount) }}
+                                — @defaultSymbol(){{ number_format($bestSalesAmount) }}
                             </div>
                         @endif
                         <div class="chart-wrap-lg">
@@ -350,7 +350,7 @@
                                         <div class="cat-color-dot" style="background:{{ $cat['color'] }}"></div>
                                         <span class="cat-row-name">{{ $cat['name'] }}</span>
                                         <span class="cat-row-pct">{{ $cat['pct'] }}%</span>
-                                        <span class="cat-row-rev">₹{{ number_format($cat['revenue']) }}</span>
+                                        <span class="cat-row-rev">@defaultSymbol(){{ number_format($cat['revenue']) }}</span>
                                     </div>
                                 @endforeach
                             </div>
@@ -418,12 +418,12 @@
                         <div class="compare-strip">
                             <div class="compare-cell">
                                 <div class="compare-cell-label">This Period</div>
-                                <div class="compare-cell-value">₹{{ number_format($revenueThis) }}</div>
+                                <div class="compare-cell-value">@defaultSymbol(){{ number_format($revenueThis) }}</div>
                                 <div class="compare-cell-sub">{{ $start->format('d M') }} – {{ $end->format('d M Y') }}</div>
                             </div>
                             <div class="compare-cell" style="background:#fafafa">
                                 <div class="compare-cell-label">Last Period</div>
-                                <div class="compare-cell-value" style="color:var(--text-secondary)">₹{{ number_format($revenuePrev) }}</div>
+                                <div class="compare-cell-value" style="color:var(--text-secondary)">@defaultSymbol(){{ number_format($revenuePrev) }}</div>
                                 <div class="compare-cell-sub">Previous {{ $start->diffInDays($end) + 1 }} days</div>
                             </div>
                         </div>
@@ -453,7 +453,7 @@
                                     <tr>
                                         <td style="font-weight:500">{{ $row['date']->format('d M, D') }}</td>
                                         <td class="units-cell">{{ number_format($row['orders']) }}</td>
-                                        <td class="rev-cell">₹{{ number_format($row['revenue']) }}</td>
+                                        <td class="rev-cell">@defaultSymbol(){{ number_format($row['revenue']) }}</td>
                                         <td>
                                             @if($row['growth'] > 0)
                                                 <span class="growth up"><i class="fa fa-arrow-up"></i> {{ $row['growth'] }}%</span>
@@ -470,7 +470,7 @@
                                 <tr>
                                     <td>7-Day Total</td>
                                     <td style="color:var(--text-secondary)">{{ number_format($weekTotalOrders) }}</td>
-                                    <td style="color:var(--accent)">₹{{ number_format($weekTotalRevenue) }}</td>
+                                    <td style="color:var(--accent)">@defaultSymbol(){{ number_format($weekTotalRevenue) }}</td>
                                     <td></td>
                                 </tr>
                             </tfoot>
@@ -523,8 +523,8 @@
                                     </td>
                                     <td><span style="font-size:12.5px;color:var(--text-secondary)">{{ $product['category'] }}</span></td>
                                     <td><span class="units-cell">{{ number_format($product['units']) }}</span></td>
-                                    <td><span class="rev-cell">₹{{ number_format($product['revenue']) }}</span></td>
-                                    <td><span style="font-size:13px;color:var(--text-secondary)">₹{{ number_format($product['avg_price']) }}</span></td>
+                                    <td><span class="rev-cell">@defaultSymbol(){{ number_format($product['revenue']) }}</span></td>
+                                    <td><span style="font-size:13px;color:var(--text-secondary)">@defaultSymbol(){{ number_format($product['avg_price']) }}</span></td>
                                     <td>
                                         <div style="display:flex;align-items:center;gap:8px">
                                             <div class="prog-bar" style="width:120px">
@@ -554,7 +554,7 @@
                                 <tr>
                                     <td colspan="3">Top {{ $topProducts->count() }} Total</td>
                                     <td style="color:var(--text-secondary)">{{ number_format($top5UnitsTotal) }} units</td>
-                                    <td style="color:var(--accent)">₹{{ number_format($top5RevenueTotal) }}</td>
+                                    <td style="color:var(--accent)">@defaultSymbol(){{ number_format($top5RevenueTotal) }}</td>
                                     <td colspan="3"></td>
                                 </tr>
                             </tfoot>
@@ -586,7 +586,7 @@
                                     <tr>
                                         <td><span style="font-size:13px;font-weight:500;color:{{ $pm['color'] }}">{{ $pm['label'] }}</span></td>
                                         <td class="units-cell">{{ number_format($pm['txns']) }}</td>
-                                        <td class="rev-cell">₹{{ number_format($pm['revenue']) }}</td>
+                                        <td class="rev-cell">@defaultSymbol(){{ number_format($pm['revenue']) }}</td>
                                         <td><span style="font-size:12px;font-weight:600;color:var(--text-primary)">{{ $pm['share'] }}%</span></td>
                                     </tr>
                                 @empty
@@ -600,7 +600,7 @@
                                     <tr>
                                         <td>Total</td>
                                         <td style="color:var(--text-secondary)">{{ number_format($paymentMethods->sum('txns')) }}</td>
-                                        <td style="color:var(--accent)">₹{{ number_format($revenueThis) }}</td>
+                                        <td style="color:var(--accent)">@defaultSymbol(){{ number_format($revenueThis) }}</td>
                                         <td style="color:var(--text-secondary)">100%</td>
                                     </tr>
                                 </tfoot>
@@ -617,29 +617,29 @@
                     <div class="sc-body">
                         <div class="info-row">
                             <span class="info-label">Gross Revenue</span>
-                            <span class="info-value">₹{{ number_format($grossRevenue) }}</span>
+                            <span class="info-value">@defaultSymbol(){{ number_format($grossRevenue) }}</span>
                         </div>
                         <div class="info-row">
                             <span class="info-label">Discounts Given</span>
-                            <span class="info-value" style="color:var(--red)">− ₹{{ number_format($discountsGiven) }}</span>
+                            <span class="info-value" style="color:var(--red)">− @defaultSymbol(){{ number_format($discountsGiven) }}</span>
                         </div>
                         <div class="info-row">
                             <span class="info-label">Returns / Refunds</span>
-                            <span class="info-value" style="color:var(--red)">− ₹{{ number_format($refundsTotal) }}</span>
+                            <span class="info-value" style="color:var(--red)">− @defaultSymbol(){{ number_format($refundsTotal) }}</span>
                         </div>
                         <div class="info-row">
                             <span class="info-label">Tax Collected (GST)</span>
-                            <span class="info-value">₹{{ number_format($taxCollected) }}</span>
+                            <span class="info-value">@defaultSymbol(){{ number_format($taxCollected) }}</span>
                         </div>
                         <div class="info-row" style="border-top:2px solid var(--border);margin-top:4px;padding-top:12px">
                             <span style="font-size:14px;font-weight:650;color:var(--text-primary)">Net Revenue</span>
-                            <span style="font-size:18px;font-weight:750;color:var(--accent)">₹{{ number_format($revenueThis) }}</span>
+                            <span style="font-size:18px;font-weight:750;color:var(--accent)">@defaultSymbol(){{ number_format($revenueThis) }}</span>
                         </div>
                         @if($bestSalesDay)
                             <div class="info-row">
                                 <span class="info-label">Best Sales Day</span>
                                 <span class="info-value">
-                                    {{ \Carbon\Carbon::parse($bestSalesDay)->format('D d M') }} — ₹{{ number_format($bestSalesAmount) }}
+                                    {{ \Carbon\Carbon::parse($bestSalesDay)->format('D d M') }} — @defaultSymbol(){{ number_format($bestSalesAmount) }}
                                 </span>
                             </div>
                         @endif
@@ -676,7 +676,7 @@
         data: {
             labels,
             datasets: [{
-                label: 'Revenue (₹)',
+                label: 'Revenue (@defaultSymbol())',
                 data: series,
                 fill: true,
                 tension: 0.45,
@@ -701,14 +701,14 @@
                 legend: { display: false },
                 tooltip: {
                     backgroundColor: '#202223', cornerRadius: 8, padding: 10,
-                    callbacks: { label: v => ' ₹' + v.parsed.y.toLocaleString('en-IN') }
+                    callbacks: { label: v => ' @defaultSymbol()' + v.parsed.y.toLocaleString('en-IN') }
                 }
             },
             scales: {
                 x: { grid: { display: false }, ticks: { color: '#8c9196', font: { size: 11 }, maxTicksLimit: 15 }, border: { display: false } },
                 y: {
                     grid: { color: '#f1f2f4' }, border: { display: false },
-                    ticks: { color: '#8c9196', font: { size: 11 }, callback: v => '₹' + (v >= 1000 ? (v/1000).toFixed(0)+'k' : v) }
+                    ticks: { color: '#8c9196', font: { size: 11 }, callback: v => '@defaultSymbol()' + (v >= 1000 ? (v/1000).toFixed(0)+'k' : v) }
                 }
             }
         }
@@ -815,14 +815,14 @@
                 legend: { position: 'bottom', labels: { font: { size: 11 }, boxWidth: 10, padding: 10 } },
                 tooltip: {
                     backgroundColor: '#202223', cornerRadius: 8,
-                    callbacks: { label: v => ' ₹' + v.parsed.y.toLocaleString('en-IN') }
+                    callbacks: { label: v => ' @defaultSymbol()' + v.parsed.y.toLocaleString('en-IN') }
                 }
             },
             scales: {
                 x: { grid: { display: false }, ticks: { font: { size: 11 }, color: '#8c9196' }, border: { display: false } },
                 y: {
                     grid: { color: '#f1f2f4' }, border: { display: false },
-                    ticks: { font: { size: 11 }, color: '#8c9196', callback: v => '₹' + (v >= 1000 ? (v/1000).toFixed(0)+'k' : v) }
+                    ticks: { font: { size: 11 }, color: '#8c9196', callback: v => '@defaultSymbol()' + (v >= 1000 ? (v/1000).toFixed(0)+'k' : v) }
                 }
             }
         }

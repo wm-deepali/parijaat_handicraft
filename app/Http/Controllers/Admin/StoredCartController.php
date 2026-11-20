@@ -107,8 +107,11 @@ class StoredCartController extends Controller
         $this->applyFilters($query, $request);
 
         $filename = 'stored-carts-' . now()->format('Y-m-d-His') . '.csv';
+        $code = app(\App\Support\Region::class)->default()?->currency_code;
+        $cur = $code ? " ({$code})" : '';
 
-        return response()->streamDownload(function () use ($query) {
+        return response()->streamDownload(function () use ($query, $cur) {
+
 
             $handle = fopen('php://output', 'w');
 
@@ -122,10 +125,10 @@ class StoredCartController extends Controller
                 'Customer Phone',
                 'Total Items',
                 'Total Qty',
-                'Subtotal (₹)',
-                'Discount (₹)',
-                'Tax Amount (₹)',
-                'Grand Total (₹)',
+                'Subtotal' . $cur,
+                'Discount' . $cur,
+                'Tax Amount' . $cur,
+                'Grand Total' . $cur,
                 'Coupon Code',
                 'GST Type',
                 'Product Names',
@@ -202,8 +205,8 @@ class StoredCartController extends Controller
             $query->whereHas(
                 'customer',
                 fn($q) =>
-                $q->where('name', 'like', "%{$search}%")
-                    ->orWhere('email', 'like', "%{$search}%")
+                    $q->where('name', 'like', "%{$search}%")
+                        ->orWhere('email', 'like', "%{$search}%")
             );
         }
 

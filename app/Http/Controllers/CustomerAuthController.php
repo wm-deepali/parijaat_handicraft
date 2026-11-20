@@ -50,11 +50,9 @@ class CustomerAuthController extends Controller
     // Fallback when there is no intended URL
     private function afterAuthUrl(): string
     {
-        return \Illuminate\Support\Facades\Route::has('user.dashboard.index')
-            ? route('user.dashboard.index')
-            : route('home');
+        return route('dashboard');
     }
-
+    
     public function logout(Request $request)
     {
         Auth::guard('customer')->logout();

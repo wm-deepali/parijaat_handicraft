@@ -358,7 +358,7 @@
                             <div class="sp-field">
                                 <label class="sp-label">Default Delivery Charge <span class="sp-req">*</span></label>
                                 <div class="sp-input-wrap">
-                                    <span class="sp-input-prefix">₹</span>
+                                    <span class="sp-input-prefix">@defaultSymbol()</span>
                                     <input type="number" name="default_charge" class="sp-input" value="{{ old('default_charge',$rules?->default_charge??50) }}" placeholder="50" min="0">
                                 </div>
                                 <span class="sp-hint">Applied when no other rule matches.</span>
@@ -400,9 +400,9 @@
                         <div id="freeRulesWrap">
                             <div class="sp-rule-row">
                                 <div class="sp-field"><label class="sp-label" style="text-transform:none;font-size:11px">Condition</label><div class="sp-select-wrap"><select name="free_rules[0][condition]" class="sp-select" style="height:34px;font-size:13px"><option value="above_amount">Order Amount ≥</option><option value="promo_code">Promo Code</option><option value="first_order">First Order</option></select></div></div>
-                                <div class="sp-field"><label class="sp-label" style="text-transform:none;font-size:11px">Value (₹ or Code)</label><div class="sp-input-wrap"><span class="sp-input-prefix">₹</span><input type="text" name="free_rules[0][value]" class="sp-input" value="999" style="height:34px;font-size:13px"></div></div>
+                                <div class="sp-field"><label class="sp-label" style="text-transform:none;font-size:11px">Value (@defaultSymbol() or Code)</label><div class="sp-input-wrap"><span class="sp-input-prefix">@defaultSymbol()</span><input type="text" name="free_rules[0][value]" class="sp-input" value="999" style="height:34px;font-size:13px"></div></div>
                                 <div class="sp-field"><label class="sp-label" style="text-transform:none;font-size:11px">Applies To</label><div class="sp-select-wrap"><select name="free_rules[0][applies_to]" class="sp-select" style="height:34px;font-size:13px"><option value="all">All Products</option><option value="selected_categories">Selected Categories</option></select></div></div>
-                                <div class="sp-field"><label class="sp-label" style="text-transform:none;font-size:11px">Label (shown to customer)</label><input type="text" name="free_rules[0][label]" class="sp-input" value="Free Delivery above ₹999" style="height:34px;font-size:13px"></div>
+                                <div class="sp-field"><label class="sp-label" style="text-transform:none;font-size:11px">Label (shown to customer)</label><input type="text" name="free_rules[0][label]" class="sp-input" value="Free Delivery above @defaultSymbol()999" style="height:34px;font-size:13px"></div>
                                 <button type="button" class="sp-rule-del-btn" onclick="removeRule(this)"><i class="fa fa-trash"></i></button>
                             </div>
                         </div>
@@ -418,16 +418,16 @@
                         <p class="ds-section-desc">Fixed delivery charges for specific order amount ranges.</p>
                         <div id="flatRulesWrap">
                             <div class="sp-rule-row">
-                                <div class="sp-field"><label class="sp-label" style="text-transform:none;font-size:11px">Amount From (₹)</label><div class="sp-input-wrap"><span class="sp-input-prefix">₹</span><input type="number" name="flat_rules[0][amount_from]" class="sp-input" value="0" style="height:34px;font-size:13px"></div></div>
-                                <div class="sp-field"><label class="sp-label" style="text-transform:none;font-size:11px">Amount To (₹)</label><div class="sp-input-wrap"><span class="sp-input-prefix">₹</span><input type="number" name="flat_rules[0][amount_to]" class="sp-input" value="499" style="height:34px;font-size:13px"></div></div>
-                                <div class="sp-field"><label class="sp-label" style="text-transform:none;font-size:11px">Delivery Charge (₹)</label><div class="sp-input-wrap"><span class="sp-input-prefix">₹</span><input type="number" name="flat_rules[0][charge]" class="sp-input" value="99" style="height:34px;font-size:13px"></div></div>
+                                <div class="sp-field"><label class="sp-label" style="text-transform:none;font-size:11px">Amount From (@defaultSymbol())</label><div class="sp-input-wrap"><span class="sp-input-prefix">@defaultSymbol()</span><input type="number" name="flat_rules[0][amount_from]" class="sp-input" value="0" style="height:34px;font-size:13px"></div></div>
+                                <div class="sp-field"><label class="sp-label" style="text-transform:none;font-size:11px">Amount To (@defaultSymbol())</label><div class="sp-input-wrap"><span class="sp-input-prefix">@defaultSymbol()</span><input type="number" name="flat_rules[0][amount_to]" class="sp-input" value="499" style="height:34px;font-size:13px"></div></div>
+                                <div class="sp-field"><label class="sp-label" style="text-transform:none;font-size:11px">Delivery Charge (@defaultSymbol())</label><div class="sp-input-wrap"><span class="sp-input-prefix">@defaultSymbol()</span><input type="number" name="flat_rules[0][charge]" class="sp-input" value="99" style="height:34px;font-size:13px"></div></div>
                                 <div class="sp-field"><label class="sp-label" style="text-transform:none;font-size:11px">Label</label><input type="text" name="flat_rules[0][label]" class="sp-input" value="Standard Delivery" style="height:34px;font-size:13px"></div>
                                 <button type="button" class="sp-rule-del-btn" onclick="removeRule(this)"><i class="fa fa-trash"></i></button>
                             </div>
                             <div class="sp-rule-row">
-                                <div class="sp-field"><label class="sp-label" style="text-transform:none;font-size:11px">Amount From (₹)</label><div class="sp-input-wrap"><span class="sp-input-prefix">₹</span><input type="number" name="flat_rules[1][amount_from]" class="sp-input" value="500" style="height:34px;font-size:13px"></div></div>
-                                <div class="sp-field"><label class="sp-label" style="text-transform:none;font-size:11px">Amount To (₹)</label><div class="sp-input-wrap"><span class="sp-input-prefix">₹</span><input type="number" name="flat_rules[1][amount_to]" class="sp-input" value="998" style="height:34px;font-size:13px"></div></div>
-                                <div class="sp-field"><label class="sp-label" style="text-transform:none;font-size:11px">Delivery Charge (₹)</label><div class="sp-input-wrap"><span class="sp-input-prefix">₹</span><input type="number" name="flat_rules[1][charge]" class="sp-input" value="50" style="height:34px;font-size:13px"></div></div>
+                                <div class="sp-field"><label class="sp-label" style="text-transform:none;font-size:11px">Amount From (@defaultSymbol())</label><div class="sp-input-wrap"><span class="sp-input-prefix">@defaultSymbol()</span><input type="number" name="flat_rules[1][amount_from]" class="sp-input" value="500" style="height:34px;font-size:13px"></div></div>
+                                <div class="sp-field"><label class="sp-label" style="text-transform:none;font-size:11px">Amount To (@defaultSymbol())</label><div class="sp-input-wrap"><span class="sp-input-prefix">@defaultSymbol()</span><input type="number" name="flat_rules[1][amount_to]" class="sp-input" value="998" style="height:34px;font-size:13px"></div></div>
+                                <div class="sp-field"><label class="sp-label" style="text-transform:none;font-size:11px">Delivery Charge (@defaultSymbol())</label><div class="sp-input-wrap"><span class="sp-input-prefix">@defaultSymbol()</span><input type="number" name="flat_rules[1][charge]" class="sp-input" value="50" style="height:34px;font-size:13px"></div></div>
                                 <div class="sp-field"><label class="sp-label" style="text-transform:none;font-size:11px">Label</label><input type="text" name="flat_rules[1][label]" class="sp-input" value="Reduced Delivery" style="height:34px;font-size:13px"></div>
                                 <button type="button" class="sp-rule-del-btn" onclick="removeRule(this)"><i class="fa fa-trash"></i></button>
                             </div>
@@ -453,16 +453,16 @@
                             </div>
                             <div class="sp-field">
                                 <label class="sp-label">COD Charge Value</label>
-                                <div class="sp-input-wrap"><span class="sp-input-prefix">₹ / %</span><input type="number" name="cod_charge_value" class="sp-input" value="{{ old('cod_charge_value',$rules?->cod_charge_value??30) }}" placeholder="30" min="0"></div>
+                                <div class="sp-input-wrap"><span class="sp-input-prefix">@defaultSymbol() / %</span><input type="number" name="cod_charge_value" class="sp-input" value="{{ old('cod_charge_value',$rules?->cod_charge_value??30) }}" placeholder="30" min="0"></div>
                             </div>
                             <div class="sp-field">
-                                <label class="sp-label">Free COD Above (₹)</label>
-                                <div class="sp-input-wrap"><span class="sp-input-prefix">₹</span><input type="number" name="cod_free_above" class="sp-input" value="{{ old('cod_free_above',$rules?->cod_free_above??2000) }}" placeholder="2000" min="0"></div>
+                                <label class="sp-label">Free COD Above (@defaultSymbol())</label>
+                                <div class="sp-input-wrap"><span class="sp-input-prefix">@defaultSymbol()</span><input type="number" name="cod_free_above" class="sp-input" value="{{ old('cod_free_above',$rules?->cod_free_above??2000) }}" placeholder="2000" min="0"></div>
                                 <span class="sp-hint">No COD charge if order is above this amount.</span>
                             </div>
                             <div class="sp-field">
-                                <label class="sp-label">Max COD Order Value (₹)</label>
-                                <div class="sp-input-wrap"><span class="sp-input-prefix">₹</span><input type="number" name="cod_max_order" class="sp-input" value="{{ old('cod_max_order',$rules?->cod_max_order??10000) }}" placeholder="10000" min="0"></div>
+                                <label class="sp-label">Max COD Order Value (@defaultSymbol())</label>
+                                <div class="sp-input-wrap"><span class="sp-input-prefix">@defaultSymbol()</span><input type="number" name="cod_max_order" class="sp-input" value="{{ old('cod_max_order',$rules?->cod_max_order??10000) }}" placeholder="10000" min="0"></div>
                                 <span class="sp-hint">COD not allowed above this value. 0 = no limit.</span>
                             </div>
                         </div>
@@ -479,7 +479,7 @@
                             <div class="sp-rule-row" style="grid-template-columns:140px 1fr 1fr 38px">
                                 <div class="sp-field"><label class="sp-label" style="text-transform:none;font-size:11px">Rule Type</label><div class="sp-select-wrap"><select name="pincode_rules[0][type]" class="sp-select" style="height:34px;font-size:13px"><option value="flat">Flat Charge</option><option value="free">Free Delivery</option><option value="blocked">Block Delivery</option></select></div></div>
                                 <div class="sp-field"><label class="sp-label" style="text-transform:none;font-size:11px">Pincodes (comma / range)</label><input type="text" name="pincode_rules[0][pincodes]" class="sp-input" value="110001, 110002" style="height:34px;font-size:13px"></div>
-                                <div class="sp-field"><label class="sp-label" style="text-transform:none;font-size:11px">Charge (₹)</label><div class="sp-input-wrap"><span class="sp-input-prefix">₹</span><input type="text" name="pincode_rules[0][charge]" class="sp-input" value="0" style="height:34px;font-size:13px"></div></div>
+                                <div class="sp-field"><label class="sp-label" style="text-transform:none;font-size:11px">Charge (@defaultSymbol())</label><div class="sp-input-wrap"><span class="sp-input-prefix">@defaultSymbol()</span><input type="text" name="pincode_rules[0][charge]" class="sp-input" value="0" style="height:34px;font-size:13px"></div></div>
                                 <button type="button" class="sp-rule-del-btn" onclick="removeRule(this)"><i class="fa fa-trash"></i></button>
                             </div>
                         </div>
@@ -497,15 +497,15 @@
                             <div class="sp-rule-row" style="grid-template-columns:1fr 1fr 1fr 1fr 38px">
                                 <div class="sp-field"><label class="sp-label" style="text-transform:none;font-size:11px">From (kg)</label><input type="number" name="weight_rules[0][from]" class="sp-input" value="0" step="0.5" style="height:34px;font-size:13px"></div>
                                 <div class="sp-field"><label class="sp-label" style="text-transform:none;font-size:11px">To (kg)</label><input type="number" name="weight_rules[0][to]" class="sp-input" value="0.5" step="0.5" style="height:34px;font-size:13px"></div>
-                                <div class="sp-field"><label class="sp-label" style="text-transform:none;font-size:11px">Base Charge (₹)</label><div class="sp-input-wrap"><span class="sp-input-prefix">₹</span><input type="number" name="weight_rules[0][charge]" class="sp-input" value="40" style="height:34px;font-size:13px"></div></div>
-                                <div class="sp-field"><label class="sp-label" style="text-transform:none;font-size:11px">Extra per 500g (₹)</label><div class="sp-input-wrap"><span class="sp-input-prefix">₹</span><input type="number" name="weight_rules[0][extra]" class="sp-input" value="0" style="height:34px;font-size:13px"></div></div>
+                                <div class="sp-field"><label class="sp-label" style="text-transform:none;font-size:11px">Base Charge (@defaultSymbol())</label><div class="sp-input-wrap"><span class="sp-input-prefix">@defaultSymbol()</span><input type="number" name="weight_rules[0][charge]" class="sp-input" value="40" style="height:34px;font-size:13px"></div></div>
+                                <div class="sp-field"><label class="sp-label" style="text-transform:none;font-size:11px">Extra per 500g (@defaultSymbol())</label><div class="sp-input-wrap"><span class="sp-input-prefix">@defaultSymbol()</span><input type="number" name="weight_rules[0][extra]" class="sp-input" value="0" style="height:34px;font-size:13px"></div></div>
                                 <button type="button" class="sp-rule-del-btn" onclick="removeRule(this)"><i class="fa fa-trash"></i></button>
                             </div>
                             <div class="sp-rule-row" style="grid-template-columns:1fr 1fr 1fr 1fr 38px">
                                 <div class="sp-field"><label class="sp-label" style="text-transform:none;font-size:11px">From (kg)</label><input type="number" name="weight_rules[1][from]" class="sp-input" value="0.5" step="0.5" style="height:34px;font-size:13px"></div>
                                 <div class="sp-field"><label class="sp-label" style="text-transform:none;font-size:11px">To (kg)</label><input type="number" name="weight_rules[1][to]" class="sp-input" value="2" step="0.5" style="height:34px;font-size:13px"></div>
-                                <div class="sp-field"><label class="sp-label" style="text-transform:none;font-size:11px">Base Charge (₹)</label><div class="sp-input-wrap"><span class="sp-input-prefix">₹</span><input type="number" name="weight_rules[1][charge]" class="sp-input" value="80" style="height:34px;font-size:13px"></div></div>
-                                <div class="sp-field"><label class="sp-label" style="text-transform:none;font-size:11px">Extra per 500g (₹)</label><div class="sp-input-wrap"><span class="sp-input-prefix">₹</span><input type="number" name="weight_rules[1][extra]" class="sp-input" value="20" style="height:34px;font-size:13px"></div></div>
+                                <div class="sp-field"><label class="sp-label" style="text-transform:none;font-size:11px">Base Charge (@defaultSymbol())</label><div class="sp-input-wrap"><span class="sp-input-prefix">@defaultSymbol()</span><input type="number" name="weight_rules[1][charge]" class="sp-input" value="80" style="height:34px;font-size:13px"></div></div>
+                                <div class="sp-field"><label class="sp-label" style="text-transform:none;font-size:11px">Extra per 500g (@defaultSymbol())</label><div class="sp-input-wrap"><span class="sp-input-prefix">@defaultSymbol()</span><input type="number" name="weight_rules[1][extra]" class="sp-input" value="20" style="height:34px;font-size:13px"></div></div>
                                 <button type="button" class="sp-rule-del-btn" onclick="removeRule(this)"><i class="fa fa-trash"></i></button>
                             </div>
                         </div>
@@ -552,7 +552,7 @@
                             <div class="sp-field"><label class="sp-label">Rate Fetch Mode</label><div class="sp-select-wrap"><select name="delhivery_rate_mode" class="sp-select"><option value="manual" selected>Manual (enter below)</option><option value="api">Live API Rates</option></select></div></div>
                         </div>
                         <table class="sp-rate-table">
-                            <thead><tr><th>Zone</th><th>Base (≤500g) ₹</th><th>Per add. 500g ₹</th><th>COD Fee ₹</th><th>COD % (min)</th><th>Fuel %</th><th>Est. Days</th></tr></thead>
+                            <thead><tr><th>Zone</th><th>Base (≤500g) @defaultSymbol()</th><th>Per add. 500g @defaultSymbol()</th><th>COD Fee @defaultSymbol()</th><th>COD % (min)</th><th>Fuel %</th><th>Est. Days</th></tr></thead>
                             <tbody>
                                 <tr><td style="font-weight:600;color:var(--sp-accent)">Local</td><td><input type="number" name="delhivery[local][base]" class="sp-rate-input" value="35"></td><td><input type="number" name="delhivery[local][extra]" class="sp-rate-input" value="15"></td><td><input type="number" name="delhivery[local][cod_flat]" class="sp-rate-input" value="30"></td><td><input type="number" name="delhivery[local][cod_pct]" class="sp-rate-input" value="1.5" step="0.1"></td><td><input type="number" name="delhivery[local][fuel_pct]" class="sp-rate-input" value="3.5" step="0.1"></td><td><input type="text" name="delhivery[local][days]" class="sp-rate-input" value="1–2"></td></tr>
                                 <tr><td style="font-weight:600;color:var(--sp-green)">Zonal</td><td><input type="number" name="delhivery[zonal][base]" class="sp-rate-input" value="50"></td><td><input type="number" name="delhivery[zonal][extra]" class="sp-rate-input" value="20"></td><td><input type="number" name="delhivery[zonal][cod_flat]" class="sp-rate-input" value="30"></td><td><input type="number" name="delhivery[zonal][cod_pct]" class="sp-rate-input" value="1.5" step="0.1"></td><td><input type="number" name="delhivery[zonal][fuel_pct]" class="sp-rate-input" value="3.5" step="0.1"></td><td><input type="text" name="delhivery[zonal][days]" class="sp-rate-input" value="2–4"></td></tr>
@@ -606,7 +606,7 @@
                             <div style="display:flex;align-items:center;gap:10px"><label class="sp-switch"><input type="checkbox" name="bluedart_enabled"><span class="sp-switch-track"></span></label><span class="sp-pill sp-pill-inactive">Inactive</span></div>
                         </div>
                         <table class="sp-rate-table" style="margin-bottom:16px">
-                            <thead><tr><th>Zone</th><th>Base (≤500g) ₹</th><th>Per add. 500g ₹</th><th>COD Fee ₹</th><th>Fuel %</th><th>Docket Fee ₹</th><th>Est. Days</th></tr></thead>
+                            <thead><tr><th>Zone</th><th>Base (≤500g) @defaultSymbol()</th><th>Per add. 500g @defaultSymbol()</th><th>COD Fee @defaultSymbol()</th><th>Fuel %</th><th>Docket Fee @defaultSymbol()</th><th>Est. Days</th></tr></thead>
                             <tbody>
                                 <tr><td style="font-weight:600;color:var(--sp-accent)">Local</td><td><input type="number" name="bluedart[local][base]" class="sp-rate-input" value="60"></td><td><input type="number" name="bluedart[local][extra]" class="sp-rate-input" value="20"></td><td><input type="number" name="bluedart[local][cod_flat]" class="sp-rate-input" value="40"></td><td><input type="number" name="bluedart[local][fuel_pct]" class="sp-rate-input" value="5" step="0.1"></td><td><input type="number" name="bluedart[local][docket]" class="sp-rate-input" value="20"></td><td><input type="text" name="bluedart[local][days]" class="sp-rate-input" value="1–2"></td></tr>
                                 <tr><td style="font-weight:600;color:var(--sp-green)">Zonal</td><td><input type="number" name="bluedart[zonal][base]" class="sp-rate-input" value="85"></td><td><input type="number" name="bluedart[zonal][extra]" class="sp-rate-input" value="30"></td><td><input type="number" name="bluedart[zonal][cod_flat]" class="sp-rate-input" value="40"></td><td><input type="number" name="bluedart[zonal][fuel_pct]" class="sp-rate-input" value="5" step="0.1"></td><td><input type="number" name="bluedart[zonal][docket]" class="sp-rate-input" value="20"></td><td><input type="text" name="bluedart[zonal][days]" class="sp-rate-input" value="2–3"></td></tr>
@@ -634,7 +634,7 @@
                             <div style="display:flex;align-items:center;gap:10px"><label class="sp-switch"><input type="checkbox" name="fedex_enabled"><span class="sp-switch-track"></span></label><span class="sp-pill sp-pill-inactive">Inactive</span></div>
                         </div>
                         <table class="sp-rate-table" style="margin-bottom:16px">
-                            <thead><tr><th>Service</th><th>Base (≤500g) ₹</th><th>Per add. 500g ₹</th><th>Fuel %</th><th>Remote Area ₹</th><th>Est. Days</th></tr></thead>
+                            <thead><tr><th>Service</th><th>Base (≤500g) @defaultSymbol()</th><th>Per add. 500g @defaultSymbol()</th><th>Fuel %</th><th>Remote Area @defaultSymbol()</th><th>Est. Days</th></tr></thead>
                             <tbody>
                                 <tr><td style="font-weight:600;color:var(--sp-accent)">FedEx Priority</td><td><input type="number" name="fedex[priority][base]" class="sp-rate-input" value="150"></td><td><input type="number" name="fedex[priority][extra]" class="sp-rate-input" value="60"></td><td><input type="number" name="fedex[priority][fuel_pct]" class="sp-rate-input" value="6" step="0.1"></td><td><input type="number" name="fedex[priority][remote]" class="sp-rate-input" value="200"></td><td><input type="text" name="fedex[priority][days]" class="sp-rate-input" value="1–2"></td></tr>
                                 <tr><td style="font-weight:600;color:var(--sp-green)">FedEx Economy</td><td><input type="number" name="fedex[economy][base]" class="sp-rate-input" value="90"></td><td><input type="number" name="fedex[economy][extra]" class="sp-rate-input" value="35"></td><td><input type="number" name="fedex[economy][fuel_pct]" class="sp-rate-input" value="6" step="0.1"></td><td><input type="number" name="fedex[economy][remote]" class="sp-rate-input" value="150"></td><td><input type="text" name="fedex[economy][days]" class="sp-rate-input" value="3–5"></td></tr>
@@ -661,7 +661,7 @@
                             <div style="display:flex;align-items:center;gap:10px"><label class="sp-switch"><input type="checkbox" name="dtdc_enabled"><span class="sp-switch-track"></span></label><span class="sp-pill sp-pill-inactive">Inactive</span></div>
                         </div>
                         <table class="sp-rate-table" style="margin-bottom:16px">
-                            <thead><tr><th>Zone</th><th>Base (≤500g) ₹</th><th>Per add. 500g ₹</th><th>COD Fee ₹</th><th>Fuel %</th><th>Est. Days</th></tr></thead>
+                            <thead><tr><th>Zone</th><th>Base (≤500g) @defaultSymbol()</th><th>Per add. 500g @defaultSymbol()</th><th>COD Fee @defaultSymbol()</th><th>Fuel %</th><th>Est. Days</th></tr></thead>
                             <tbody>
                                 <tr><td style="font-weight:600;color:var(--sp-accent)">Local</td><td><input type="number" name="dtdc[local][base]" class="sp-rate-input" value="30"></td><td><input type="number" name="dtdc[local][extra]" class="sp-rate-input" value="12"></td><td><input type="number" name="dtdc[local][cod_flat]" class="sp-rate-input" value="25"></td><td><input type="number" name="dtdc[local][fuel_pct]" class="sp-rate-input" value="4" step="0.1"></td><td><input type="text" name="dtdc[local][days]" class="sp-rate-input" value="1–2"></td></tr>
                                 <tr><td style="font-weight:600;color:var(--sp-green)">Zonal</td><td><input type="number" name="dtdc[zonal][base]" class="sp-rate-input" value="45"></td><td><input type="number" name="dtdc[zonal][extra]" class="sp-rate-input" value="18"></td><td><input type="number" name="dtdc[zonal][cod_flat]" class="sp-rate-input" value="25"></td><td><input type="number" name="dtdc[zonal][fuel_pct]" class="sp-rate-input" value="4" step="0.1"></td><td><input type="text" name="dtdc[zonal][days]" class="sp-rate-input" value="3–5"></td></tr>
@@ -688,7 +688,7 @@
                             <div style="display:flex;align-items:center;gap:10px"><label class="sp-switch"><input type="checkbox" name="ekart_enabled"><span class="sp-switch-track"></span></label><span class="sp-pill sp-pill-inactive">Inactive</span></div>
                         </div>
                         <table class="sp-rate-table" style="margin-bottom:16px">
-                            <thead><tr><th>Zone</th><th>Base (≤500g) ₹</th><th>Per add. 500g ₹</th><th>COD Fee ₹</th><th>Fuel %</th><th>Est. Days</th></tr></thead>
+                            <thead><tr><th>Zone</th><th>Base (≤500g) @defaultSymbol()</th><th>Per add. 500g @defaultSymbol()</th><th>COD Fee @defaultSymbol()</th><th>Fuel %</th><th>Est. Days</th></tr></thead>
                             <tbody>
                                 <tr><td style="font-weight:600;color:var(--sp-accent)">Local</td><td><input type="number" name="ekart[local][base]" class="sp-rate-input" value="28"></td><td><input type="number" name="ekart[local][extra]" class="sp-rate-input" value="10"></td><td><input type="number" name="ekart[local][cod_flat]" class="sp-rate-input" value="25"></td><td><input type="number" name="ekart[local][fuel_pct]" class="sp-rate-input" value="3.5" step="0.1"></td><td><input type="text" name="ekart[local][days]" class="sp-rate-input" value="2–3"></td></tr>
                                 <tr><td style="font-weight:600;color:var(--sp-green)">National</td><td><input type="number" name="ekart[national][base]" class="sp-rate-input" value="50"></td><td><input type="number" name="ekart[national][extra]" class="sp-rate-input" value="18"></td><td><input type="number" name="ekart[national][cod_flat]" class="sp-rate-input" value="30"></td><td><input type="number" name="ekart[national][fuel_pct]" class="sp-rate-input" value="3.5" step="0.1"></td><td><input type="text" name="ekart[national][days]" class="sp-rate-input" value="4–6"></td></tr>
@@ -714,7 +714,7 @@
                             <div style="display:flex;align-items:center;gap:10px"><label class="sp-switch"><input type="checkbox" name="xpressbees_enabled"><span class="sp-switch-track"></span></label><span class="sp-pill sp-pill-inactive">Inactive</span></div>
                         </div>
                         <table class="sp-rate-table" style="margin-bottom:16px">
-                            <thead><tr><th>Zone</th><th>Base (≤500g) ₹</th><th>Per add. 500g ₹</th><th>COD Fee ₹</th><th>Fuel %</th><th>Est. Days</th></tr></thead>
+                            <thead><tr><th>Zone</th><th>Base (≤500g) @defaultSymbol()</th><th>Per add. 500g @defaultSymbol()</th><th>COD Fee @defaultSymbol()</th><th>Fuel %</th><th>Est. Days</th></tr></thead>
                             <tbody>
                                 <tr><td style="font-weight:600;color:var(--sp-accent)">Local</td><td><input type="number" name="xpressbees[local][base]" class="sp-rate-input" value="32"></td><td><input type="number" name="xpressbees[local][extra]" class="sp-rate-input" value="14"></td><td><input type="number" name="xpressbees[local][cod_flat]" class="sp-rate-input" value="28"></td><td><input type="number" name="xpressbees[local][fuel_pct]" class="sp-rate-input" value="4" step="0.1"></td><td><input type="text" name="xpressbees[local][days]" class="sp-rate-input" value="1–2"></td></tr>
                                 <tr><td style="font-weight:600;color:var(--sp-green)">Zonal</td><td><input type="number" name="xpressbees[zonal][base]" class="sp-rate-input" value="48"></td><td><input type="number" name="xpressbees[zonal][extra]" class="sp-rate-input" value="18"></td><td><input type="number" name="xpressbees[zonal][cod_flat]" class="sp-rate-input" value="28"></td><td><input type="number" name="xpressbees[zonal][fuel_pct]" class="sp-rate-input" value="4" step="0.1"></td><td><input type="text" name="xpressbees[zonal][days]" class="sp-rate-input" value="2–4"></td></tr>
@@ -747,6 +747,7 @@
 @include('admin.footer')
 
 <script>
+const SYM = @json(app(\App\Support\Region::class)->defaultSymbol());
 /* ══ Switch main section (Delivery Rules ↔ Courier Charges) ══ */
 function switchMain(key) {
     // Update left main nav
@@ -858,7 +859,7 @@ function addFreeRule() {
     document.getElementById('freeRulesWrap').insertAdjacentHTML('beforeend', `
     <div class="sp-rule-row">
         <div class="sp-field"><label class="sp-label" style="text-transform:none;font-size:11px">Condition</label><div class="sp-select-wrap"><select name="free_rules[${i}][condition]" class="sp-select" style="height:34px;font-size:13px"><option value="above_amount">Order Amount ≥</option><option value="promo_code">Promo Code</option><option value="first_order">First Order</option></select></div></div>
-        <div class="sp-field"><label class="sp-label" style="text-transform:none;font-size:11px">Value (₹ or Code)</label><div class="sp-input-wrap"><span class="sp-input-prefix">₹</span><input type="text" name="free_rules[${i}][value]" class="sp-input" placeholder="value" style="height:34px;font-size:13px"></div></div>
+        <div class="sp-field"><label class="sp-label" style="text-transform:none;font-size:11px">Value (@defaultSymbol() or Code)</label><div class="sp-input-wrap"><span class="sp-input-prefix">@defaultSymbol()</span><input type="text" name="free_rules[${i}][value]" class="sp-input" placeholder="value" style="height:34px;font-size:13px"></div></div>
         <div class="sp-field"><label class="sp-label" style="text-transform:none;font-size:11px">Applies To</label><div class="sp-select-wrap"><select name="free_rules[${i}][applies_to]" class="sp-select" style="height:34px;font-size:13px"><option value="all">All Products</option><option value="selected_categories">Selected Categories</option></select></div></div>
         <div class="sp-field"><label class="sp-label" style="text-transform:none;font-size:11px">Label</label><input type="text" name="free_rules[${i}][label]" class="sp-input" placeholder="Free delivery label" style="height:34px;font-size:13px"></div>
         <button type="button" class="sp-rule-del-btn" onclick="removeRule(this)"><i class="fa fa-trash"></i></button>
@@ -869,9 +870,9 @@ function addFlatRule() {
     const i = flatIdx++;
     document.getElementById('flatRulesWrap').insertAdjacentHTML('beforeend', `
     <div class="sp-rule-row">
-        <div class="sp-field"><label class="sp-label" style="text-transform:none;font-size:11px">Amount From (₹)</label><div class="sp-input-wrap"><span class="sp-input-prefix">₹</span><input type="number" name="flat_rules[${i}][amount_from]" class="sp-input" placeholder="0" style="height:34px;font-size:13px"></div></div>
-        <div class="sp-field"><label class="sp-label" style="text-transform:none;font-size:11px">Amount To (₹)</label><div class="sp-input-wrap"><span class="sp-input-prefix">₹</span><input type="number" name="flat_rules[${i}][amount_to]" class="sp-input" placeholder="999" style="height:34px;font-size:13px"></div></div>
-        <div class="sp-field"><label class="sp-label" style="text-transform:none;font-size:11px">Delivery Charge (₹)</label><div class="sp-input-wrap"><span class="sp-input-prefix">₹</span><input type="number" name="flat_rules[${i}][charge]" class="sp-input" placeholder="50" style="height:34px;font-size:13px"></div></div>
+        <div class="sp-field"><label class="sp-label" style="text-transform:none;font-size:11px">Amount From (@defaultSymbol())</label><div class="sp-input-wrap"><span class="sp-input-prefix">@defaultSymbol()</span><input type="number" name="flat_rules[${i}][amount_from]" class="sp-input" placeholder="0" style="height:34px;font-size:13px"></div></div>
+        <div class="sp-field"><label class="sp-label" style="text-transform:none;font-size:11px">Amount To (${SYM})</label><div class="sp-input-wrap"><span class="sp-input-prefix">@defaultSymbol()</span><input type="number" name="flat_rules[${i}][amount_to]" class="sp-input" placeholder="999" style="height:34px;font-size:13px"></div></div>
+        <div class="sp-field"><label class="sp-label" style="text-transform:none;font-size:11px">Delivery Charge (${SYM})</label><div class="sp-input-wrap"><span class="sp-input-prefix">@defaultSymbol()</span><input type="number" name="flat_rules[${i}][charge]" class="sp-input" placeholder="50" style="height:34px;font-size:13px"></div></div>
         <div class="sp-field"><label class="sp-label" style="text-transform:none;font-size:11px">Label</label><input type="text" name="flat_rules[${i}][label]" class="sp-input" placeholder="Delivery label" style="height:34px;font-size:13px"></div>
         <button type="button" class="sp-rule-del-btn" onclick="removeRule(this)"><i class="fa fa-trash"></i></button>
     </div>`);
@@ -883,7 +884,7 @@ function addPincodeRule() {
     <div class="sp-rule-row" style="grid-template-columns:140px 1fr 1fr 38px">
         <div class="sp-field"><label class="sp-label" style="text-transform:none;font-size:11px">Rule Type</label><div class="sp-select-wrap"><select name="pincode_rules[${i}][type]" class="sp-select" style="height:34px;font-size:13px"><option value="flat">Flat Charge</option><option value="free">Free Delivery</option><option value="blocked">Block Delivery</option></select></div></div>
         <div class="sp-field"><label class="sp-label" style="text-transform:none;font-size:11px">Pincodes</label><input type="text" name="pincode_rules[${i}][pincodes]" class="sp-input" placeholder="110001, 110002-110020" style="height:34px;font-size:13px"></div>
-        <div class="sp-field"><label class="sp-label" style="text-transform:none;font-size:11px">Charge (₹)</label><div class="sp-input-wrap"><span class="sp-input-prefix">₹</span><input type="text" name="pincode_rules[${i}][charge]" class="sp-input" placeholder="0" style="height:34px;font-size:13px"></div></div>
+        <div class="sp-field"><label class="sp-label" style="text-transform:none;font-size:11px">Charge (${SYM})</label><div class="sp-input-wrap"><span class="sp-input-prefix">@defaultSymbol()</span><input type="text" name="pincode_rules[${i}][charge]" class="sp-input" placeholder="0" style="height:34px;font-size:13px"></div></div>
         <button type="button" class="sp-rule-del-btn" onclick="removeRule(this)"><i class="fa fa-trash"></i></button>
     </div>`);
 }
@@ -894,8 +895,8 @@ function addWeightRule() {
     <div class="sp-rule-row" style="grid-template-columns:1fr 1fr 1fr 1fr 38px">
         <div class="sp-field"><label class="sp-label" style="text-transform:none;font-size:11px">From (kg)</label><input type="number" name="weight_rules[${i}][from]" class="sp-input" placeholder="0" step="0.5" style="height:34px;font-size:13px"></div>
         <div class="sp-field"><label class="sp-label" style="text-transform:none;font-size:11px">To (kg)</label><input type="number" name="weight_rules[${i}][to]" class="sp-input" placeholder="1" step="0.5" style="height:34px;font-size:13px"></div>
-        <div class="sp-field"><label class="sp-label" style="text-transform:none;font-size:11px">Base Charge (₹)</label><div class="sp-input-wrap"><span class="sp-input-prefix">₹</span><input type="number" name="weight_rules[${i}][charge]" class="sp-input" placeholder="60" style="height:34px;font-size:13px"></div></div>
-        <div class="sp-field"><label class="sp-label" style="text-transform:none;font-size:11px">Extra per 500g (₹)</label><div class="sp-input-wrap"><span class="sp-input-prefix">₹</span><input type="number" name="weight_rules[${i}][extra]" class="sp-input" placeholder="20" style="height:34px;font-size:13px"></div></div>
+        <div class="sp-field"><label class="sp-label" style="text-transform:none;font-size:11px">Base Charge (${SYM})</label><div class="sp-input-wrap"><span class="sp-input-prefix">@defaultSymbol()</span><input type="number" name="weight_rules[${i}][charge]" class="sp-input" placeholder="60" style="height:34px;font-size:13px"></div></div>
+        <div class="sp-field"><label class="sp-label" style="text-transform:none;font-size:11px">Extra per 500g (${SYM})</label><div class="sp-input-wrap"><span class="sp-input-prefix">@defaultSymbol()</span><input type="number" name="weight_rules[${i}][extra]" class="sp-input" placeholder="20" style="height:34px;font-size:13px"></div></div>
         <button type="button" class="sp-rule-del-btn" onclick="removeRule(this)"><i class="fa fa-trash"></i></button>
     </div>`);
 }

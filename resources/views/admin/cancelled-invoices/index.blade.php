@@ -59,7 +59,7 @@
                 </div>
                 <div class="stat-card">
                     <div class="stat-label">Total Value</div>
-                    <div class="stat-value">₹{{ number_format($stats['total_value'], 0) }}</div>
+                    <div class="stat-value">@defaultSymbol(){{ number_format($stats['total_value'], 0) }}</div>
                 </div>
                 <div class="stat-card">
                     <div class="stat-label">Refund Still Pending</div>
@@ -120,7 +120,7 @@
                                     </td>
                                     <td style="color:var(--text-secondary)">{{ $invoice->created_at->format('d M Y') }}</td>
                                     <td style="color:var(--text-secondary)">{{ $order->updated_at->format('d M Y') }}</td>
-                                    <td style="font-weight:700">₹{{ number_format($order->grand_total, 2) }}</td>
+                                    <td style="font-weight:700">@defaultSymbol(){{ number_format($order->grand_total, 2) }}</td>
                                     <td><span class="pill pill-cancel">Cancelled</span></td>
                                     <td>
                                         @if($refund)

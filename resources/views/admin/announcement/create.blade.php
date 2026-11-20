@@ -83,7 +83,7 @@
                                 <div class="field-group">
                                     <label class="field-label">Title <span class="req">*</span></label>
                                     <input type="text" name="title" class="field-input" required
-                                           placeholder="e.g. Free shipping on orders above ₹999">
+                                           placeholder="e.g. Free shipping on orders above 999">
                                 </div>
 
                                 <div class="field-group">

@@ -22,6 +22,22 @@ class AppServiceProvider extends ServiceProvider
 
     public function boot(): void
     {
+        Blade::directive('defaultSymbol', function () {
+            return "<?php echo e(app(\\App\\Support\\Region::class)->defaultSymbol()); ?>";
+        });
+
+
+        // @moneyDefault($amount): amount already in the default currency, shown as is: "$120.00"
+        Blade::directive('moneyDefault', function ($expression) {
+            $expression = trim((string) $expression);
+
+            if ($expression === '') {
+                return '';
+            }
+
+            return "<?php echo e(app(\\App\\Support\\Region::class)->formatDefault($expression)); ?>";
+        });
+
         // @money($amount): default currency ka amount, customer ki currency me
         Blade::directive('money', function ($expression) {
             $expression = trim((string) $expression);

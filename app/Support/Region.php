@@ -90,7 +90,6 @@ class Region
         return $f > 0 ? (float) $amount / $f : (float) $amount;
     }
 
-    /** "₹1,299.00", "$120.00" ya "AED 440.70" */
     public function format($amount = null, bool $convert = true): string
     {
         if ($amount === null || $amount === '') {
@@ -121,6 +120,44 @@ class Region
     {
         return (int) ($this->current()?->currency?->decimals ?? 2);
     }
+
+    /** Symbol of the store's DEFAULT currency (admin side; ignores the visitor's country). */
+    public function defaultSymbol(): string
+    {
+        $currency = $this->default()?->currency;
+
+        return (string) ($currency?->symbol ?: $currency?->code ?? Setting::first()?->currency_symbol ?? '');
+    }
+
+    public function defaultDecimals(): int
+    {
+        return (int) ($this->default()?->currency?->decimals ?? 2);
+    }
+
+    public function defaultCode(): string
+    {
+        return (string) ($this->default()?->currency_code ?? '');
+    }
+
+    /** Plain number in the default currency, no symbol (for Excel/CSV cells): "3,450.00" */
+    public function numberDefault($amount): string
+    {
+        return number_format((float) $amount, $this->defaultDecimals());
+    }
+
+    /** Amount already in the default currency, shown as-is: "$120.00" / "AED 440.70" */
+    public function formatDefault($amount = null): string
+    {
+        if ($amount === null || $amount === '') {
+            return '';
+        }
+
+        $symbol = $this->defaultSymbol();
+        $space = ($symbol !== '' && ctype_alpha(str_replace(' ', '', $symbol))) ? ' ' : '';
+
+        return $symbol . $space . number_format((float) $amount, $this->defaultDecimals());
+    }
+
 
     /** Detail page ki JS ke liye. */
     public function js(): array

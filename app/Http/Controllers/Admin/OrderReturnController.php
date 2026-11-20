@@ -2,12 +2,12 @@
 
 namespace App\Http\Controllers\Admin;
 
-use App\Http\Controllers\Controller;
 use App\Models\OrderReturn;
-use App\Models\RefundTransaction;
 use Illuminate\Http\Request;
+use App\Support\RefundMoney;
+use App\Models\RefundTransaction;
 use Illuminate\Support\Facades\DB;
-use Illuminate\Support\Facades\Storage;
+use App\Http\Controllers\Controller;
 
 class OrderReturnController extends Controller
 {
@@ -180,7 +180,12 @@ class OrderReturnController extends Controller
                 ->store('order-returns/proofs', 'public');
         }
 
-        DB::transaction(function () use ($request, $orderReturn, $proofPath) {
+        $orderReturn->loadMissing('order');
+        $order = $orderReturn->order;
+        $amountDefault = (float) $orderReturn->refundable_amount;
+        $label = RefundMoney::label($order, $amountDefault);
+
+        DB::transaction(function () use ($request, $orderReturn, $proofPath, $order, $amountDefault, $label) {
             // Only the status changes on the return itself. refund_method,
             // upi_id, bank_name, etc. on $orderReturn remain exactly as the
             // customer submitted them — they are not touched here.
@@ -200,7 +205,7 @@ class OrderReturnController extends Controller
                 'status' => 'completed',
                 'refund_method' => $request->refund_method,
                 'utr_id' => $request->utr_id,
-                'amount' => $orderReturn->refundable_amount,
+                'amount' => $amountDefault,              // default currency
                 'remarks' => $request->remarks,
                 'payment_proof' => $proofPath,
 
@@ -213,11 +218,13 @@ class OrderReturnController extends Controller
                 'account_type' => $isBank ? $request->account_type : null,
             ]);
 
+            // customer currency wala amount (order ke frozen rate se)
+            $refund->forceFill(RefundMoney::columns($order, $amountDefault))->save();
+
             \App\Models\Notification::create([
                 'customer_id' => $orderReturn->customer_id,
                 'title' => 'Refund Completed',
-                'message' => 'Your refund of ₹' .
-                    number_format($refund->amount, 2) .
+                'message' => 'Your refund of ' . $label .
                     ' has been processed successfully. UTR: ' .
                     $refund->utr_id,
                 'icon' => 'fa-solid fa-money-bill-transfer',
@@ -228,7 +235,7 @@ class OrderReturnController extends Controller
             \App\Models\AdminNotification::notify([
                 'type' => 'return',
                 'title' => 'Refund processed',
-                'message' => 'Refund of ₹' . number_format($refund->amount, 2) . ' for return RET-' . str_pad($orderReturn->id, 4, '0', STR_PAD_LEFT) . ' has been successfully credited to the customer\'s account.',
+                'message' => 'Refund of ' . $label . ' for return RET-' . str_pad($orderReturn->id, 4, '0', STR_PAD_LEFT) . ' has been successfully credited to the customer\'s account.',
                 'reference' => '#RET-' . str_pad($orderReturn->id, 4, '0', STR_PAD_LEFT),
                 'icon' => 'fa-undo',
                 'url' => route('admin.order-returns.show', $orderReturn->id),
@@ -320,6 +327,8 @@ class OrderReturnController extends Controller
                 'UTR ID',
                 'Refund Method',
                 'Requested On',
+                'Refund Currency',
+                'Refund Amount (customer currency)',
             ]);
 
             foreach ($returns as $r) {
@@ -335,6 +344,8 @@ class OrderReturnController extends Controller
                     $r->refundTransaction->utr_id ?? '',
                     $r->refundTransaction->refund_method ?? '',
                     $r->created_at->format('d M Y'),
+                    $r->refundTransaction->currency_code ?? '',
+                    $r->refundTransaction->amount_customer ?? '',
                 ]);
             }
 

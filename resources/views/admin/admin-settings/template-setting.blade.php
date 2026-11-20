@@ -438,7 +438,7 @@
                                 </div>
                                 <div class="sp-preview-wrap">
                                     <div class="sp-preview-header"><span class="sp-preview-label"><i class="fa fa-mobile-alt"></i>SMS Preview</span></div>
-                                    <div class="sp-preview-body"><div class="sp-sms-bubble">Hi <strong>Rahul</strong>, your order <strong>#ORD-1089</strong> worth <strong>₹3,450</strong> has been placed successfully! Track: parijaat.com/track/1089 - Parijaat</div></div>
+                                    <div class="sp-preview-body"><div class="sp-sms-bubble">Hi <strong>Rahul</strong>, your order <strong>#ORD-1089</strong> worth <strong>@defaultSymbol()3,450</strong> has been placed successfully! Track: parijaat.com/track/1089 - Parijaat</div></div>
                                 </div>
                             </div>
                         </div>
@@ -767,7 +767,7 @@ We'll notify you when it ships!
 
 Team *{brand_name}*</textarea></div></div>
                                 <div class="sp-var-section" style="margin-bottom:20px"><div class="sp-var-title"><i class="fa fa-code"></i>Variables</div><div class="sp-var-chips"><span class="sp-var-chip">{customer_name}</span><span class="sp-var-chip">{order_id}</span><span class="sp-var-chip">{order_amount}</span><span class="sp-var-chip">{order_date}</span><span class="sp-var-chip">{payment_method}</span><span class="sp-var-chip">{expected_delivery}</span><span class="sp-var-chip">{brand_name}</span><span class="sp-var-chip">{order_url}</span></div></div>
-                                <div class="sp-wa-preview"><div class="sp-wa-bubble"><div class="sp-wa-bubble-header">Order Confirmed ✅</div><div class="sp-wa-bubble-body">Hi <strong>Rahul</strong> 👋<br><br>Your order <strong>#ORD-1089</strong> worth <strong>₹3,450</strong> placed!<br><br>🗓️ 24 Jun 2026 &nbsp; 💳 UPI &nbsp; 🚚 28 Jun</div><div class="sp-wa-btn">Track Order</div></div></div>
+                                <div class="sp-wa-preview"><div class="sp-wa-bubble"><div class="sp-wa-bubble-header">Order Confirmed ✅</div><div class="sp-wa-bubble-body">Hi <strong>Rahul</strong> 👋<br><br>Your order <strong>#ORD-1089</strong> worth <strong>@defaultSymbol()3,450</strong> placed!<br><br>🗓️ 24 Jun 2026 &nbsp; 💳 UPI &nbsp; 🚚 28 Jun</div><div class="sp-wa-btn">Track Order</div></div></div>
                             </div>
                         </div>
 

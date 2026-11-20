@@ -422,7 +422,7 @@
                 </div>
                 <div class="stat">
                     <div class="l">Cart Value</div>
-                    <div class="v" style="color:var(--orange)">₹{{ number_format($cart->grand_total, 0) }}</div>
+                    <div class="v" style="color:var(--orange)">@defaultSymbol(){{ number_format($cart->grand_total, 0) }}</div>
                     <div class="s">{{ $cart->items->count() }} item(s)</div>
                 </div>
                 <div class="stat">
@@ -510,14 +510,14 @@
                                         <div class="tl-meta">
                                             {{ $meta['product'] }}
                                             @if(!empty($meta['quantity'])) × {{ $meta['quantity'] }} @endif
-                                            @if(!empty($meta['price'])) — ₹{{ number_format((float) $meta['price'], 0) }} @endif
+                                            @if(!empty($meta['price'])) — @defaultSymbol(){{ number_format((float) $meta['price'], 0) }} @endif
                                         </div>
                                     @endif
                                     @if(!empty($meta['order_number']))
                                         <div class="tl-meta">
                                             Order {{ $meta['order_number'] }}
                                             @if(!empty($meta['method'])) · {{ strtoupper($meta['method']) }} @endif
-                                            @if(!empty($meta['amount'])) · ₹{{ number_format((float) $meta['amount'], 0) }} @endif
+                                            @if(!empty($meta['amount'])) · @defaultSymbol(){{ number_format((float) $meta['amount'], 0) }} @endif
                                         </div>
                                     @endif
 
@@ -567,14 +567,14 @@
                                     {{ $variantLabel }} @if($variantLabel) · @endif Qty {{ $item->quantity }}
                                 </div>
                             </div>
-                            <div style="font-size:13px;font-weight:700">₹{{ number_format($item->total, 0) }}</div>
+                            <div style="font-size:13px;font-weight:700">@defaultSymbol(){{ number_format($item->total, 0) }}</div>
                         </div>
                     @endforeach
 
                     @if($cart->coupon_code)
                         <div style="margin-top:10px;font-size:12.5px;color:var(--green)">
                             <i class="fa fa-tag"></i> Coupon: <strong>{{ $cart->coupon_code }}</strong>
-                            (−₹{{ number_format($cart->discount, 0) }})
+                            (−@defaultSymbol(){{ number_format($cart->discount, 0) }})
                         </div>
                     @endif
                 </div>

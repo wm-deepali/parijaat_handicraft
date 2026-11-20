@@ -2,11 +2,12 @@
 
 namespace App\Http\Controllers\Admin;
 
-use App\Http\Controllers\Controller;
-use App\Models\EmailTemplate;
+use App\Support\Region;
 use App\Models\SmtpSetting;
-use App\Services\Email\EmailDispatcher;
 use Illuminate\Http\Request;
+use App\Models\EmailTemplate;
+use App\Http\Controllers\Controller;
+use App\Services\Email\EmailDispatcher;
 
 class EmailTemplateController extends Controller
 {
@@ -114,6 +115,8 @@ class EmailTemplateController extends Controller
         // Sample variables — same pattern as SMS_SAMPLE in JS
         // Sample variables — matches EmailTemplate::eventMeta() vars exactly
         $appUrl = url('/');
+        $cur = app(Region::class)->defaultSymbol();
+        $cs = $cur . (ctype_alpha(str_replace(' ', '', $cur)) ? ' ' : '');   // "$" or "AED "
 
         $samples = [
             // Customer
@@ -123,13 +126,13 @@ class EmailTemplateController extends Controller
             // Store (global)
             '{store_name}' => 'Parijaat Handicraft Store',
             '{brand_name}' => 'Parijaat Handicraft',
-            '{logo_url}' => $appUrl .'/assets/images/logo.png',
+            '{logo_url}' => $appUrl . '/assets/images/logo.png',
             '{tagline}' => 'Handcrafted, with heart.',
-            '{shop_url}' => $appUrl, 
+            '{shop_url}' => $appUrl,
             '{login_url}' => $appUrl . '/user/login',
 
             // Support (global)
-            '{support_email}' => 'support@parijaat .com',
+            '{support_email}' => 'support@parijaat.com',
             '{support_number}' => '+91 0000000000',
 
             // Order
@@ -137,13 +140,13 @@ class EmailTemplateController extends Controller
             '{order_date}' => '24 Jun 2026',
             '{shipped_date}' => '26 Jun 2026',
             '{delivered_date}' => '28 Jun 2026',
-            '{grand_total}' => '₹3,450',
+            '{grand_total}' => $cs . '3,450',
             '{item_count}' => '3',
 
             // Payment
             '{payment_method}' => 'UPI',
             '{payment_status}' => 'Paid',
-            '{payment_amount}' => '₹3,450',
+            '{payment_amount}' => $cs . '3,450',
             '{transaction_id}' => 'TXN8472910',
 
             // Shipment
@@ -154,7 +157,7 @@ class EmailTemplateController extends Controller
 
             // Cancellation / Refund
             '{cancel_reason}' => 'Out of stock',
-            '{refund_amount}' => '₹3,450',
+            '{refund_amount}' => $cs . '3,450',
             '{refund_days}' => '5-7',
 
             // Smart HTML blocks
@@ -168,21 +171,22 @@ class EmailTemplateController extends Controller
             <div style="font-size:11px;color:#7a9e9c;">Qty: 1</div>
         </div>
         <div style="display:table-cell;vertical-align:middle;text-align:right;font-size:14px;font-weight:700;color:#1F5552;white-space:nowrap;">
-            ₹ 3,450.00
+            ' . $cs . '3,450.00
         </div>
     </div>
 ',
+
 
             '{order_summary}' => '
     <div style="margin-top:16px;">
         <div style="display:table;width:100%;padding:5px 0;">
             <span style="display:table-cell;font-size:13px;color:#666;">Subtotal</span>
-            <span style="display:table-cell;text-align:right;font-size:13px;color:#333;">₹ 3,450.00</span>
+            <span style="display:table-cell;text-align:right;font-size:13px;color:#333;">' . $cs . '3,450.00</span>
         </div>
         <hr style="border:none;border-top:1px solid #d4dbd9;margin:10px 0;">
         <div style="display:table;width:100%;padding:5px 0;">
             <span style="display:table-cell;font-size:15px;font-weight:600;color:#1a1a1a;">Grand Total</span>
-            <span style="display:table-cell;text-align:right;font-size:16px;font-weight:700;color:#1F5552;">₹ 3,450.00</span>
+            <span style="display:table-cell;text-align:right;font-size:16px;font-weight:700;color:#1F5552;">' . $cs . '3,450.00</span>
         </div>
     </div>
 ',
@@ -197,7 +201,7 @@ class EmailTemplateController extends Controller
 
             // Coupon
             '{coupon_code}' => 'SAVE20',
-            '{discount_value}' => '₹200',
+            '{discount_value}' => $cs . '200',
             '{expiry_date}' => '30 Jun 2026',
             '{store_url}' => $appUrl,
 

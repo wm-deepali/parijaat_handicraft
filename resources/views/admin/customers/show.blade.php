@@ -173,12 +173,12 @@
                 </div>
                 <div class="cust-stat-card">
                     <div class="cust-stat-label">Total Spent</div>
-                    <div class="cust-stat-value">₹{{ number_format($totalSpent, 0) }}</div>
+                    <div class="cust-stat-value">@defaultSymbol(){{ number_format($totalSpent, 0) }}</div>
                     <div class="cust-stat-sub">Paid orders</div>
                 </div>
                 <div class="cust-stat-card">
                     <div class="cust-stat-label">Avg Order Value</div>
-                    <div class="cust-stat-value">₹{{ number_format($avgOrderValue, 0) }}</div>
+                    <div class="cust-stat-value">@defaultSymbol(){{ number_format($avgOrderValue, 0) }}</div>
                     <div class="cust-stat-sub">Per order</div>
                 </div>
                 <div class="cust-stat-card">
@@ -335,7 +335,7 @@
                                                     {{ $order->items->count() }} item(s)
                                                 </td>
                                                 <td style="font-weight:600">
-                                                    ₹{{ number_format($order->grand_total, 0) }}
+                                                    @defaultSymbol(){{ number_format($order->grand_total, 0) }}
                                                 </td>
                                                 <td>
                                                     @php $ps = strtolower($order->payment_status); @endphp
@@ -399,7 +399,7 @@
                             </div>
                             <div class="sidebar-row">
                                 <span class="sidebar-row-label">Total Spent</span>
-                                <span class="sidebar-row-value">₹{{ number_format($totalSpent, 0) }}</span>
+                                <span class="sidebar-row-value">@defaultSymbol(){{ number_format($totalSpent, 0) }}</span>
                             </div>
                             <div class="sidebar-row">
                                 <span class="sidebar-row-label">Addresses</span>

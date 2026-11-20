@@ -494,7 +494,7 @@
                         </div>
                         <div class="drow">
                             <span class="dlabel">Refund Amount</span>
-                            <span class="dval">₹{{ number_format($cnRefund->amount, 2) }}</span>
+                            <span class="dval">@defaultSymbol(){{ number_format($cnRefund->amount, 2) }}</span>
                         </div>
                         <div class="drow">
                             <span class="dlabel">Refund UTR</span>
@@ -607,7 +607,7 @@
                             <div style="border-top:1px dashed #e3e5e8;margin-top:6px;padding-top:16px">
                                 <div
                                     style="font-size:11.5px;font-weight:600;color:#8c9196;text-transform:uppercase;letter-spacing:.04em;margin-bottom:12px">
-                                    Refund — ₹{{ number_format($ndr->order->grand_total, 2) }}
+                                    Refund — @defaultSymbol(){{ number_format($ndr->order->grand_total, 2) }}
                                 </div>
 
                                 {{-- Payment Method Tabs --}}
@@ -737,7 +737,7 @@
                             <div style="border-top:1px dashed #e3e5e8;margin-top:6px;padding-top:16px">
                                 <div
                                     style="font-size:11.5px;font-weight:600;color:#8c9196;text-transform:uppercase;letter-spacing:.04em;margin-bottom:12px">
-                                    Refund — ₹{{ number_format($ndr->order->grand_total, 2) }}
+                                    Refund — @defaultSymbol(){{ number_format($ndr->order->grand_total, 2) }}
                                 </div>
 
                                 <div style="margin-bottom:14px">

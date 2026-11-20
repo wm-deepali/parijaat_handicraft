@@ -170,7 +170,7 @@
             </td>
             <td>
                 <div class="kpi-label">Avg. LTV</div>
-                <div class="kpi-value">Rs. {{ number_format($avgLtv) }}</div>
+                <div class="kpi-value">@defaultSymbol(){{ number_format($avgLtv) }}</div>
             </td>
             <td>
                 <div class="kpi-label">Churn Rate</div>
@@ -294,8 +294,8 @@
                     <td>{{ $c['email'] }}</td>
                     <td class="{{ $c['segment']['class'] }}">{{ $c['segment']['label'] }}</td>
                     <td class="text-right">{{ $c['orders'] }}</td>
-                    <td class="text-right">Rs. {{ number_format($c['total_spent']) }}</td>
-                    <td class="text-right">Rs. {{ number_format($c['avg_order']) }}</td>
+                    <td class="text-right">@defaultSymbol(){{ number_format($c['total_spent']) }}</td>
+                    <td class="text-right">@defaultSymbol(){{ number_format($c['avg_order']) }}</td>
                     <td>{{ $c['last_order'] }}</td>
                 </tr>
             @empty
@@ -308,7 +308,7 @@
             <tr>
                 <td colspan="4">Total ({{ $allCustomersTable->count() }} customers)</td>
                 <td class="text-right">{{ number_format($allCustomersTable->sum('orders')) }} orders</td>
-                <td class="text-right">Rs. {{ number_format($allCustomersTable->sum('total_spent')) }}</td>
+                <td class="text-right">@defaultSymbol(){{ number_format($allCustomersTable->sum('total_spent')) }}</td>
                 <td colspan="2"></td>
             </tr>
         </tfoot>
@@ -381,7 +381,7 @@
                         </tr>
                         <tr>
                             <td>Avg. Lifetime Value</td>
-                            <td class="text-right">Rs. {{ number_format($avgLtv) }}</td>
+                            <td class="text-right">@defaultSymbol(){{ number_format($avgLtv) }}</td>
                         </tr>
                         <tr>
                             <td>Avg. Days Between Orders</td>

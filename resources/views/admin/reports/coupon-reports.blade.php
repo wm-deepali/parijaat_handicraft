@@ -551,8 +551,8 @@
                     </div>
                     <div>
                         <div class="stat-label">Total Discount Given</div>
-                        <div class="stat-value">₹{{ number_format($stats['total_discount'], 2) }}</div>
-                        <div class="stat-sub">This month: ₹{{ number_format($stats['month_discount'], 2) }}</div>
+                        <div class="stat-value">@defaultSymbol(){{ number_format($stats['total_discount'], 2) }}</div>
+                        <div class="stat-sub">This month: @defaultSymbol(){{ number_format($stats['month_discount'], 2) }}</div>
                     </div>
                 </div>
 
@@ -562,7 +562,7 @@
                     </div>
                     <div>
                         <div class="stat-label">Avg. Discount / Use</div>
-                        <div class="stat-value">₹{{ number_format($stats['avg_discount_per_use'], 2) }}</div>
+                        <div class="stat-value">@defaultSymbol(){{ number_format($stats['avg_discount_per_use'], 2) }}</div>
                         <div class="stat-sub">Across all coupons</div>
                     </div>
                 </div>
@@ -586,7 +586,7 @@
                                 <div class="lb-code">{{ $row->code }}</div>
                                 <div class="lb-meta">
                                     @if($row->coupon)
-                                        {{ $row->coupon->discount_type === 'percentage' ? $row->coupon->discount_value.'% off' : '₹'.number_format($row->coupon->discount_value, 0).' off' }}
+                                        {{ $row->coupon->discount_type === 'percentage' ? $row->coupon->discount_value.'% off' : app(\App\Support\Region::class)->defaultSymbol().number_format($row->coupon->discount_value, 0).' off' }}
                                         · {{ ucfirst($row->coupon->discount_type) }}
                                     @endif
                                 </div>
@@ -612,12 +612,12 @@
                                 <div class="lb-code">{{ $row->code }}</div>
                                 <div class="lb-meta">
                                     @if($row->coupon)
-                                        {{ $row->coupon->discount_type === 'percentage' ? $row->coupon->discount_value.'% off' : '₹'.number_format($row->coupon->discount_value, 0).' off' }}
+                                        {{ $row->coupon->discount_type === 'percentage' ? $row->coupon->discount_value.'% off' : app(\App\Support\Region::class)->defaultSymbol().number_format($row->coupon->discount_value, 0).' off' }}
                                         · {{ number_format($row->redemptions) }} uses
                                     @endif
                                 </div>
                             </div>
-                            <div class="lb-val" style="color:var(--green)">₹{{ number_format($row->total_savings, 0) }}</div>
+                            <div class="lb-val" style="color:var(--green)">@defaultSymbol(){{ number_format($row->total_savings, 0) }}</div>
                         </div>
                     @empty
                         <div class="lb-row"><span style="color:var(--text-hint);font-size:13px">No savings yet</span></div>
@@ -715,9 +715,9 @@
                                             <span class="pill pill-fixed">Fixed</span>
                                         @endif
                                     </td>
-                                    <td>{{ $coupon->discount_type === 'percentage' ? $coupon->discount_value.'%' : '₹'.number_format($coupon->discount_value, 2) }}</td>
-                                    <td>{{ $coupon->minimum_order_amount ? '₹'.number_format($coupon->minimum_order_amount, 2) : '—' }}</td>
-                                    <td>{{ $coupon->maximum_discount ? '₹'.number_format($coupon->maximum_discount, 2) : '—' }}</td>
+                                    <td>{{ $coupon->discount_type === 'percentage' ? $coupon->discount_value.'%' : app(\App\Support\Region::class)->defaultSymbol().number_format($coupon->discount_value, 2) }}</td>
+                                    <td>{{ $coupon->minimum_order_amount ? app(\App\Support\Region::class)->defaultSymbol().number_format($coupon->minimum_order_amount, 2) : '—' }}</td>
+                                    <td>{{ $coupon->maximum_discount ? app(\App\Support\Region::class)->defaultSymbol().number_format($coupon->maximum_discount, 2) : '—' }}</td>
                                     <td>
                                         <div class="usage-wrap">
                                             <div style="font-size:13px;font-weight:600">{{ number_format($used) }} uses</div>
@@ -731,7 +731,7 @@
                                         </div>
                                     </td>
                                     <td>{{ $usageLimit ?: '—' }}</td>
-                                    <td class="savings-cell">₹{{ number_format($coupon->savings_total, 0) }}</td>
+                                    <td class="savings-cell">@defaultSymbol(){{ number_format($coupon->savings_total, 0) }}</td>
                                     <td>
                                         {{ $coupon->start_date ? \Carbon\Carbon::parse($coupon->start_date)->format('d M Y') : '—' }}<br>
                                         <small style="color:var(--text-hint)">to {{ $coupon->end_date ? \Carbon\Carbon::parse($coupon->end_date)->format('d M Y') : '—' }}</small>

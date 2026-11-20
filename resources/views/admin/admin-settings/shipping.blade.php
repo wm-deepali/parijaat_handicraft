@@ -19,7 +19,7 @@
                 <div class="field-group">
                     <label class="field-label">Free Delivery Above (Min. Order Value)</label>
                     <div class="input-wrap">
-                        <span class="input-prefix">₹</span>
+                        <span class="input-prefix">@defaultSymbol()</span>
                         <input type="number" min="0" step="0.01" name="free_delivery_threshold"
                             class="field-input" value="{{ $shipping->free_delivery_threshold ?? '' }}">
                     </div>

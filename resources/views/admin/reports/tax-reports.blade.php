@@ -890,7 +890,7 @@
                         <div class="stat-label">Taxable Value</div>
                         <div class="stat-icon blue"><i class="fa fa-indian-rupee-sign"></i></div>
                     </div>
-                    <div class="stat-value">₹{{ number_format($summary->taxable_value ?? 0, 0) }}</div>
+                    <div class="stat-value">@defaultSymbol(){{ number_format($summary->taxable_value ?? 0, 0) }}</div>
                     <div class="stat-sub">Total order value excl. tax</div>
                 </div>
 
@@ -899,7 +899,7 @@
                         <div class="stat-label">Total Tax Collected</div>
                         <div class="stat-icon purple"><i class="fa fa-landmark"></i></div>
                     </div>
-                    <div class="stat-value">₹{{ number_format($summary->total_tax ?? 0, 0) }}</div>
+                    <div class="stat-value">@defaultSymbol(){{ number_format($summary->total_tax ?? 0, 0) }}</div>
                     <div class="stat-sub">CGST + SGST + IGST</div>
                 </div>
 
@@ -908,7 +908,7 @@
                         <div class="stat-label">CGST</div>
                         <div class="stat-icon green"><i class="fa fa-building-columns"></i></div>
                     </div>
-                    <div class="stat-value">₹{{ number_format($summary->cgst_total ?? 0, 0) }}</div>
+                    <div class="stat-value">@defaultSymbol(){{ number_format($summary->cgst_total ?? 0, 0) }}</div>
                     <div class="stat-sub">Central GST (intra-state)</div>
                 </div>
 
@@ -917,7 +917,7 @@
                         <div class="stat-label">SGST</div>
                         <div class="stat-icon amber"><i class="fa fa-building"></i></div>
                     </div>
-                    <div class="stat-value">₹{{ number_format($summary->sgst_total ?? 0, 0) }}</div>
+                    <div class="stat-value">@defaultSymbol(){{ number_format($summary->sgst_total ?? 0, 0) }}</div>
                     <div class="stat-sub">State GST (intra-state)</div>
                 </div>
 
@@ -926,7 +926,7 @@
                         <div class="stat-label">IGST</div>
                         <div class="stat-icon red"><i class="fa fa-arrows-left-right"></i></div>
                     </div>
-                    <div class="stat-value">₹{{ number_format($summary->igst_total ?? 0, 0) }}</div>
+                    <div class="stat-value">@defaultSymbol(){{ number_format($summary->igst_total ?? 0, 0) }}</div>
                     <div class="stat-sub">Integrated GST (inter-state)</div>
                 </div>
 
@@ -935,8 +935,8 @@
                         <div class="stat-label">Net Tax Payable</div>
                         <div class="stat-icon purple"><i class="fa fa-scale-balanced"></i></div>
                     </div>
-                    <div class="stat-value" style="color:var(--accent)">₹{{ number_format($netTaxPayable, 0) }}</div>
-                    <div class="stat-sub">Collected − ₹{{ number_format($creditTotals['tax'], 0) }} reversed</div>
+                    <div class="stat-value" style="color:var(--accent)">@defaultSymbol(){{ number_format($netTaxPayable, 0) }}</div>
+                    <div class="stat-sub">Collected − @defaultSymbol(){{ number_format($creditTotals['tax'], 0) }} reversed</div>
                 </div>
 
             </div>
@@ -954,8 +954,8 @@
                         <div class="gst-slab-card">
                             <div class="gst-slab-rate">{{ $slab }}%</div>
                             <div class="gst-slab-label">{{ $slab == 0 ? 'Exempt' : 'GST Slab' }}</div>
-                            <div class="gst-slab-taxable">₹{{ number_format($data['taxable'], 0) }}</div>
-                            <div class="gst-slab-tax">₹{{ number_format($data['tax'], 0) }}</div>
+                            <div class="gst-slab-taxable">@defaultSymbol(){{ number_format($data['taxable'], 0) }}</div>
+                            <div class="gst-slab-tax">@defaultSymbol(){{ number_format($data['tax'], 0) }}</div>
                             <div class="gst-slab-sub">Tax collected</div>
                         </div>
                     @endforeach
@@ -964,8 +964,8 @@
                         <div class="gst-slab-rate">All</div>
                         <div class="gst-slab-label">Total</div>
                         <div class="gst-slab-taxable" style="color:var(--accent)">
-                            ₹{{ number_format($summary->taxable_value ?? 0, 0) }}</div>
-                        <div class="gst-slab-tax">₹{{ number_format($summary->total_tax ?? 0, 0) }}</div>
+                            @defaultSymbol(){{ number_format($summary->taxable_value ?? 0, 0) }}</div>
+                        <div class="gst-slab-tax">@defaultSymbol(){{ number_format($summary->total_tax ?? 0, 0) }}</div>
                         <div class="gst-slab-sub">Grand total</div>
                     </div>
 
@@ -979,7 +979,7 @@
                             <div class="split-label">CGST (Central)</div>
                             <div style="font-size:11px;color:var(--text-hint)">Intra-state, 50% share</div>
                         </div>
-                        <div class="split-value">₹{{ number_format($summary->cgst_total ?? 0, 0) }}</div>
+                        <div class="split-value">@defaultSymbol(){{ number_format($summary->cgst_total ?? 0, 0) }}</div>
                     </div>
                     <div class="tax-split-chip">
                         <div class="split-dot" style="background:#916a00"></div>
@@ -987,7 +987,7 @@
                             <div class="split-label">SGST (State)</div>
                             <div style="font-size:11px;color:var(--text-hint)">Intra-state, 50% share</div>
                         </div>
-                        <div class="split-value">₹{{ number_format($summary->sgst_total ?? 0, 0) }}</div>
+                        <div class="split-value">@defaultSymbol(){{ number_format($summary->sgst_total ?? 0, 0) }}</div>
                     </div>
                     <div class="tax-split-chip">
                         <div class="split-dot" style="background:#0069d9"></div>
@@ -995,7 +995,7 @@
                             <div class="split-label">IGST (Integrated)</div>
                             <div style="font-size:11px;color:var(--text-hint)">Inter-state orders</div>
                         </div>
-                        <div class="split-value">₹{{ number_format($summary->igst_total ?? 0, 0) }}</div>
+                        <div class="split-value">@defaultSymbol(){{ number_format($summary->igst_total ?? 0, 0) }}</div>
                     </div>
                     <div class="tax-split-chip" style="background:#f4f5f8">
                         <div class="split-dot" style="background:#007a5e"></div>
@@ -1004,7 +1004,7 @@
                             <div style="font-size:11px;color:var(--text-hint)">All components</div>
                         </div>
                         <div class="split-value" style="color:var(--green)">
-                            ₹{{ number_format($summary->total_tax ?? 0, 0) }}</div>
+                            @defaultSymbol(){{ number_format($summary->total_tax ?? 0, 0) }}</div>
                     </div>
                 </div>
             </div>
@@ -1111,18 +1111,18 @@
                                     </td>
                                     <td><span style="font-weight:700;color:var(--accent)">{{ round($slabRate) }}%</span>
                                     </td>
-                                    <td>₹{{ number_format($order->subtotal, 2) }}</td>
+                                    <td>@defaultSymbol(){{ number_format($order->subtotal, 2) }}</td>
                                     <td class="{{ $isIntra ? 'amt-green' : 'amt-muted' }}">
-                                        {{ $isIntra ? '₹' . number_format($order->cgst_amount, 2) : '—' }}
+                                        {{ $isIntra ? app(\App\Support\Region::class)->defaultSymbol() . number_format($order->cgst_amount, 2) : '—' }}
                                     </td>
                                     <td class="{{ $isIntra ? 'amt-green' : 'amt-muted' }}">
-                                        {{ $isIntra ? '₹' . number_format($order->sgst_amount, 2) : '—' }}
+                                        {{ $isIntra ? app(\App\Support\Region::class)->defaultSymbol() . number_format($order->sgst_amount, 2) : '—' }}
                                     </td>
                                     <td class="{{ !$isIntra ? 'amt-green' : 'amt-muted' }}">
-                                        {{ !$isIntra ? '₹' . number_format($order->igst_amount, 2) : '—' }}
+                                        {{ !$isIntra ? app(\App\Support\Region::class)->defaultSymbol() . number_format($order->igst_amount, 2) : '—' }}
                                     </td>
-                                    <td style="font-weight:700">₹{{ number_format($order->tax_amount, 2) }}</td>
-                                    <td style="font-weight:700">₹{{ number_format($order->grand_total, 2) }}</td>
+                                    <td style="font-weight:700">@defaultSymbol(){{ number_format($order->tax_amount, 2) }}</td>
+                                    <td style="font-weight:700">@defaultSymbol(){{ number_format($order->grand_total, 2) }}</td>
                                 </tr>
                             @empty
                                 <tr>
@@ -1137,12 +1137,12 @@
                                     style="text-align:right;color:var(--text-hint);font-size:12px;font-weight:600;letter-spacing:.03em;text-transform:uppercase">
                                     Page Total
                                 </td>
-                                <td>₹{{ number_format($pageTotals['taxable'], 2) }}</td>
-                                <td style="color:var(--green)">₹{{ number_format($pageTotals['cgst'], 2) }}</td>
-                                <td style="color:var(--green)">₹{{ number_format($pageTotals['sgst'], 2) }}</td>
-                                <td style="color:var(--blue)">₹{{ number_format($pageTotals['igst'], 2) }}</td>
-                                <td style="color:var(--accent)">₹{{ number_format($pageTotals['tax'], 2) }}</td>
-                                <td>₹{{ number_format($pageTotals['total'], 2) }}</td>
+                                <td>@defaultSymbol(){{ number_format($pageTotals['taxable'], 2) }}</td>
+                                <td style="color:var(--green)">@defaultSymbol(){{ number_format($pageTotals['cgst'], 2) }}</td>
+                                <td style="color:var(--green)">@defaultSymbol(){{ number_format($pageTotals['sgst'], 2) }}</td>
+                                <td style="color:var(--blue)">@defaultSymbol(){{ number_format($pageTotals['igst'], 2) }}</td>
+                                <td style="color:var(--accent)">@defaultSymbol(){{ number_format($pageTotals['tax'], 2) }}</td>
+                                <td>@defaultSymbol(){{ number_format($pageTotals['total'], 2) }}</td>
                             </tr>
                         </tfoot>
                     </table>
@@ -1212,12 +1212,12 @@
                                     <td style="max-width:200px;font-size:12.5px">{{ $row['product'] }}</td>
                                     <td style="font-size:12.5px;color:var(--text-secondary)">{{ $row['reason'] }}</td>
                                     <td>{{ $row['refund_date']->format('d M Y') }}</td>
-                                    <td style="color:var(--red)">− ₹{{ number_format($row['taxable'], 2) }}</td>
-                                    <td style="color:var(--red)">− ₹{{ number_format($row['cgst'], 2) }}</td>
-                                    <td style="color:var(--red)">− ₹{{ number_format($row['sgst'], 2) }}</td>
-                                    <td style="color:var(--red)">− ₹{{ number_format($row['igst'], 2) }}</td>
-                                    <td style="font-weight:700;color:var(--red)">− ₹{{ number_format($row['tax'], 2) }}</td>
-                                    <td style="font-weight:700">₹{{ number_format($row['refund_amount'], 2) }}</td>
+                                    <td style="color:var(--red)">− @defaultSymbol(){{ number_format($row['taxable'], 2) }}</td>
+                                    <td style="color:var(--red)">− @defaultSymbol(){{ number_format($row['cgst'], 2) }}</td>
+                                    <td style="color:var(--red)">− @defaultSymbol(){{ number_format($row['sgst'], 2) }}</td>
+                                    <td style="color:var(--red)">− @defaultSymbol(){{ number_format($row['igst'], 2) }}</td>
+                                    <td style="font-weight:700;color:var(--red)">− @defaultSymbol(){{ number_format($row['tax'], 2) }}</td>
+                                    <td style="font-weight:700">@defaultSymbol(){{ number_format($row['refund_amount'], 2) }}</td>
                                     <td>
                                         <a href="{{ route('admin.credit-notes.download', $row['refund_id']) }}"
                                             class="btn-secondary-dash" style="padding:5px 10px"
@@ -1239,12 +1239,12 @@
                                     <td colspan="6"
                                         style="text-align:right;color:var(--text-hint);font-size:12px;font-weight:600;letter-spacing:.03em;text-transform:uppercase">
                                         Total Reversed</td>
-                                    <td style="color:var(--red)">− ₹{{ number_format($creditTotals['taxable'], 2) }}</td>
-                                    <td style="color:var(--red)">− ₹{{ number_format($creditTotals['cgst'], 2) }}</td>
-                                    <td style="color:var(--red)">− ₹{{ number_format($creditTotals['sgst'], 2) }}</td>
-                                    <td style="color:var(--red)">− ₹{{ number_format($creditTotals['igst'], 2) }}</td>
-                                    <td style="color:var(--red)">− ₹{{ number_format($creditTotals['tax'], 2) }}</td>
-                                    <td>₹{{ number_format($creditTotals['refund'], 2) }}</td>
+                                    <td style="color:var(--red)">− @defaultSymbol(){{ number_format($creditTotals['taxable'], 2) }}</td>
+                                    <td style="color:var(--red)">− @defaultSymbol(){{ number_format($creditTotals['cgst'], 2) }}</td>
+                                    <td style="color:var(--red)">− @defaultSymbol(){{ number_format($creditTotals['sgst'], 2) }}</td>
+                                    <td style="color:var(--red)">− @defaultSymbol(){{ number_format($creditTotals['igst'], 2) }}</td>
+                                    <td style="color:var(--red)">− @defaultSymbol(){{ number_format($creditTotals['tax'], 2) }}</td>
+                                    <td>@defaultSymbol(){{ number_format($creditTotals['refund'], 2) }}</td>
                                     <td></td>
                                 </tr>
                             </tfoot>

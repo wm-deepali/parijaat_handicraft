@@ -38,7 +38,11 @@
 <body>
 
     @include('layouts.tracking-body-top')
-    @php $authCustomer = auth('customer')->user(); @endphp
+    @php
+        $authCustomer = auth('customer')->user();
+        $wishOn = (bool) ($general->wishlist ?? true);
+        $wishCount = $wishOn ? count(\App\Models\Wishlist::currentProductIds()) : 0;
+    @endphp
 
     @if (!empty($seo?->body_scripts))
         {!! $seo->body_scripts !!}
@@ -89,7 +93,7 @@
                         </button>
                     </div>
                     <ul class="top-right">
-                        <li><a href="dashboard.html#tab-2">Track Your Order</a></li>
+                        <li><a href="{{ route('dashboard') }}#tab-2">Track Your Order</a></li>
                         <li class="hide-lg">
                             <a href="{{ route('contact') }}">Help &amp; Support</a>
                         </li>
@@ -189,11 +193,13 @@
                                         <ul class="acc-list">
                                             <li><a href="{{ route('dashboard') }}#tab-2"><i
                                                         class="fa-solid fa-truck-fast"></i>Track Order</a></li>
-                                            <li><a href="{{ route('dashboard') }}#tab-2"><i
+                                            <li><a href="{{ route('dashboard') }}#tab-3"><i
                                                         class="fa-solid fa-box-open"></i>My Orders</a></li>
-                                            <li><a href="{{ route('dashboard') }}#tab-4"><i
-                                                        class="fa-regular fa-heart"></i>My Wishlist</a></li>
-                                            <li><a href="{{ route('dashboard') }}#tab-1"><i
+                                            @if ($wishOn)
+                                                <li><a href="{{ route('dashboard') }}#tab-4"><i
+                                                            class="fa-regular fa-heart"></i>My Wishlist</a></li>
+                                            @endif
+                                            <li><a href="{{ route('dashboard') }}#tab-5"><i
                                                         class="fa-regular fa-user"></i>My Profile</a></li>
                                         </ul>
                                         <div class="acc-foot">
@@ -216,16 +222,18 @@
                             </div>
                         </div>
 
-                        <a href="{{ $authCustomer ? route('dashboard') . '#tab-4' : 'javascript:void(0)' }}" @unless ($authCustomer) data-model=".login-pop" @endunless class="action-link wish-link"
-                            aria-label="Wishlist">
-                            <span class="ico">
-                                <svg class="ic" viewBox="0 0 24 24" aria-hidden="true">
-                                    <path
-                                        d="M19 14c1.49-1.46 3-3.21 3-5.5A5.5 5.5 0 0 0 16.5 3c-1.76 0-3 .5-4.5 2-1.5-1.5-2.74-2-4.5-2A5.5 5.5 0 0 0 2 8.5c0 2.3 1.5 4.05 3 5.5l7 7z" />
-                                </svg>
-                                <span class="count wish-count">0</span>
-                            </span>
-                        </a>
+                        @if ($wishOn)
+                            <a href="{{ $authCustomer ? route('dashboard') . '#tab-4' : 'javascript:void(0)' }}" @unless ($authCustomer) data-model=".login-pop" @endunless class="action-link wish-link"
+                                aria-label="Wishlist">
+                                <span class="ico">
+                                    <svg class="ic" viewBox="0 0 24 24" aria-hidden="true">
+                                        <path
+                                            d="M19 14c1.49-1.46 3-3.21 3-5.5A5.5 5.5 0 0 0 16.5 3c-1.76 0-3 .5-4.5 2-1.5-1.5-2.74-2-4.5-2A5.5 5.5 0 0 0 2 8.5c0 2.3 1.5 4.05 3 5.5l7 7z" />
+                                    </svg>
+                                    <span class="count wish-count" data-wish-count>{{ $wishCount }}</span>
+                                </span>
+                            </a>
+                        @endif
 
                         <button type="button" class="action-link cart-link" data-model=".cart-pop" aria-label="My Cart">
                             <span class="ico">
@@ -516,8 +524,8 @@
                             <li>
                                 <a href="refund-cancellation-policy.html">Refund &amp; Cancellation</a>
                             </li>
-                            <li><a href="dashboard.html#tab-2">Track Order</a></li>
-                            <li><a href="dashboard.html#tab-4">Wishlist</a></li>
+                            <li><a href="{{ route('dashboard') }}#tab-2">Track Order</a></li>
+                            <li><a href="{{ route('dashboard') }}#tab-4">Wishlist</a></li>
                         </ul>
                     </div>
 
@@ -576,9 +584,12 @@
             <button type="button" class="float-link" data-model=".ham-pop" aria-label="Menu">
                 <i class="fa-solid fa-bars"></i><span>Menu</span>
             </button>
-            <a href="{{ $authCustomer ? route('dashboard') . '#tab-4' : 'javascript:void(0)' }}" @unless ($authCustomer)
-            data-model=".login-pop" @endunless class="float-link">
-                <i class="fa-regular fa-heart"></i><span>Wishlist</span><b class="f-count">0</b></a>
+            @if ($wishOn)
+                <a href="{{ $authCustomer ? route('dashboard') . '#tab-4' : 'javascript:void(0)' }}" @unless ($authCustomer)
+                data-model=".login-pop" @endunless class="float-link">
+                    <i class="fa-regular fa-heart"></i><span>Wishlist</span><b class="f-count"
+                        data-wish-count>{{ $wishCount }}</b></a>
+            @endif
             <a href="{{ route('cart') }}" class="float-link"><i class="fa-solid fa-bag-shopping"></i><span>Cart</span><b
                     class="f-count">{{ $miniCart?->items->sum('quantity') ?? 0 }}</b></a>
             <a href="{{ $authCustomer ? route('dashboard') . '#tab-1' : 'javascript:void(0)' }}" @unless ($authCustomer)
@@ -816,7 +827,7 @@
                         <li><a href="about.html#craft">Our Craft</a></li>
                         <li><a href="{{ route('about') }}">About Us</a></li>
                         <li><a href="{{ route('certifications') }}">Certifications</a></li>
-                        <li><a href="dashboard.html#tab-2">Track Order</a></li>
+                        <li><a href="{{ route('dashboard') }}#tab-2">Track Order</a></li>
                         <li><a href="{{ route('contact') }}">Help &amp; Support</a></li>
                         <li><a href="{{ route('contact') }}">Contact Us</a></li>
                     </ul>
@@ -1404,12 +1415,86 @@
             // ── open the modal when the server asks for it (/user/login, /user/register) ──
             if (AUTH.openAuth && !AUTH.loggedIn) {
                 setTimeout(function () {
-                    $('.wish-link[data-model=".login-pop"]').first().trigger('click');
+                    $('[data-model=".login-pop"]').first().trigger('click');
                     if (AUTH.openAuth === 'register') {
                         $('.login-pop .tab-nav li[data-tab="pop-register"]').trigger('click');
                     }
                 }, 300);
             }
+        });
+    </script>
+
+    <style>
+        .wish-btn.is-wished i,
+        .wish-link.is-wished i {
+            color: #e0245e;
+        }
+
+        .wish-btn.is-busy,
+        .wish-link.is-busy {
+            pointer-events: none;
+            opacity: .6;
+        }
+    </style>
+
+    <script>
+        $(function () {
+            var WISH_URL = "{{ route('wishlist.toggle') }}";
+
+            // only real heart buttons (they carry data-id); the header link has no data-id
+            var SEL = '.wish-btn[data-id], .wish-link[data-id]';
+
+            function paint(id, added) {
+                $(SEL).filter(function () { return String($(this).data('id')) === String(id); }).each(function () {
+                    var $b = $(this);
+                    $b.toggleClass('is-wished', added).attr('aria-pressed', added ? 'true' : 'false');
+                    $b.find('i').toggleClass('fa-solid', added).toggleClass('fa-regular', !added);
+                    $b.find('.wl-text').text(added ? 'Added to Wishlist' : 'Add to Wishlist');
+                    if ($b.hasClass('wish-btn')) {
+                        $b.attr('aria-label', added ? 'Remove from wishlist' : 'Add to wishlist');
+                    }
+                });
+            }
+
+            function notify(type, title, text) {
+                var ui = window.cartUI || {};
+                if (ui.notify) ui.notify(type, title, text);
+            }
+
+            $(document).off('click.wish').on('click.wish', SEL, function (e) {
+                var $b = $(this);
+                var id = parseInt($b.data('id'), 10);
+
+                if (!id) return;
+                e.preventDefault();
+
+                if ($b.hasClass('is-busy')) return;
+                $b.addClass('is-busy');
+
+                $.ajax({
+                    url: WISH_URL,
+                    method: 'POST',
+                    dataType: 'json',
+                    data: { product_id: id },
+                    headers: { 'X-CSRF-TOKEN': $('meta[name="csrf-token"]').attr('content') } // fresh token after in-page login
+                })
+                    .done(function (res) {
+                        paint(id, !!res.added);
+
+                        $('[data-wish-count]').text(res.count);
+
+                        if (res.tracking_events && typeof window.runTrackingEvents === 'function') {
+                            window.runTrackingEvents(res.tracking_events);
+                        }
+
+                        notify('success', res.added ? 'Added to Wishlist' : 'Removed from Wishlist', res.message);
+                    })
+                    .fail(function (xhr) {
+                        var j = xhr.responseJSON || {};
+                        notify('error', 'Wishlist', j.message || 'Something went wrong. Please try again.');
+                    })
+                    .always(function () { $b.removeClass('is-busy'); });
+            });
         });
     </script>
 

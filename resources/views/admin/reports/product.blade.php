@@ -260,9 +260,9 @@
                     <div class="kpi-label">Total Revenue</div>
                     <div class="kpi-value" style="color:var(--green)">
                         @if($revenueThis >= 100000)
-                            ₹{{ number_format($revenueThis / 100000, 1) }}L
+                            @defaultSymbol(){{ number_format($revenueThis / 100000, 1) }}L
                         @else
-                            ₹{{ number_format($revenueThis) }}
+                            @defaultSymbol(){{ number_format($revenueThis) }}
                         @endif
                     </div>
                     <div style="display:flex;align-items:center;gap:8px;margin-top:8px">
@@ -531,8 +531,8 @@
                                                 </div>
                                             </td>
                                             <td class="right" style="font-weight:700">{{ number_format($p->units_sold) }}</td>
-                                            <td class="right" style="font-weight:700;color:var(--green)">₹{{ number_format($p->revenue) }}</td>
-                                            <td class="right muted">₹{{ number_format($p->avg_price) }}</td>
+                                            <td class="right" style="font-weight:700;color:var(--green)">@defaultSymbol(){{ number_format($p->revenue) }}</td>
+                                            <td class="right muted">@defaultSymbol(){{ number_format($p->avg_price) }}</td>
                                             <td class="right muted">{{ number_format($p->order_count) }}</td>
                                             <td>
                                                 <div class="mini-bar-wrap">
@@ -598,9 +598,9 @@
                                         @endforeach
                                         <text x="55" y="50" text-anchor="middle" font-size="12" font-weight="700" fill="#202223">
                                             @if($totalCatRevenue >= 100000)
-                                                ₹{{ number_format($totalCatRevenue / 100000, 1) }}L
+                                                @defaultSymbol(){{ number_format($totalCatRevenue / 100000, 1) }}L
                                             @else
-                                                ₹{{ number_format($totalCatRevenue) }}
+                                                @defaultSymbol(){{ number_format($totalCatRevenue) }}
                                             @endif
                                         </text>
                                         <text x="55" y="64" text-anchor="middle" font-size="9" fill="#8c9196">Total</text>
@@ -625,7 +625,7 @@
                         <div class="sidebar-body">
                             <div class="metric-row">
                                 <span class="metric-label">Avg Revenue / Product</span>
-                                <span class="metric-value">₹{{ number_format($avgRevenuePerProduct) }}</span>
+                                <span class="metric-value">@defaultSymbol(){{ number_format($avgRevenuePerProduct) }}</span>
                             </div>
                             <div class="metric-row">
                                 <span class="metric-label">Avg Units / Product</span>

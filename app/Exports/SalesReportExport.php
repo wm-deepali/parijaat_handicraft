@@ -5,8 +5,9 @@ namespace App\Exports;
 use App\Models\Order;
 use App\Models\OrderItem;
 use App\Models\OrderReturn;
-use App\Models\RefundTransaction;
+use App\Support\Region;
 use Illuminate\Support\Carbon;
+use App\Models\RefundTransaction;
 use Illuminate\Support\Facades\DB;
 use Maatwebsite\Excel\Concerns\FromCollection;
 use Maatwebsite\Excel\Concerns\WithColumnWidths;
@@ -14,7 +15,6 @@ use Maatwebsite\Excel\Concerns\WithHeadings;
 use Maatwebsite\Excel\Concerns\WithMultipleSheets;
 use Maatwebsite\Excel\Concerns\WithStyles;
 use Maatwebsite\Excel\Concerns\WithTitle;
-use PhpOffice\PhpSpreadsheet\Style\Alignment;
 use PhpOffice\PhpSpreadsheet\Style\Fill;
 use PhpOffice\PhpSpreadsheet\Worksheet\Worksheet;
 
@@ -85,20 +85,25 @@ class SalesKpiSheet implements FromCollection, WithHeadings, WithTitle, WithStyl
 
         $pct = fn($old, $new) => $old > 0 ? round((($new - $old) / $old) * 100, 1) . '%' : ($new > 0 ? '+100%' : '0%');
 
+        $r = app(Region::class);
+        $c = $r->defaultSymbol();
+        $f = fn($v) => $r->numberDefault($v);
+
         return collect([
             ['Period', $this->start->format('d M Y') . ' – ' . $this->end->format('d M Y'), $prevStart->format('d M Y') . ' – ' . $prevEnd->format('d M Y'), ''],
+            ['Currency', $r->defaultCode() . ' (' . $c . ')', '', ''],
             ['', '', '', ''],
-            ['Total Revenue (₹)', number_format($revenueThis, 2), number_format($revenuePrev, 2), $pct($revenuePrev, $revenueThis)],
+            ["Total Revenue ($c)", $f($revenueThis), $f($revenuePrev), $pct($revenuePrev, $revenueThis)],
             ['Total Orders', number_format($ordersThis), number_format($ordersPrev), $pct($ordersPrev, $ordersThis)],
-            ['Avg. Order Value (₹)', $ordersThis > 0 ? number_format($revenueThis / $ordersThis, 2) : 0, $ordersPrev > 0 ? number_format($revenuePrev / $ordersPrev, 2) : 0, ''],
+            ["Avg. Order Value ($c)", $ordersThis > 0 ? $f($revenueThis / $ordersThis) : 0, $ordersPrev > 0 ? $f($revenuePrev / $ordersPrev) : 0, ''],
             ['Units Sold', number_format($unitsThis), number_format($unitsPrev), $pct($unitsPrev, $unitsThis)],
             ['Return Rate', $returnRateThis . '%', '', ''],
             ['', '', '', ''],
-            ['Gross Revenue (₹)', number_format($grossRevenue, 2), '', ''],
-            ['Discounts Given (₹)', number_format($discounts, 2), '', ''],
-            ['Refunds / Returns (₹)', number_format($refunds, 2), '', ''],
-            ['Tax Collected GST (₹)', number_format($tax, 2), '', ''],
-            ['Net Revenue (₹)', number_format($revenueThis, 2), '', ''],
+            ["Gross Revenue ($c)", $f($grossRevenue), '', ''],
+            ["Discounts Given ($c)", $f($discounts), '', ''],
+            ["Refunds / Returns ($c)", $f($refunds), '', ''],
+            ["Tax Collected ($c)", $f($tax), '', ''],
+            ["Net Revenue ($c)", $f($revenueThis), '', ''],
         ]);
     }
 
@@ -130,9 +135,9 @@ class TopProductsSheet implements FromCollection, WithHeadings, WithTitle, WithS
 
     public function headings(): array
     {
-        return ['#', 'Product Name', 'SKU', 'Category', 'Units Sold', 'Revenue (₹)', 'Avg. Price (₹)', 'Share %'];
+        $c = app(Region::class)->defaultSymbol();
+        return ['#', 'Product Name', 'SKU', 'Category', 'Units Sold', "Revenue ($c)", "Avg. Price ($c)", 'Share %'];
     }
-
     public function collection()
     {
         $totalRevenue = (float) OrderItem::join('orders', 'orders.id', '=', 'order_items.order_id')
@@ -198,7 +203,7 @@ class DailyBreakdownSheet implements FromCollection, WithHeadings, WithTitle, Wi
 
     public function headings(): array
     {
-        return ['Date', 'Day', 'Orders', 'Revenue (₹)', 'Returns'];
+        return ['Date', 'Day', 'Orders', 'Revenue (' . app(Region::class)->defaultSymbol() . ')', 'Returns'];
     }
 
     public function collection()
@@ -258,7 +263,7 @@ class PaymentMethodsSheet implements FromCollection, WithHeadings, WithTitle, Wi
 
     public function headings(): array
     {
-        return ['Payment Method', 'Transactions', 'Revenue (₹)', 'Share %'];
+        return ['Payment Method', 'Transactions', 'Revenue (' . app(Region::class)->defaultSymbol() . ')', 'Share %'];
     }
 
     public function collection()

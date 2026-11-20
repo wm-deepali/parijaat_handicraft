@@ -2,6 +2,7 @@
 
 namespace App\Services;
 
+use App\Models\Country;
 use App\Models\Invoice;
 use App\Models\InvoiceSetting;
 use App\Models\Order;
@@ -30,6 +31,12 @@ class InvoiceService
 
         $order->loadMissing(['city', 'state']);
 
+        // tax_handling khali = purana order = India
+        $isForeign = !in_array($order->tax_handling, [null, 'india_gst'], true);
+        $countryName = $isForeign && $order->country_code
+            ? Country::where('iso2', $order->country_code)->value('name')
+            : null;
+
         if ($order->billing_address_line_1) {
             $bState = \App\Models\State::find($order->billing_state_id)?->name;
             $bCity = \App\Models\City::find($order->billing_city_id)?->name;
@@ -40,6 +47,7 @@ class InvoiceService
                 $bCity,
                 $bState,
                 $order->billing_pincode,
+                $countryName,
             ])->filter()->implode(', ');
         } else { // orders placed before billing existed
             $billingAddress = collect([
@@ -48,12 +56,13 @@ class InvoiceService
                 $order->city?->name,
                 $order->state?->name,
                 $order->pincode,
+                $countryName,
             ])->filter()->implode(', ');
         }
 
         $data = [
             'order_id' => $order->id,
-            'invoice_number' => AdminSettingController::generateInvoiceNumber(),
+            'invoice_number' => AdminSettingController::generateInvoiceNumber($isForeign ? 'export' : 'india'),
             'invoice_date' => now()->toDateString(),
 
             'customer_name' => $order->billing_name ?: $order->customer_name,

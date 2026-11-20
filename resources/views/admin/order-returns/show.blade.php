@@ -163,14 +163,14 @@
                             @foreach($return->orderItem->addons as $addon)
                                 <div class="addon-row" style="justify-content:flex-end;gap:8px">
                                     <span>{{ $addon->detail }}</span>
-                                    <span>₹{{ number_format($addon->price, 2) }}</span>
+                                    <span>@defaultSymbol(){{ number_format($addon->price, 2) }}</span>
                                 </div>
                             @endforeach
                         </div>
                     </div>
                     @endif
 
-                    <div class="drow"><span class="dlabel">Refundable Amount</span><span class="dval" style="color:var(--accent);font-size:15px">₹{{ number_format($return->refundable_amount, 2) }}</span></div>
+                    <div class="drow"><span class="dlabel">Refundable Amount</span><span class="dval" style="color:var(--accent);font-size:15px">@defaultSymbol(){{ number_format($return->refundable_amount, 2) }}</span></div>
                     <div class="drow"><span class="dlabel">Requested On</span><span class="dval">{{ $return->created_at->format('d M Y, h:i A') }}</span></div>
                     @if($return->details)
                     <div class="drow"><span class="dlabel">Details</span><span class="dval" style="max-width:240px;text-align:right">{{ $return->details }}</span></div>

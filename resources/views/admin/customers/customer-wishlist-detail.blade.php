@@ -227,7 +227,7 @@
                         <div class="sp-identity-email">{{ $customer->email }} &nbsp;·&nbsp; {{ $customer->phone ?? 'N/A' }}</div>
                         <div class="sp-identity-meta">
                             <span class="sp-meta-chip navy"><i class="fa fa-heart" style="font-size:10px"></i> {{ $totalItems }} Wishlist Items</span>
-                            <span class="sp-meta-chip green"><i class="fa fa-rupee-sign" style="font-size:10px"></i> ₹{{ number_format($totalValue) }} Total Value</span>
+                            <span class="sp-meta-chip green"><i class="fa fa-rupee-sign" style="font-size:10px"></i> @defaultSymbol(){{ number_format($totalValue) }} Total Value</span>
                             @if($heat === 'hot')
                                 <span class="sp-meta-chip amber"><i class="fa fa-fire" style="font-size:10px"></i> Hot Customer</span>
                             @endif
@@ -252,7 +252,7 @@
                 </div>
                 <div class="sp-kpi">
                     <div class="sp-kpi-top"><span class="sp-kpi-label">Total Value</span><div class="sp-kpi-icon ic-green"><i class="fa fa-rupee-sign"></i></div></div>
-                    <div class="sp-kpi-value">₹{{ number_format($totalValue) }}</div>
+                    <div class="sp-kpi-value">@defaultSymbol(){{ number_format($totalValue) }}</div>
                     <div class="sp-kpi-sub">Combined MRP</div>
                 </div>
                 <div class="sp-kpi">
@@ -342,9 +342,9 @@
                                 <div class="sp-card-name">{{ $product->name }}</div>
                                 <div class="sp-card-sku">SKU: {{ $product->sku ?? $product->product_code }}</div>
                                 <div class="sp-card-price-row">
-                                    <span class="sp-price-current" @if($item->stockStatus === 'out') style="color:var(--text-hint)" @endif>₹{{ number_format($product->price) }}</span>
+                                    <span class="sp-price-current" @if($item->stockStatus === 'out') style="color:var(--text-hint)" @endif>@defaultSymbol(){{ number_format($product->price) }}</span>
                                     @if($item->hasDiscount)
-                                        <span class="sp-price-original">₹{{ number_format($product->mrp) }}</span>
+                                        <span class="sp-price-original">@defaultSymbol(){{ number_format($product->mrp) }}</span>
                                         <span class="sp-price-discount">{{ $item->discountPercent }}% off</span>
                                     @endif
                                 </div>
@@ -419,9 +419,9 @@
                             </td>
                             <td style="font-size:12.5px;color:var(--text-secondary)">{{ optional($product->category)->name ?? 'Uncategorized' }}</td>
                             <td>
-                                <strong>₹{{ number_format($product->price) }}</strong>
+                                <strong>@defaultSymbol(){{ number_format($product->price) }}</strong>
                                 @if($item->hasDiscount)
-                                    <br><span style="font-size:11.5px;color:var(--text-hint);text-decoration:line-through">₹{{ number_format($product->mrp) }}</span>
+                                    <br><span style="font-size:11.5px;color:var(--text-hint);text-decoration:line-through">@defaultSymbol(){{ number_format($product->mrp) }}</span>
                                 @endif
                             </td>
                             <td>

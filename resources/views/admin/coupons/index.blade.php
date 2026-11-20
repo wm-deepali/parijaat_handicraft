@@ -590,14 +590,14 @@
 
                                         @else
 
-                                            ₹{{ number_format($coupon->discount_value, 2) }}
+                                            @defaultSymbol(){{ number_format($coupon->discount_value, 2) }}
 
                                         @endif
 
                                     </td>
 
                                     <td>
-                                        ₹{{ number_format($coupon->minimum_order_amount ?? 0, 2) }}
+                                        @defaultSymbol(){{ number_format($coupon->minimum_order_amount ?? 0, 2) }}
                                     </td>
 <td>
     {{ $coupon->minimum_order_quantity ?? '—' }}
@@ -654,7 +654,7 @@
 
                                             {{-- Share Coupon Button --}}
                                             <button class="action-btn"
-                                                onclick="openShareModal({{ $coupon->id }}, '{{ $coupon->code }}', '{{ $coupon->discount_type == 'percentage' ? $coupon->discount_value . '%' : '₹' . number_format($coupon->discount_value, 2) }}', '{{ date('d M Y', strtotime($coupon->end_date)) }}')"
+                                                onclick="openShareModal({{ $coupon->id }}, '{{ $coupon->code }}', '{{ $coupon->discount_type == 'percentage' ? $coupon->discount_value . '%' : app(\App\Support\Region::class)->defaultSymbol() . number_format($coupon->discount_value, 2) }}', '{{ date('d M Y', strtotime($coupon->end_date)) }}')"
                                                 title="Share Coupon">
                                                 <i class="fa fa-share-alt"></i>
                                             </button>

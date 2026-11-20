@@ -362,6 +362,11 @@ class CartController extends Controller
      */
     private function freeShippingProgress(?Cart $cart): ?array
     {
+        $country = app(Region::class)->current();
+        if ($country && !$country->is_default) {
+            return null;
+        }
+
         $threshold = (float) (ShippingSetting::first()?->free_delivery_threshold ?? 0);
 
         if ($threshold <= 0 || !$cart || !$cart->items()->exists()) {

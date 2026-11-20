@@ -155,7 +155,7 @@ class CouponController extends Controller
                 '{coupon_code}' => $coupon->code,
                 '{discount_value}' => $coupon->discount_type === 'percentage'
                     ? $coupon->discount_value . '%'
-                    : '₹' . number_format($coupon->discount_value, 2),
+                    : app(\App\Support\Region::class)->formatDefault($coupon->discount_value),
                 '{expiry_date}' => \Carbon\Carbon::parse($coupon->end_date)->format('d M Y'),
                 '{customer_name}' => $customer->name ?? 'Valued Customer',
                 '{store_url}' => url('/'),

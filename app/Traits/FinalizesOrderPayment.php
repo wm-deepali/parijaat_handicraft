@@ -22,6 +22,9 @@ trait FinalizesOrderPayment
             'city',
         ]);
 
+        $money = \App\Support\OrderMoney::formatter($order);
+        $orderTotal = \App\Support\OrderMoney::total($order);
+
         /*
          |--------------------------------------------------------------------------
          | Order Items HTML
@@ -74,7 +77,7 @@ trait FinalizesOrderPayment
             $addonsHtml = '';
             if ($item->addons->isNotEmpty()) {
                 foreach ($item->addons as $addon) {
-                    $addonsHtml .= "<div style='font-size:11px;color:#7a9e9c;'>+ {$addon->detail} (₹" . number_format($addon->price, 2) . ")</div>";
+                    $addonsHtml .= "<div style='font-size:11px;color:#7a9e9c;'>+ {$addon->detail} (" . $money($addon->price) . ")</div>";
                 }
             }
 
@@ -91,7 +94,7 @@ trait FinalizesOrderPayment
             {$addonsHtml}
         </div>
         <div style='display:table-cell;vertical-align:middle;text-align:right;font-size:14px;font-weight:700;color:#1F5552;white-space:nowrap;'>
-            ₹ " . number_format($lineTotal, 2) . "
+            " . $money($lineTotal) . "
         </div>
     </div>
 ";
@@ -107,7 +110,7 @@ trait FinalizesOrderPayment
             <div style='display:table;width:100%;padding:5px 0;'>
                 <span style='display:table-cell;font-size:13px;color:#666;'>Subtotal</span>
                 <span style='display:table-cell;text-align:right;font-size:13px;color:#333;'>
-                    ₹ " . number_format($order->subtotal, 2) . "
+                    " . $money($order->subtotal) . "
                 </span>
             </div>
     ";
@@ -118,7 +121,7 @@ trait FinalizesOrderPayment
             <div style='display:table;width:100%;padding:5px 0;'>
                 <span style='display:table-cell;font-size:13px;color:#2e7d32;font-weight:500;'>{$discountLabel}</span>
                 <span style='display:table-cell;text-align:right;font-size:13px;color:#2e7d32;font-weight:500;'>
-                    − ₹ " . number_format($order->discount, 2) . "
+                    − " . $money($order->discount) . "
                 </span>
             </div>
         ";
@@ -129,7 +132,7 @@ trait FinalizesOrderPayment
         <div style='display:table;width:100%;padding:5px 0;'>
             <span style='display:table-cell;font-size:13px;color:#666;'>Shipping</span>
             <span style='display:table-cell;text-align:right;font-size:13px;color:#333;'>
-                ₹ " . number_format($order->shipping_charge, 2) . "
+                " . $money($order->shipping_charge) . "
             </span>
         </div>
     ";
@@ -143,7 +146,7 @@ trait FinalizesOrderPayment
                 <div style='display:table;width:100%;padding:5px 0;'>
                     <span style='display:table-cell;font-size:13px;color:#666;'>IGST ({$order->igst_rate}%)</span>
                     <span style='display:table-cell;text-align:right;font-size:13px;color:#333;'>
-                        ₹ " . number_format($order->igst_amount, 2) . "
+                        " . $money($order->igst_amount) . "
                     </span>
                 </div>
             ";
@@ -155,7 +158,7 @@ trait FinalizesOrderPayment
                     <div style='display:table;width:100%;padding:5px 0;'>
                         <span style='display:table-cell;font-size:13px;color:#666;'>CGST ({$order->cgst_rate}%)</span>
                         <span style='display:table-cell;text-align:right;font-size:13px;color:#333;'>
-                            ₹ " . number_format($order->cgst_amount, 2) . "
+                            " . $money($order->cgst_amount) . "
                         </span>
                     </div>
                 ";
@@ -166,7 +169,7 @@ trait FinalizesOrderPayment
                     <div style='display:table;width:100%;padding:5px 0;'>
                         <span style='display:table-cell;font-size:13px;color:#666;'>SGST ({$order->sgst_rate}%)</span>
                         <span style='display:table-cell;text-align:right;font-size:13px;color:#333;'>
-                            ₹ " . number_format($order->sgst_amount, 2) . "
+                            " . $money($order->sgst_amount) . "
                         </span>
                     </div>
                 ";
@@ -179,7 +182,7 @@ trait FinalizesOrderPayment
             <div style='display:table;width:100%;padding:5px 0;'>
                 <span style='display:table-cell;font-size:15px;font-weight:600;color:#1a1a1a;'>Grand Total</span>
                 <span style='display:table-cell;text-align:right;font-size:16px;font-weight:700;color:#1F5552;'>
-                    ₹ " . number_format($order->grand_total, 2) . "
+                    " . $orderTotal . "
                 </span>
             </div>
         </div>
@@ -216,7 +219,7 @@ trait FinalizesOrderPayment
 
             '{order_number}' => $order->order_number,
             '{order_date}' => $order->created_at->format('d M Y'),
-            '{grand_total}' => '₹' . number_format($order->grand_total, 2),
+            '{grand_total}' => $orderTotal,
 
             '{payment_method}' => ucfirst($order->payment_method),
             '{payment_status}' => ucfirst($order->payment_status),
@@ -244,7 +247,7 @@ trait FinalizesOrderPayment
                 'payment-received',
                 $order->customer_email,
                 array_merge($variables, [
-                    '{payment_amount}' => '₹' . number_format($order->grand_total, 2),
+                    '{payment_amount}' => $orderTotal,
                     '{transaction_id}' => $order->transaction_id ?? 'N/A',
                     '{invoice_url}' => route('order.success', $order->id),
                 ]),
@@ -378,7 +381,7 @@ trait FinalizesOrderPayment
             \App\Models\AdminNotification::notify([
                 'type' => 'payment',
                 'title' => 'Payment received',
-                'message' => "Payment of ₹" . number_format($order->grand_total, 2) . " for order #{$order->order_number} successfully received via {$label}.",
+                'message' => "Payment of " . \App\Support\OrderMoney::stored($order, $order->grand_total) . " for order #{$order->order_number} successfully received via {$label}.",
                 'reference' => '#' . $order->order_number,
                 'icon' => 'fa-credit-card',
                 'url' => route('admin.orders.show', $order->id),

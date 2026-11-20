@@ -142,7 +142,7 @@ class UserDashboardController extends Controller
         $defCode = $o->default_currency_code ?: app(Region::class)->default()?->currency_code;
         $hasSnap = $o->currency_code && $o->total_customer !== null;
         $cur = $currencies[$o->currency_code ?: $defCode] ?? null;
-        $symbol = $cur ? ($cur->symbol ?: $cur->code) : '₹';
+        $symbol = $cur ? ($cur->symbol ?: $cur->code) : app(Region::class)->defaultSymbol();
         $space = ctype_alpha(str_replace(' ', '', $symbol)) ? ' ' : '';
         $decimals = (int) ($cur->decimals ?? 2);
 

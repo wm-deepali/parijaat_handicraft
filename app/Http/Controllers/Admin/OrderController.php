@@ -465,7 +465,7 @@ class OrderController extends Controller
 
                 'cancelled' => [
                     'title' => 'Order cancelled',
-                    'message' => "Order #{$order->order_number} by {$order->customer_name} (₹" . number_format($order->grand_total, 2) . ") was cancelled."
+                    'message' => "Order #{$order->order_number} by {$order->customer_name} (" . \App\Support\OrderMoney::stored($order, $order->grand_total) . ") was cancelled."
                         . ($request->note ? " Reason: {$request->note}." : ''),
                     'icon' => 'fa-times-circle',
                     'link_text' => 'View Order',
@@ -495,6 +495,9 @@ class OrderController extends Controller
             $smtpSetting = SmtpSetting::first();
 
             if ($smtpSetting) {
+
+                $money = \App\Support\OrderMoney::formatter($order);
+                $orderTotal = \App\Support\OrderMoney::total($order);
 
                 /*
                 |--------------------------------------------------------------------------
@@ -555,7 +558,7 @@ class OrderController extends Controller
                         $addonsHtml = '';
                         if ($item->addons->isNotEmpty()) {
                             foreach ($item->addons as $addon) {
-                                $addonsHtml .= "<div style='font-size:11px;color:#7a9e9c;'>+ {$addon->detail} (₹" . number_format($addon->price, 2) . ")</div>";
+                                $addonsHtml .= "<div style='font-size:11px;color:#7a9e9c;'>+ {$addon->detail} (" . $money($addon->price) . ")</div>";
                             }
                         }
 
@@ -572,7 +575,7 @@ class OrderController extends Controller
             {$addonsHtml}
         </div>
         <div style='display:table-cell;vertical-align:middle;text-align:right;font-size:14px;font-weight:700;color:#1F5552;white-space:nowrap;'>
-            ₹ " . number_format($lineTotal, 2) . "
+            " . $money($lineTotal) . "
         </div>
     </div>
 ";
@@ -614,7 +617,7 @@ class OrderController extends Controller
 
                             '{expected_delivery}' => now()->addDays(3)->format('d M Y'),
 
-                            '{grand_total}' => '₹' . number_format($order->grand_total, 2),
+                            '{grand_total}' => $orderTotal,
 
                             '{payment_method}' => ucfirst($order->payment_method),
                             '{payment_status}' => ucfirst($order->payment_status),
@@ -623,7 +626,7 @@ class OrderController extends Controller
                             '{shipping_address}' => $shippingAddress,
 
                             '{shipping_charge}' => $order->shipping_charge > 0
-                                ? '₹' . number_format($order->shipping_charge, 2)
+                                ? $money($order->shipping_charge)
                                 : 'FREE',
 
                             '{order_url}' => route('order.success', $order->id),
@@ -642,7 +645,7 @@ class OrderController extends Controller
 
                             '{order_number}' => $order->order_number,
                             '{delivered_date}' => now()->format('d M Y'),
-                            '{grand_total}' => '₹' . number_format($order->grand_total, 2),
+                            '{grand_total}' => $orderTotal,
                             '{item_count}' => $order->items->count(),
 
                             '{payment_method}' => ucfirst($order->payment_method),
@@ -652,7 +655,7 @@ class OrderController extends Controller
                             '{shipping_address}' => $shippingAddress,
 
                             '{shipping_charge}' => $order->shipping_charge > 0
-                                ? '₹' . number_format($order->shipping_charge, 2)
+                                ? $money($order->shipping_charge)
                                 : 'FREE',
 
                             '{review_url}' => route('home'),
@@ -673,7 +676,7 @@ class OrderController extends Controller
                             '{order_number}' => $order->order_number,
 
                             '{cancel_reason}' => $request->note ?: 'Cancelled by store',
-                            '{refund_amount}' => '₹' . number_format($order->grand_total - $order->shipping_charge, 2),
+                            '{refund_amount}' => $money($order->grand_total - $order->shipping_charge),
                             '{refund_days}' => '5-7',
 
                             '{shipping_address}' => $shippingAddress,

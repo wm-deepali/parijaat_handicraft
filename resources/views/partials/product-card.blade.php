@@ -12,6 +12,10 @@
     $id = $p['id'] ?? ($p['sku'] ?? null);
     $name = $p['name'] ?? '';
     $off = (int) ($p['off'] ?? 0);
+
+    // wishlist: hidden when the admin switch is off; heart filled when already saved
+    $wishOn = (bool) ($general->wishlist ?? true);
+    $wished = $wishOn && in_array($id, \App\Models\Wishlist::currentProductIds());
 @endphp
 <article class="prod_cart">
     <div class="prod-img">
@@ -25,9 +29,13 @@
             <span class="prod-badge">{{ $p['badge'] }}</span>
         @endif
 
-        <button type="button" class="wish-btn" aria-label="Add to wishlist" data-id="{{ $id }}">
-            <i class="fa-regular fa-heart"></i>
-        </button>
+        @if ($wishOn)
+            <button type="button" @class(['wish-btn', 'is-wished' => $wished])
+                aria-label="{{ $wished ? 'Remove from wishlist' : 'Add to wishlist' }}"
+                aria-pressed="{{ $wished ? 'true' : 'false' }}" data-id="{{ $id }}">
+                <i class="{{ $wished ? 'fa-solid' : 'fa-regular' }} fa-heart"></i>
+            </button>
+        @endif
     </div>
 
     <div class="prod-info">

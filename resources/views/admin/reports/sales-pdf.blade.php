@@ -59,7 +59,7 @@
 <div class="kpi-grid">
     <div class="kpi-cell">
         <div class="kpi-label">Total Revenue</div>
-        <div class="kpi-value">₹{{ number_format($revenueThis) }}</div>
+        <div class="kpi-value">@defaultSymbol(){{ number_format($revenueThis) }}</div>
         @if($revenueGrowth > 0)
             <div class="kpi-badge up">▲ {{ $revenueGrowth }}% vs prev</div>
         @elseif($revenueGrowth < 0)
@@ -77,7 +77,7 @@
     </div>
     <div class="kpi-cell">
         <div class="kpi-label">Avg. Order Value</div>
-        <div class="kpi-value">₹{{ number_format($aovThis) }}</div>
+        <div class="kpi-value">@defaultSymbol(){{ number_format($aovThis) }}</div>
         @if($aovGrowth > 0)
             <div class="kpi-badge up">▲ {{ $aovGrowth }}% vs prev</div>
         @elseif($aovGrowth < 0)
@@ -114,8 +114,8 @@
             <th>SKU</th>
             <th>Category</th>
             <th>Units</th>
-            <th>Revenue (₹)</th>
-            <th>Avg. Price (₹)</th>
+            <th>Revenue (@defaultSymbol())</th>
+            <th>Avg. Price (@defaultSymbol())</th>
             <th>Share</th>
         </tr>
     </thead>
@@ -127,8 +127,8 @@
                 <td>{{ $p['sku'] }}</td>
                 <td>{{ $p['category'] }}</td>
                 <td>{{ number_format($p['units']) }}</td>
-                <td>₹{{ number_format($p['revenue']) }}</td>
-                <td>₹{{ number_format($p['avg_price']) }}</td>
+                <td>@defaultSymbol(){{ number_format($p['revenue']) }}</td>
+                <td>@defaultSymbol(){{ number_format($p['avg_price']) }}</td>
                 <td>{{ $p['share'] ?? 0 }}%</td>
             </tr>
         @empty
@@ -146,7 +146,7 @@
                 <tr>
                     <th>Method</th>
                     <th>Txns</th>
-                    <th>Revenue (₹)</th>
+                    <th>Revenue (@defaultSymbol())</th>
                     <th>Share</th>
                 </tr>
             </thead>
@@ -155,7 +155,7 @@
                     <tr>
                         <td>{{ $pm['label'] }}</td>
                         <td>{{ number_format($pm['txns']) }}</td>
-                        <td>₹{{ number_format($pm['revenue']) }}</td>
+                        <td>@defaultSymbol(){{ number_format($pm['revenue']) }}</td>
                         <td>{{ $pm['share'] }}%</td>
                     </tr>
                 @empty
@@ -167,7 +167,7 @@
                     <tr>
                         <td>Total</td>
                         <td>{{ number_format(collect($paymentMethods)->sum('txns')) }}</td>
-                        <td>₹{{ number_format($revenueThis) }}</td>
+                        <td>@defaultSymbol(){{ number_format($revenueThis) }}</td>
                         <td>100%</td>
                     </tr>
                 </tfoot>
@@ -179,23 +179,23 @@
         <h2>Revenue Summary</h2>
         <div class="metric-row">
             <span class="metric-label">Gross Revenue</span>
-            <span class="metric-value">₹{{ number_format($grossRevenue) }}</span>
+            <span class="metric-value">@defaultSymbol(){{ number_format($grossRevenue) }}</span>
         </div>
         <div class="metric-row">
             <span class="metric-label">Discounts Given</span>
-            <span class="metric-value" style="color:#b22222">− ₹{{ number_format($discountsGiven) }}</span>
+            <span class="metric-value" style="color:#b22222">− @defaultSymbol(){{ number_format($discountsGiven) }}</span>
         </div>
         <div class="metric-row">
             <span class="metric-label">Returns / Refunds</span>
-            <span class="metric-value" style="color:#b22222">− ₹{{ number_format($refundsTotal) }}</span>
+            <span class="metric-value" style="color:#b22222">− @defaultSymbol(){{ number_format($refundsTotal) }}</span>
         </div>
         <div class="metric-row">
             <span class="metric-label">Tax Collected (GST)</span>
-            <span class="metric-value">₹{{ number_format($taxCollected) }}</span>
+            <span class="metric-value">@defaultSymbol(){{ number_format($taxCollected) }}</span>
         </div>
         <div class="metric-row" style="border-top:2px solid #303d89;margin-top:6px;padding-top:8px">
             <span style="font-weight:700;font-size:11px;color:#303d89">Net Revenue</span>
-            <span style="font-weight:700;font-size:13px;color:#303d89">₹{{ number_format($revenueThis) }}</span>
+            <span style="font-weight:700;font-size:13px;color:#303d89">@defaultSymbol(){{ number_format($revenueThis) }}</span>
         </div>
     </div>
 </div>

@@ -278,7 +278,7 @@ function openRefundModal(id, customer, product, amount, requested) {
 
     let html = _infoRow('Customer', customer) +
         _infoRow('Product', product) +
-        _infoRow('Refund Amount', '₹' + fmt);
+        _infoRow('Refund Amount', '@defaultSymbol()' + fmt);
 
     if (requested && requested.method) {
         html += `<div style="margin-top:10px;padding-top:10px;border-top:1px dashed #e3e5e8">

@@ -360,7 +360,7 @@
                     <div class="field-group">
                         <label class="field-label">Currency Symbol</label>
                         <input type="text" name="currency_symbol" class="field-input"
-                            value="{{ old('currency_symbol', $general?->currency_symbol ?? '₹') }}" readonly>
+                            value="{{ old('currency_symbol', $general?->currency_symbol ?? app(\App\Support\Region::class)->defaultSymbol()) }}" readonly>
 
                     </div>
                     <div class="field-group">

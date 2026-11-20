@@ -477,7 +477,7 @@
                 </div>
                 <div class="stat-card">
                     <div class="stat-label">Total Refunded</div>
-                    <div class="stat-value" style="color:var(--green)">₹{{ number_format($stats['total_amount'], 0) }}
+                    <div class="stat-value" style="color:var(--green)">@defaultSymbol(){{ number_format($stats['total_amount'], 0) }}
                     </div>
                     <div class="stat-sub">Amount returned</div>
                 </div>
@@ -594,7 +594,7 @@
                                             </div>
                                         </div>
                                     </td>
-                                    <td style="font-weight:700;color:var(--green)">₹{{ number_format($refund->amount, 0) }}
+                                    <td style="font-weight:700;color:var(--green)">@defaultSymbol(){{ number_format($refund->amount, 0) }}
                                     </td>
                                     <td style="color:var(--text-secondary);font-size:13px">
                                         {{ $methodLabels[$refund->refund_method] ?? strtoupper($refund->refund_method) }}

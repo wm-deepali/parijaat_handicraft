@@ -819,7 +819,7 @@
                     </td>
                     <td><span class="mono">{{ $log->payment_id ?? '—' }}</span></td>
                     <td>{{ ucfirst($log->gateway) }}</td>
-                    <td style="font-weight:700">₹{{ number_format($log->amount, 2) }}</td>
+                    <td style="font-weight:700">@defaultSymbol(){{ number_format($log->amount, 2) }}</td>
                     <td>{{ $log->method ? ucfirst($log->method) : '—' }}</td>
                     <td>
                         @php
@@ -1586,7 +1586,7 @@
                 ['key' => 'Order', 'val' => e($log->order_number ?? '—')],
                 ['key' => 'Payment ID', 'val' => e($log->payment_id ?? '—')],
                 ['key' => 'Gateway', 'val' => e(ucfirst($log->gateway))],
-                ['key' => 'Amount', 'val' => '₹' . number_format($log->amount, 2)],
+                ['key' => 'Amount', 'val' => '${SYM}' . number_format($log->amount, 2)],
                 ['key' => 'Method', 'val' => e($log->method ? ucfirst($log->method) : '—')],
                 ['key' => 'Status', 'val' => '<span class="badge ' . (['captured' => 'badge-success', 'failed' => 'badge-failed', 'refunded' => 'badge-info', 'pending' => 'badge-pending', 'created' => 'badge-pending'][$log->status] ?? 'badge-info') . '">' . ucfirst($log->status) . '</span>'],
                 ['key' => 'Customer', 'val' => e(($log->customer_name ?? '—') . ($log->customer_email ? ' <' . $log->customer_email . '>' : ''))],

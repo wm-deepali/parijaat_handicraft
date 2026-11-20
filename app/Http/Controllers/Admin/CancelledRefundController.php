@@ -7,6 +7,7 @@ use App\Models\AdminNotification;
 use App\Models\Notification;
 use App\Models\Order;
 use App\Models\RefundTransaction;
+use App\Support\RefundMoney;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
 
@@ -77,7 +78,9 @@ class CancelledRefundController extends Controller
             ? $request->file('payment_proof')->store('refunds/cancelled-proofs', 'public')
             : null;
 
-        DB::transaction(function () use ($request, $order, $proofPath) {
+        $label = RefundMoney::label($order, (float) $request->amount);
+
+        DB::transaction(function () use ($request, $order, $proofPath, $label) {
             // Lock the row so a double-click can't create two refunds
             $order = Order::lockForUpdate()->findOrFail($order->id);
 
@@ -98,7 +101,7 @@ class CancelledRefundController extends Controller
                 'status' => 'completed',
                 'refund_method' => $request->refund_method,
                 'utr_id' => $request->utr_id,
-                'amount' => $request->amount,
+                'amount' => $request->amount,           // default currency
                 'remarks' => $request->remarks,
                 'payment_proof' => $proofPath,
 
@@ -111,12 +114,15 @@ class CancelledRefundController extends Controller
                 'account_type' => $isBank ? $request->account_type : null,
             ]);
 
+            // customer currency wala amount (order ke frozen rate se); $fillable par nirbhar nahi
+            $refund->forceFill(RefundMoney::columns($order, (float) $refund->amount))->save();
+
             $order->update(['payment_status' => 'refunded']);
 
             $order->statusHistory()->create([
                 'status' => 'cancelled',
                 'previous_status' => 'cancelled',
-                'remarks' => 'Refund of ₹' . number_format($refund->amount, 2) . ' processed. UTR: ' . $refund->utr_id,
+                'remarks' => 'Refund of ' . $label . ' processed. UTR: ' . $refund->utr_id,
                 'triggered_by' => 'Admin (' . auth()->user()->name . ')',
             ]);
 
@@ -124,7 +130,7 @@ class CancelledRefundController extends Controller
                 Notification::create([
                     'customer_id' => $order->customer_id,
                     'title' => 'Refund Completed',
-                    'message' => 'Your refund of ₹' . number_format($refund->amount, 2)
+                    'message' => 'Your refund of ' . $label
                         . ' for cancelled order ' . $order->order_number . ' has been processed. UTR: ' . $refund->utr_id,
                     'icon' => 'fa-solid fa-money-bill-transfer',
                     'color' => 'success',
@@ -135,7 +141,7 @@ class CancelledRefundController extends Controller
             AdminNotification::notify([
                 'type' => 'order',
                 'title' => 'Refund processed',
-                'message' => 'Refund of ₹' . number_format($refund->amount, 2) . ' recorded for cancelled order #' . $order->order_number . '.',
+                'message' => 'Refund of ' . $label . ' recorded for cancelled order #' . $order->order_number . '.',
                 'reference' => '#' . $order->order_number,
                 'icon' => 'fa-undo',
                 'url' => route('admin.orders.show', $order->id),
@@ -145,6 +151,6 @@ class CancelledRefundController extends Controller
 
         return redirect()
             ->route('admin.cancelled-refunds.index')
-            ->with('success', 'Refund recorded for order #' . $order->order_number . ' (UTR: ' . $request->utr_id . ').');
+            ->with('success', 'Refund of ' . $label . ' recorded for order #' . $order->order_number . ' (UTR: ' . $request->utr_id . ').');
     }
 }

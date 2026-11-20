@@ -65,7 +65,7 @@
             </td>
             <td>
                 <div class="kpi-label">Total Revenue</div>
-                <div class="kpi-value">Rs. {{ number_format($revenueThis) }}</div>
+                <div class="kpi-value">@defaultSymbol(){{ number_format($revenueThis) }}</div>
                 <div class="kpi-sub">{{ $revenueGrowth >= 0 ? '+' : '' }}{{ $revenueGrowth }}% vs prev period</div>
             </td>
             <td>
@@ -87,7 +87,7 @@
                         @foreach($donutCategories as $cat)
                             <tr>
                                 <td>{{ $cat['name'] }}</td>
-                                <td class="text-right">Rs. {{ number_format($cat['revenue']) }}</td>
+                                <td class="text-right">@defaultSymbol(){{ number_format($cat['revenue']) }}</td>
                                 <td class="text-right">{{ $cat['pct'] }}%</td>
                             </tr>
                         @endforeach
@@ -97,7 +97,7 @@
             <td>
                 <table class="data-table">
                     <tbody>
-                        <tr><td>Avg Revenue / Product</td><td class="text-right">Rs. {{ number_format($avgRevenuePerProduct) }}</td></tr>
+                        <tr><td>Avg Revenue / Product</td><td class="text-right">@defaultSymbol(){{ number_format($avgRevenuePerProduct) }}</td></tr>
                         <tr><td>Avg Units / Product</td><td class="text-right">{{ $avgUnitsPerProduct }}</td></tr>
                         <tr><td>Avg Rating (all)</td><td class="text-right">{{ $avgRating > 0 ? $avgRating : '—' }}</td></tr>
                         <tr><td>Return Rate</td><td class="text-right">{{ $returnRate }}%</td></tr>
@@ -173,8 +173,8 @@
                     <td>{{ $p->sku }}</td>
                     <td>{{ $p->category_name ?: 'Uncategorized' }}</td>
                     <td class="text-right">{{ number_format($p->units_sold) }}</td>
-                    <td class="text-right">Rs. {{ number_format($p->revenue) }}</td>
-                    <td class="text-right">Rs. {{ number_format($p->avg_price) }}</td>
+                    <td class="text-right">@defaultSymbol(){{ number_format($p->revenue) }}</td>
+                    <td class="text-right">@defaultSymbol(){{ number_format($p->avg_price) }}</td>
                     <td class="text-right">{{ number_format($p->order_count) }}</td>
                     <td class="text-right">{{ number_format($p->stock) }}</td>
                     <td class="text-right">{{ $rating > 0 ? $rating : '—' }}</td>
@@ -189,7 +189,7 @@
             <tr>
                 <td colspan="4">Total</td>
                 <td class="text-right">{{ number_format($products->sum('units_sold')) }}</td>
-                <td class="text-right">Rs. {{ number_format($products->sum('revenue')) }}</td>
+                <td class="text-right">@defaultSymbol(){{ number_format($products->sum('revenue')) }}</td>
                 <td colspan="6"></td>
             </tr>
         </tfoot>

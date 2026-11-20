@@ -2,6 +2,7 @@
 
 namespace App\Models;
 
+use App\Support\Region;
 use Carbon\Carbon;
 use Illuminate\Database\Eloquent\Model;
 
@@ -40,22 +41,26 @@ class Coupon extends Model
         return in_array(strtolower((string) $this->discount_type), ['percentage', 'percent'], true);
     }
 
-    /** "Get 10% off (up to ₹500) on orders above ₹2,999. Valid till 31 Dec 2026." */
+    /** Offer text in the visitor's currency (stored amounts are in the default currency). */
     public function getOfferTextAttribute(): string
     {
+        $region = app(Region::class);
+
+        $money = fn ($v) => preg_replace('/\.0+$/', '', $region->format($v));
+
         $value = rtrim(rtrim(number_format((float) $this->discount_value, 2, '.', ''), '0'), '.');
 
         $text = $this->is_percent
             ? "Get {$value}% off"
-            : 'Get flat ₹' . number_format((float) $this->discount_value) . ' off';
+            : 'Get flat ' . $money($this->discount_value) . ' off';
 
         if ($this->is_percent && $this->maximum_discount > 0) {
-            $text .= ' (up to ₹' . number_format((float) $this->maximum_discount) . ')';
+            $text .= ' (up to ' . $money($this->maximum_discount) . ')';
         }
 
         $conds = [];
         if ($this->minimum_order_amount > 0) {
-            $conds[] = 'orders above ₹' . number_format((float) $this->minimum_order_amount);
+            $conds[] = 'orders above ' . $money($this->minimum_order_amount);
         }
         if ($this->minimum_order_quantity > 1) {
             $conds[] = $this->minimum_order_quantity . '+ items';
