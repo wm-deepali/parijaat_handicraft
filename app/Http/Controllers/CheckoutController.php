@@ -9,14 +9,18 @@ use Razorpay\Api\Api;
 use App\Models\State;
 use App\Models\Setting;
 use App\Models\OrderItem;
+use App\Support\Region;
 use Illuminate\Http\Request;
 use App\Models\PaymentSetting;
 use App\Models\CustomerAddress;
 use Illuminate\Validation\Rule;
 use Illuminate\Support\Facades\DB;
 use App\Services\StockAlertService;
+use App\Services\ShippingCalculator;
 use Illuminate\Support\Facades\Log;
 use App\Services\Tracking\CartTracker;
+// use Razorpay\Api\Api;   // Razorpay disabled for now
+use App\Services\CashfreeService;
 
 use App\Traits\FinalizesOrderPayment;
 
@@ -27,6 +31,15 @@ class CheckoutController extends Controller
     // Inject in constructor
     public function __construct(protected StockAlertService $alertService)
     {
+    }
+
+    /** COD sirf tab jab admin ne enable kiya ho AUR customer default country me ho. */
+    private function codAllowed(): bool
+    {
+        $country = app(Region::class)->current();
+
+        return (bool) optional(Setting::first())->cod_enabled;
+        // && (!$country || $country->is_default);
     }
 
     public function checkout()
@@ -43,7 +56,7 @@ class CheckoutController extends Controller
             return redirect()->route('cart')->with('error', 'Your cart is empty.');
         }
 
-        // Totals use the current default address (GST + shipping zone)
+        // Totals use the current default address (GST + shipping zone) and the selected country
         $cart->recalculateTotals();
         $cart->refresh();
 
@@ -59,23 +72,34 @@ class CheckoutController extends Controller
 
         CartTracker::track('checkout_viewed', $cart, [], 30); // no duplicate on refresh
 
+        $country = app(Region::class)->current();
+
         $addresses = $customer
             ? $customer->addresses()->with(['state', 'city'])->orderByDesc('is_default')->get()
             : collect();
 
+        // sirf selected country ke addresses
+        if ($country) {
+            $addresses = $addresses
+                ->filter(fn($a) => strcasecmp(trim((string) $a->country), $country->name) === 0)
+                ->values();
+        }
+
         $defaultAddress = $addresses->firstWhere('is_default', true);
 
-        $states = State::orderBy('name')->get();
+        $states = State::when($country, fn($q) => $q->where('country_id', $country->id))
+            ->orderBy('name')
+            ->get();
 
         $beginCheckoutScript = \App\Services\Tracking\PixelTracker::beginCheckoutScript($cart);
 
         $summary = \App\Services\CartSummary::for($cart);
 
-        $codEnabled = (bool) optional(Setting::first())->cod_enabled;
+        $codEnabled = $this->codAllowed();
 
         return view(
             'front-pages.checkout',
-            compact('cart', 'customer', 'addresses', 'defaultAddress', 'states', 'beginCheckoutScript', 'summary', 'codEnabled')
+            compact('cart', 'customer', 'addresses', 'defaultAddress', 'states', 'beginCheckoutScript', 'summary', 'codEnabled', 'country')
         );
     }
 
@@ -88,31 +112,48 @@ class CheckoutController extends Controller
 
     private function addressRules(Request $request): array
     {
+        $country = app(Region::class)->current();
+        $isIndia = !$country || $country->iso2 === 'IN';
+
+        $stateExists = Rule::exists('states', 'id');
+        if ($country) {
+            $stateExists = $stateExists->where('country_id', $country->id);
+        }
+
         return [
             'name' => 'required|string|max:255',
             'email' => 'required|email',
-            'phone' => ['required', 'regex:/^[6-9]\d{9}$/'],
+            'phone' => ['required', $isIndia ? 'regex:/^[6-9]\d{9}$/' : 'regex:/^[0-9+\-\s()]{6,20}$/'],
             'address_line_1' => 'required|string|max:255',
             'address_line_2' => 'nullable|string|max:255',
-            'state_id' => 'required|exists:states,id',
+            'state_id' => ['required', $stateExists],
             'city_id' => ['required', Rule::exists('cities', 'id')->where('state_id', $request->state_id)],
-            'pincode' => ['required', 'regex:/^\d{6}$/'],
+            'pincode' => ['required', $isIndia ? 'regex:/^\d{6}$/' : 'regex:/^[A-Za-z0-9\- ]{3,12}$/'],
             'address_type' => 'nullable|in:home,office,other',
         ];
     }
 
     private function addressMessages(): array
     {
+        $country = app(Region::class)->current();
+        $isIndia = !$country || $country->iso2 === 'IN';
+
         return [
             'email.required' => 'Please enter your email in the Contact section.',
             'email.email' => 'Please enter a valid email in the Contact section.',
-            'phone.regex' => 'Enter a valid 10 digit mobile number.',
-            'pincode.regex' => 'Enter a valid 6 digit pincode.',
+            'phone.regex' => $isIndia ? 'Enter a valid 10 digit mobile number.' : 'Enter a valid phone number.',
+            'pincode.regex' => $isIndia ? 'Enter a valid 6 digit pincode.' : 'Enter a valid postal code.',
             'state_id.required' => 'Please select a state.',
+            'state_id.exists' => 'Please select a state from the chosen country.',
             'city_id.required' => 'Please select a city.',
             'city_id.exists' => 'Please select a city from the chosen state.',
             'address_line_1.required' => 'Please enter your house / flat number.',
         ];
+    }
+
+    private function countryName(): string
+    {
+        return app(Region::class)->current()?->name ?? 'India';
     }
 
     public function storeAddress(Request $request)
@@ -132,7 +173,7 @@ class CheckoutController extends Controller
                 'phone' => $v['phone'],
                 'address_line_1' => $v['address_line_1'],
                 'address_line_2' => $v['address_line_2'] ?? null,
-                'country' => 'India',
+                'country' => $this->countryName(),
                 'state_id' => $v['state_id'],
                 'city_id' => $v['city_id'],
                 'pincode' => $v['pincode'],
@@ -210,14 +251,15 @@ class CheckoutController extends Controller
     public function placeOrder(Request $request)
     {
         $customer = auth('customer')->user();
+        $region = app(Region::class);
+        $country = $region->current();
 
         $request->validate([
-            'payment_method' => 'required|in:cod,razorpay',
+            'payment_method' => 'required|in:cod,cashfree',
         ]);
 
-        // COD sirf tab jab admin ne enable kiya ho (blade check bypass ho sakta hai)
-        // NOTE: agar cod_enabled kisi aur model/table mein hai to yahan wahi use karo
-        if ($request->payment_method === 'cod' && !optional(Setting::first())->cod_enabled) {
+        // COD sirf tab jab admin ne enable kiya ho aur default country ho (blade check bypass ho sakta hai)
+        if ($request->payment_method === 'cod' && !$this->codAllowed()) {
             return response()->json([
                 'success' => false,
                 'message' => 'Cash on Delivery is not available.',
@@ -233,13 +275,13 @@ class CheckoutController extends Controller
                 'bill_address_line_2' => 'nullable|string|max:255',
                 'bill_state_id' => 'required|exists:states,id',
                 'bill_city_id' => ['required', Rule::exists('cities', 'id')->where('state_id', $request->bill_state_id)],
-                'bill_pincode' => ['required', 'regex:/^\d{6}$/'],
+                'bill_pincode' => ['required', 'regex:/^[A-Za-z0-9\- ]{3,12}$/'],
             ], [
                 'bill_name.required' => 'Please enter the billing name.',
                 'bill_address_line_1.required' => 'Please enter the billing house / flat number.',
                 'bill_state_id.required' => 'Please select the billing state.',
                 'bill_city_id.required' => 'Please select the billing city.',
-                'bill_pincode.regex' => 'Enter a valid 6 digit billing pincode.',
+                'bill_pincode.regex' => 'Enter a valid billing pincode.',
             ]);
         }
 
@@ -249,6 +291,13 @@ class CheckoutController extends Controller
         if ($request->filled('address_id')) {
             $address = CustomerAddress::where('customer_id', $customer->id)
                 ->find($request->address_id);
+        }
+
+        /* Payment page se aaye (address_id nahi, address fields nahi): default address use karo */
+        if (!$address && !$request->filled('address_line_1')) {
+            $address = CustomerAddress::where('customer_id', $customer->id)
+                ->where('is_default', 1)
+                ->first();
         }
 
         /* Create Address If Not Exists */
@@ -266,12 +315,20 @@ class CheckoutController extends Controller
                 'phone' => $request->phone,
                 'address_line_1' => $request->address_line_1,
                 'address_line_2' => $request->address_line_2,
-                'country' => 'India',
+                'country' => $this->countryName(),
                 'state_id' => $request->state_id,
                 'city_id' => $request->city_id,
                 'pincode' => $request->pincode,
                 'address_type' => $request->address_type ?? 'home',
                 'is_default' => 1,
+            ]);
+        }
+
+        /* Address selected country ka hona chahiye (price, tax aur currency usi country ke hain) */
+        if ($country && strcasecmp(trim((string) $address->country), $country->name) !== 0) {
+            return response()->json([
+                'success' => false,
+                'message' => "This address is not in {$country->name}. Change the country from the top bar or choose another address.",
             ]);
         }
 
@@ -312,6 +369,19 @@ class CheckoutController extends Controller
                 'success' => false,
                 'message' => 'Cart is empty.'
             ]);
+        }
+
+        /* Foreign country: jab tak shipping calculate na ho sake, order nahi (warna shipping 0 lag jayegi) */
+        if ($country && !$country->is_default) {
+            $taxable = max(0, (float) $cart->items->sum('total') - (float) $cart->discount);
+            $ship = ShippingCalculator::forCart($cart, $taxable);
+
+            if (empty($ship['known'])) {
+                return response()->json([
+                    'success' => false,
+                    'message' => "Shipping to {$country->name} is not available yet. Please contact us.",
+                ]);
+            }
         }
 
         DB::beginTransaction();
@@ -359,6 +429,13 @@ class CheckoutController extends Controller
                 'payment_status' => 'pending',
                 'status' => 'pending',
             ]);
+
+            // country, currency, us din ka rate, extra %, teeno amounts: ab freeze (forceFill, $fillable par nirbhar nahi)
+            $snapshot = $region->snapshot((float) $cart->grand_total);
+
+            if ($snapshot) {
+                $order->forceFill($snapshot)->save();
+            }
 
             $order->statusHistory()->create([
                 'status' => 'pending',
@@ -418,6 +495,8 @@ class CheckoutController extends Controller
 
                 DB::commit();
 
+                session()->forget('guest_checkout_address');
+
                 CartTracker::track('order_placed', $cart, [
                     'order_number' => $order->order_number,
                     'method' => 'cod',
@@ -435,6 +514,7 @@ class CheckoutController extends Controller
                 $this->sendOrderEmails($order);
 
                 return response()->json([
+                    'address_id' => $address->id,
                     'success' => true,
                     'type' => 'cod',
                     'message' => 'Order placed successfully.',
@@ -442,48 +522,27 @@ class CheckoutController extends Controller
                 ]);
             }
 
-            /* Razorpay Order */
-            $paymentSetting = PaymentSetting::first();
-
-            $keyId = $paymentSetting->live_mode
-                ? $paymentSetting->live_key_id
-                : $paymentSetting->test_key_id;
-
-            $keySecret = $paymentSetting->live_mode
-                ? $paymentSetting->live_key_secret
-                : $paymentSetting->test_key_secret;
-
-            $api = new Api($keyId, $keySecret);
-
-            $razorpayOrder = $api->order->create([
-                'receipt' => $order->order_number,
-                'amount' => round($order->grand_total * 100),
-                'currency' => 'INR',
-                'payment_capture' => 1
-            ]);
-
-            $order->update([
-                'razorpay_order_id' => $razorpayOrder['id']
-            ]);
+            /* Cashfree order (Cashfree order_id = our order_number) */
+            $cf = app(CashfreeService::class);
+            $cfOrder = $cf->createOrder($order);
 
             DB::commit();
 
+            session()->forget('guest_checkout_address');
+
             CartTracker::track('payment_started', $cart, [
                 'order_number' => $order->order_number,
-                'method' => 'razorpay',
+                'method' => 'cashfree',
                 'amount' => (float) $order->grand_total,
             ]);
 
             return response()->json([
                 'success' => true,
-                'type' => 'razorpay',
+                'type' => 'cashfree',
                 'order_id' => $order->id,
-                'razorpay_order_id' => $razorpayOrder['id'],
-                'amount' => round($order->grand_total * 100),
-                'key' => $keyId,
-                'customer_name' => $order->customer_name,
-                'customer_email' => $order->customer_email,
-                'customer_phone' => $order->customer_phone,
+                'payment_session_id' => $cfOrder['payment_session_id'],
+                'mode' => $cf->mode(),
+                'address_id' => $address->id,
             ]);
 
         } catch (\Exception $e) {
@@ -502,85 +561,155 @@ class CheckoutController extends Controller
         }
     }
 
-    public function razorpaySuccess(Request $request)
+    // public function razorpaySuccess(Request $request)
+    // {
+    //     $request->validate([
+    //         'order_id' => 'required|integer',
+    //         'razorpay_payment_id' => 'required',
+    //         'razorpay_order_id' => 'required',
+    //         'razorpay_signature' => 'required',
+    //     ]);
+
+    //     try {
+    //         // Sirf is customer ka order
+    //         $order = Order::where('customer_id', auth('customer')->id())
+    //             ->findOrFail($request->order_id);
+
+    //         // Payment isi order ka hona chahiye
+    //         if ($order->razorpay_order_id !== $request->razorpay_order_id) {
+    //             return response()->json([
+    //                 'success' => false,
+    //                 'message' => 'Invalid payment details.'
+    //             ], 422);
+    //         }
+
+    //         /* Verify Signature */
+    //         $paymentSetting = PaymentSetting::first();
+
+    //         $keyId = $paymentSetting->live_mode
+    //             ? $paymentSetting->live_key_id
+    //             : $paymentSetting->test_key_id;
+
+    //         $keySecret = $paymentSetting->live_mode
+    //             ? $paymentSetting->live_key_secret
+    //             : $paymentSetting->test_key_secret;
+
+    //         $api = new Api($keyId, $keySecret);
+
+    //         $api->utility->verifyPaymentSignature([
+    //             'razorpay_order_id' => $request->razorpay_order_id,
+    //             'razorpay_payment_id' => $request->razorpay_payment_id,
+    //             'razorpay_signature' => $request->razorpay_signature,
+    //         ]);
+
+    //         // Row lock + already-paid check inside (webhook may have won the race)
+    //         $this->finalizeRazorpayPayment(
+    //             $order->id,
+    //             $request->razorpay_payment_id,
+    //             $request->razorpay_signature,
+    //             'Customer Callback',
+    //             $order->customer_id,
+    //             $request
+    //         );
+
+    //         return response()->json([
+    //             'success' => true,
+    //             'redirect_url' => route('order.success', $order->id),
+    //         ]);
+
+    //     } catch (\Razorpay\Api\Errors\SignatureVerificationError $e) {
+
+    //         Log::warning('Razorpay signature failed: ' . $e->getMessage(), [
+    //             'order_id' => $request->order_id,
+    //         ]);
+
+    //         return response()->json([
+    //             'success' => false,
+    //             'message' => 'Payment verification failed.'
+    //         ], 422);
+
+    //     } catch (\Exception $e) {
+
+    //         Log::error('razorpaySuccess failed: ' . $e->getMessage(), [
+    //             'order_id' => $request->order_id,
+    //             'trace' => $e->getTraceAsString(),
+    //         ]);
+
+    //         return response()->json([
+    //             'success' => false,
+    //             'message' => 'Unable to confirm payment. If money was deducted, please contact support.'
+    //         ], 422);
+    //     }
+    // }
+
+
+    // Browser callback after the Cashfree popup closes: ask Cashfree if it is really paid
+    public function cashfreeVerify(Request $request, CashfreeService $cf)
     {
-        $request->validate([
-            'order_id' => 'required|integer',
-            'razorpay_payment_id' => 'required',
-            'razorpay_order_id' => 'required',
-            'razorpay_signature' => 'required',
-        ]);
+        $request->validate(['order_id' => 'required|integer']);
+
+        $order = Order::where('customer_id', auth('customer')->id())
+            ->findOrFail($request->order_id);
 
         try {
-            // Sirf is customer ka order
-            $order = Order::where('customer_id', auth('customer')->id())
-                ->findOrFail($request->order_id);
-
-            // Payment isi order ka hona chahiye
-            if ($order->razorpay_order_id !== $request->razorpay_order_id) {
+            if ($this->confirmCashfree($order, $cf, 'Customer Callback', $request)) {
                 return response()->json([
-                    'success' => false,
-                    'message' => 'Invalid payment details.'
-                ], 422);
+                    'success' => true,
+                    'redirect_url' => route('order.success', $order->id),
+                ]);
             }
-
-            /* Verify Signature */
-            $paymentSetting = PaymentSetting::first();
-
-            $keyId = $paymentSetting->live_mode
-                ? $paymentSetting->live_key_id
-                : $paymentSetting->test_key_id;
-
-            $keySecret = $paymentSetting->live_mode
-                ? $paymentSetting->live_key_secret
-                : $paymentSetting->test_key_secret;
-
-            $api = new Api($keyId, $keySecret);
-
-            $api->utility->verifyPaymentSignature([
-                'razorpay_order_id' => $request->razorpay_order_id,
-                'razorpay_payment_id' => $request->razorpay_payment_id,
-                'razorpay_signature' => $request->razorpay_signature,
-            ]);
-
-            // Row lock + already-paid check inside (webhook may have won the race)
-            $this->finalizeRazorpayPayment(
-                $order->id,
-                $request->razorpay_payment_id,
-                $request->razorpay_signature,
-                'Customer Callback',
-                $order->customer_id,
-                $request
-            );
-
-            return response()->json([
-                'success' => true,
-                'redirect_url' => route('order.success', $order->id),
-            ]);
-
-        } catch (\Razorpay\Api\Errors\SignatureVerificationError $e) {
-
-            Log::warning('Razorpay signature failed: ' . $e->getMessage(), [
-                'order_id' => $request->order_id,
-            ]);
+        } catch (\Throwable $e) {
+            Log::error('cashfreeVerify failed: ' . $e->getMessage(), ['order_id' => $order->id]);
 
             return response()->json([
                 'success' => false,
-                'message' => 'Payment verification failed.'
-            ], 422);
-
-        } catch (\Exception $e) {
-
-            Log::error('razorpaySuccess failed: ' . $e->getMessage(), [
-                'order_id' => $request->order_id,
-                'trace' => $e->getTraceAsString(),
-            ]);
-
-            return response()->json([
-                'success' => false,
-                'message' => 'Unable to confirm payment. If money was deducted, please contact support.'
+                'message' => 'Unable to confirm payment. If money was deducted, please contact support.',
             ], 422);
         }
+
+        return response()->json([
+            'success' => false,
+            'message' => 'Payment was not completed. Please try again.',
+        ], 422);
+    }
+
+    // Cashfree redirects here when the payment page leaves the site (e.g. UPI app on mobile)
+    public function cashfreeReturn(Request $request, CashfreeService $cf)
+    {
+        $order = Order::where('customer_id', auth('customer')->id())
+            ->where('order_number', (string) $request->query('order_id'))
+            ->first();
+
+        if (!$order) {
+            return redirect()->route('payment')->with('error', 'Order not found.');
+        }
+
+        try {
+            if ($this->confirmCashfree($order, $cf, 'Customer Return', $request)) {
+                return redirect()->route('order.success', $order->id);
+            }
+        } catch (\Throwable $e) {
+            Log::error('cashfreeReturn failed: ' . $e->getMessage(), ['order_id' => $order->id]);
+        }
+
+        return redirect()->route('payment')->with('error', 'Payment was not completed. Please try again.');
+    }
+
+    private function confirmCashfree(Order $order, CashfreeService $cf, string $by, ?Request $request = null): bool
+    {
+        if ($order->payment_status === 'paid') {
+            return true;
+        }
+
+        $paymentId = $cf->confirmPaid($order);
+
+        if (!$paymentId) {
+            return false;
+        }
+
+        $this->finalizeOnlinePayment($order->id, $paymentId, 'cashfree', $by, $order->customer_id, $request);
+
+        return true;
     }
 
     public function orderSuccess($id)
@@ -599,7 +728,7 @@ class CheckoutController extends Controller
         }
 
         return view(
-            'front-pages.thank-you',
+            'front-pages.order-success',
             compact('order', 'purchaseScript')
         );
     }
@@ -618,6 +747,84 @@ class CheckoutController extends Controller
         CartTracker::track($request->step, $cart, [], 30);
 
         return response()->json(['success' => true]);
+    }
+
+    public function guestAddress(Request $request)
+    {
+        if (auth('customer')->check()) {
+            return response()->json(['success' => false, 'message' => 'You are already signed in. Please refresh the page.'], 422);
+        }
+
+        $v = $request->validate($this->addressRules($request), $this->addressMessages());
+
+        session(['guest_checkout_address' => $v]);
+
+        return response()->json(['success' => true]);
+    }
+
+    // Unsaved CustomerAddress, only so the blade can read the same fields
+    private function guestAddressModel(array $d): CustomerAddress
+    {
+        $a = (new CustomerAddress())->forceFill($d + ['country' => $this->countryName()]);
+        $a->setRelation('state', State::find($d['state_id']));
+        $a->setRelation('city', City::find($d['city_id']));
+
+        return $a;
+    }
+
+    public function payment()
+    {
+        $customer = auth('customer')->user(); // null for guests
+        $country = app(Region::class)->current();
+
+        $cart = $customer
+            ? Cart::where('customer_id', $customer->id)->first()
+            : Cart::where('session_id', session()->getId())->whereNull('customer_id')->first();
+
+        if (!$cart || !$cart->items()->exists()) {
+            return redirect()->route('cart')->with('error', 'Your cart is empty.');
+        }
+
+        $guestAddress = null;
+
+        if ($customer) {
+            $address = CustomerAddress::with(['state', 'city'])
+                ->where('customer_id', $customer->id)
+                ->where('is_default', 1)
+                ->first();
+        } else {
+            $guestAddress = session('guest_checkout_address');
+            $address = $guestAddress ? $this->guestAddressModel($guestAddress) : null;
+        }
+
+        if (!$address || ($country && strcasecmp(trim((string) $address->country), $country->name) !== 0)) {
+            return redirect()->route('checkout')->with('error', 'Please choose a delivery address.');
+        }
+
+        $cart->recalculateTotals();
+        $cart->refresh();
+
+        $cart->load([
+            'items.product.images',
+            'items.product.category',
+            'items.priceVariant',
+            'items.stockVariant',
+            'items.imageVariant.images',
+            'items.addons',
+        ]);
+
+        $summary = \App\Services\CartSummary::for($cart);
+
+        $states = State::when($country, fn($q) => $q->where('country_id', $country->id))
+            ->orderBy('name')
+            ->get();
+
+        $codEnabled = $this->codAllowed();
+
+        return view(
+            'front-pages.payment',
+            compact('cart', 'customer', 'address', 'guestAddress', 'states', 'summary', 'codEnabled', 'country')
+        );
     }
 
 }

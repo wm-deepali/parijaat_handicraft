@@ -1,3 +1,7 @@
+@php
+    // Admin controller doesn't pass this; the customer controller sets it to true
+    $customerView = $customerView ?? false;
+@endphp
 <!DOCTYPE html>
 <html lang="en">
 
@@ -464,16 +468,28 @@
     {{-- ── Action bar (browser preview only, hidden in PDF) ── --}}
     @if(!isset($isPdf) || !$isPdf)
         <div class="print-bar">
-            <a href="{{ route('admin.orders.show', $order) }}" class="btn-back">
-                ← Back to Order
-            </a>
+            @if($customerView)
+                <a href="{{ url('/dashboard') }}#tab-3" class="btn-back">
+                    ← Back to My Orders
+                </a>
+            @else
+                <a href="{{ route('admin.orders.show', $order) }}" class="btn-back">
+                    ← Back to Order
+                </a>
+            @endif
             <div style="display:flex;gap:8px">
                 <button onclick="window.print()" class="btn-print">
                     🖨 Print
                 </button>
-                <a href="{{ route('admin.orders.invoice.download', $order) }}" class="btn-pdf">
-                    ⬇ Download PDF
-                </a>
+                @if($customerView)
+                    <a href="{{ route('user.orders.invoice.download', $order->id) }}" class="btn-pdf">
+                        ⬇ Download PDF
+                    </a>
+                @else
+                    <a href="{{ route('admin.orders.invoice.download', $order) }}" class="btn-pdf">
+                        ⬇ Download PDF
+                    </a>
+                @endif
             </div>
         </div>
     @endif
@@ -492,7 +508,7 @@
                         {{ $setting->company_name ?? config('app.name') }}
                     </div>
                 @endif
-                <div class="brand-tagline">Tax Invoice</div>
+                <div class="brand-tagline">{{ $isExport ? 'Export Invoice' : 'Tax Invoice' }}</div>
                 <div class="brand-address">
 
                     @if($setting?->company_address)
@@ -686,14 +702,14 @@
                                 @if($item->addons->isNotEmpty())
                                     <div class="item-variant" style="margin-top:3px">
                                         @foreach($item->addons as $addon)
-                                            + {{ $addon->detail }} (&#8377;{{ number_format($addon->price, 2) }})<br>
+                                            + {{ $addon->detail }} ({{ $sym }}{{ number_format($addon->price, 2) }})<br>
                                         @endforeach
                                     </div>
                                 @endif
                             </td>
                             <td class="center">{{ $item->quantity }}</td>
-                            <td class="right">&#8377;{{ number_format($item->price, 2) }}</td>
-                            <td class="right">&#8377;{{ number_format($lineTotal, 2) }}</td>
+                            <td class="right">{{ $sym }}{{ number_format($item->price, 2) }}</td>
+                            <td class="right">{{ $sym }}{{ number_format($lineTotal, 2) }}</td>
                         </tr>
                     @endforeach
                 </tbody>
@@ -708,8 +724,13 @@
                             <p>
                                 <strong>Discount Applied:</strong> Coupon
                                 <strong>{{ $order->coupon_code }}</strong>
-                                saved you &#8377;{{ number_format($invoice->discount, 2) }} on this order.
+                                saved you {{ $sym }}{{ number_format($invoice->discount, 2) }} on this order.
                             </p>
+                        </div>
+                    @endif
+                    @if($isExport)
+                        <div class="inv-notes" style="margin-top:20px">
+                            <p><strong>Export supply:</strong> No GST charged on this invoice.</p>
                         </div>
                     @endif
                 </div>
@@ -718,86 +739,94 @@
                     <table class="totals-table" style="margin-top:16px">
                         <tr>
                             <td class="t-label">Subtotal</td>
-                            <td class="t-value">&#8377;{{ number_format($invoice->subtotal, 2) }}</td>
+                            <td class="t-value">{{ $sym }}{{ number_format($invoice->subtotal, 2) }}</td>
                         </tr>
 
                         @if($invoice->discount > 0)
                             <tr class="t-discount">
                                 <td class="t-label">Discount</td>
-                                <td class="t-value">− &#8377;{{ number_format($invoice->discount, 2) }}</td>
+                                <td class="t-value">− {{ $sym }}{{ number_format($invoice->discount, 2) }}</td>
                             </tr>
                         @endif
 
                         @if(($invoice->shipping_charge ?? 0) > 0)
                             <tr>
                                 <td class="t-label">Shipping</td>
-                                <td class="t-value">&#8377;{{ number_format($invoice->shipping_charge, 2) }}</td>
+                                <td class="t-value">{{ $sym }}{{ number_format($invoice->shipping_charge, 2) }}</td>
                             </tr>
                         @endif
 
-                        {{-- GST rows --}}
-                        @if($setting?->show_gst_breakup)
+                        {{-- GST / VAT rows --}}
+                        @php $taxType = $invoice->gst_type ?: $order->gst_type; @endphp
 
+                        @if($taxType === 'export')
+                            <tr>
+                                <td class="t-label">GST</td>
+                                <td class="t-value">Zero rated (export)</td>
+                            </tr>
+                        @elseif($taxType === 'vat')
                             @if($invoice->tax_amount > 0)
-
+                                <tr>
+                                    <td class="t-label">VAT</td>
+                                    <td class="t-value">{{ $sym }}{{ number_format($invoice->tax_amount, 2) }}</td>
+                                </tr>
+                            @endif
+                        @elseif($setting?->show_gst_breakup)
+                            @if($invoice->tax_amount > 0)
                                 @if($invoice->gst_type === 'igst' && $invoice->igst_amount > 0)
-
                                     <tr>
-                                        <td class="t-label">
-                                            IGST ({{ $invoice->igst_rate }}%)
-                                        </td>
-                                        <td class="t-value">
-                                            ₹{{ number_format($invoice->igst_amount, 2) }}
-                                        </td>
+                                        <td class="t-label">IGST ({{ $invoice->igst_rate }}%)</td>
+                                        <td class="t-value">{{ $sym }}{{ number_format($invoice->igst_amount, 2) }}</td>
                                     </tr>
-
                                 @else
-
                                     @if($invoice->cgst_amount > 0)
                                         <tr>
-                                            <td class="t-label">
-                                                CGST ({{ $invoice->cgst_rate }}%)
-                                            </td>
-                                            <td class="t-value">
-                                                ₹{{ number_format($invoice->cgst_amount, 2) }}
-                                            </td>
+                                            <td class="t-label">CGST ({{ $invoice->cgst_rate }}%)</td>
+                                            <td class="t-value">{{ $sym }}{{ number_format($invoice->cgst_amount, 2) }}</td>
                                         </tr>
                                     @endif
-
                                     @if($invoice->sgst_amount > 0)
                                         <tr>
-                                            <td class="t-label">
-                                                SGST ({{ $invoice->sgst_rate }}%)
-                                            </td>
-                                            <td class="t-value">
-                                                ₹{{ number_format($invoice->sgst_amount, 2) }}
-                                            </td>
+                                            <td class="t-label">SGST ({{ $invoice->sgst_rate }}%)</td>
+                                            <td class="t-value">{{ $sym }}{{ number_format($invoice->sgst_amount, 2) }}</td>
                                         </tr>
                                     @endif
-
                                 @endif
-
                             @endif
-
-                        @else
-
-                            @if($invoice->tax_amount > 0)
-
-                                <tr>
-                                    <td class="t-label">GST</td>
-                                    <td class="t-value">
-                                        ₹{{ number_format($invoice->tax_amount, 2) }}
-                                    </td>
-                                </tr>
-
-                            @endif
-
+                        @elseif($invoice->tax_amount > 0)
+                            <tr>
+                                <td class="t-label">GST</td>
+                                <td class="t-value">{{ $sym }}{{ number_format($invoice->tax_amount, 2) }}</td>
+                            </tr>
                         @endif
                         <tr class="t-total">
                             <td class="t-label">Grand Total</td>
-                            <td class="t-value">&#8377;{{ number_format($invoice->grand_total, 2) }}</td>
+                            <td class="t-value">{{ $sym }}{{ number_format($invoice->grand_total, 2) }}</td>
                         </tr>
                     </table>
+                    @if($regionInfo)
+                        <table class="totals-table" style="margin-top:10px;background:#f8f9fa">
+                            <tr>
+                                <td class="t-label">Amount charged ({{ $regionInfo['customer_currency'] }})</td>
+                                <td class="t-value">{{ $regionInfo['customer_symbol'] }}{{ $regionInfo['customer_total'] }}
+                                </td>
+                            </tr>
+                            @if($regionInfo['rate'])
+                                <tr>
+                                    <td class="t-label">Exchange rate</td>
+                                    <td class="t-value" style="font-size:11px">{{ $regionInfo['rate'] }}</td>
+                                </tr>
+                            @endif
+                            {{-- INR accounts value is internal: admin only --}}
+                            @if(!$customerView && $regionInfo['inr_total'])
+                                <tr>
+                                    <td class="t-label">Value in INR</td>
+                                    <td class="t-value">{{ $regionInfo['inr_symbol'] }}{{ $regionInfo['inr_total'] }}</td>
+                                </tr>
+                            @endif
+                        </table>
+                    @endif
+
                 </div>
             </div>
 

@@ -3,7 +3,10 @@
 namespace App\Http\Controllers\Admin;
 
 use App\Models\Order;
+use App\Support\Region;
 use App\Models\Courier;
+use App\Models\Country;
+use App\Models\Currency;
 use App\Models\SmtpSetting;
 use Illuminate\Http\Request;
 use App\Models\InvoiceSetting;
@@ -11,9 +14,12 @@ use Barryvdh\DomPDF\Facade\Pdf;
 use App\Services\InvoiceService;
 use Illuminate\Support\Facades\DB;
 use App\Http\Controllers\Controller;
+use App\Http\Controllers\Concerns\InvoiceHelpers;
 
 class OrderController extends Controller
 {
+    use InvoiceHelpers;
+
     public function index(Request $request)
     {
         // ── Customer filter (used when viewing orders from a customer's wishlist/profile) ──
@@ -28,9 +34,6 @@ class OrderController extends Controller
         ];
 
         // ── Tab counts ────────────────────────────────────────
-        // NDR and RTO added as their own tabs — without these, orders that fail
-        // delivery (status = 'ndr'/'rto') would only ever show up under "All"
-        // and never surface in a dedicated queue for admins to work through.
         $tabCounts = [
             'all' => Order::when($customerId, fn($q) => $q->where('customer_id', $customerId))->count(),
             'new' => Order::where('status', 'new')->when($customerId, fn($q) => $q->where('customer_id', $customerId))->count(),
@@ -46,7 +49,6 @@ class OrderController extends Controller
         // ── Base query ────────────────────────────────────────
         $query = Order::with(['items', 'customer', 'refundTransactions'])->latest();
 
-        // ── Customer filter ────────────────────────────────────
         if ($customerId) {
             $query->where('customer_id', $customerId);
         }
@@ -79,21 +81,41 @@ class OrderController extends Controller
             $query->whereDate('created_at', '<=', $to);
         }
 
+        // ── Region (tax type) + country filter ────────────────
+        $this->applyRegionFilters($query, $request);
+
         // ── Paginate ──────────────────────────────────────────
         $orders = $query->paginate(25)->withQueryString();
+
+        // ── Currency helpers for the table ────────────────────
+        $currencies = Currency::get()->keyBy('code');
+        $defaultCountry = app(Region::class)->default();
+        $defaultCode = $defaultCountry?->currency_code;
+        $defaultIso = $defaultCountry?->iso2;
+        $sym = $this->defaultSymbol($currencies);
+
+        $orderCountries = Country::whereIn(
+            'iso2',
+            Order::whereNotNull('country_code')->distinct()->pluck('country_code')
+        )->orderBy('name')->pluck('name', 'iso2');
 
         return view('admin.orders.index', compact(
             'orders',
             'kpi',
             'tabCounts',
-            'activeTab'
+            'activeTab',
+            'currencies',
+            'sym',
+            'defaultCode',
+            'defaultIso',
+            'orderCountries'
         ));
     }
 
     // ── Export CSV ────────────────────────────────────────────
     public function export(Request $request)
     {
-        $query = Order::with('items')->latest();
+        $query = Order::with(['items', 'invoice'])->latest();
 
         if ($customerId = $request->input('customer')) {
             $query->where('customer_id', $customerId);
@@ -119,7 +141,16 @@ class OrderController extends Controller
             $query->where('status', $tab);
         }
 
+        $this->applyRegionFilters($query, $request);
+
         $orders = $query->get();
+        $defaultCode = app(Region::class)->default()?->currency_code;
+
+        $taxNames = [
+            'india_gst' => 'India GST',
+            'export' => 'Export (no tax)',
+            'destination_vat' => 'Destination VAT',
+        ];
 
         $filename = 'orders_' . now()->format('Y_m_d_His') . '.csv';
         $headers = [
@@ -127,7 +158,7 @@ class OrderController extends Controller
             'Content-Disposition' => "attachment; filename=\"{$filename}\"",
         ];
 
-        $callback = function () use ($orders) {
+        $callback = function () use ($orders, $defaultCode, $taxNames) {
             $fh = fopen('php://output', 'w');
             fputcsv($fh, [
                 'Order #',
@@ -137,12 +168,23 @@ class OrderController extends Controller
                 'Items',
                 'Subtotal',
                 'Discount',
-                'Shipping',   // new
+                'Shipping',
                 'Tax',
                 'Grand Total',
                 'Payment',
                 'Status',
                 'Date',
+                // new: international / accounts columns
+                'Invoice No',
+                'Country',
+                'Customer Currency',
+                'Exchange Rate',
+                'Extra %',
+                'Extra Amount (default currency)',
+                'Customer Paid',
+                'Default Currency',
+                'Accounts (INR)',
+                'Tax Type',
             ]);
             foreach ($orders as $o) {
                 fputcsv($fh, [
@@ -153,12 +195,22 @@ class OrderController extends Controller
                     $o->items->count(),
                     $o->subtotal,
                     $o->discount,
-                    $o->shipping_charge ?? 0,   // new
+                    $o->shipping_charge ?? 0,
                     $o->tax_amount,
                     $o->grand_total,
                     $o->payment_status,
                     $o->status,
                     $o->created_at->format('d M Y h:i A'),
+                    $o->invoice?->invoice_number,
+                    $o->country_code ?: 'IN',
+                    $o->currency_code,
+                    $o->exchange_rate,
+                    $o->price_adjustment_percent,
+                    $o->price_adjustment_amount,
+                    $o->total_customer,
+                    $o->default_currency_code ?: $defaultCode,
+                    $o->total_inr,
+                    $taxNames[$o->tax_handling ?: 'india_gst'] ?? $o->tax_handling,
                 ]);
             }
             fclose($fh);
@@ -166,7 +218,6 @@ class OrderController extends Controller
 
         return response()->stream($callback, 200, $headers);
     }
-
 
     public function show(Order $order)
     {
@@ -242,6 +293,14 @@ class OrderController extends Controller
             && $order->status !== 'cancelled'
             && ($order->payment_method === 'cod' || $order->payment_status === 'paid');
 
+        // International order block + currency symbol of this order's stored amounts
+        $currencies = Currency::get()->keyBy('code');
+        $sym = $this->orderSymbol($order, $currencies);
+        $regionInfo = $this->regionInfo($order, $currencies);
+        $countryName = $order->country_code
+            ? (Country::where('iso2', $order->country_code)->value('name') ?? $order->country_code)
+            : 'India';
+
         return view('admin.orders.show', compact(
             'order',
             'customerOrderCount',
@@ -252,7 +311,10 @@ class OrderController extends Controller
             'currentIdx',
             'timelineSteps',
             'couriers',
-            'canGenerateInvoice'
+            'canGenerateInvoice',
+            'sym',
+            'regionInfo',
+            'countryName'
         ));
     }
 
@@ -630,7 +692,6 @@ class OrderController extends Controller
         );
     }
 
-
     public function updatePayment(Request $request, Order $order)
     {
         $request->validate([
@@ -688,7 +749,6 @@ class OrderController extends Controller
 
         return back()->with('success', 'Payment updated successfully.');
     }
-
     protected function logCodPayment(Order $order, $payment = null): void
     {
         try {
@@ -744,8 +804,13 @@ class OrderController extends Controller
             }
         }
 
+        $currencies = Currency::get()->keyBy('code');
+        $sym = $this->orderSymbol($order, $currencies);
+        $regionInfo = $this->regionInfo($order, $currencies);
+        $isExport = $order->gst_type === 'export' || $order->tax_handling === 'export';
+
         // Rendered as a full standalone HTML page (no admin layout)
-        return view('admin.orders.invoice', compact('order', 'invoice', 'setting', 'logo_64'));
+        return view('admin.orders.invoice', compact('order', 'invoice', 'setting', 'logo_64', 'sym', 'regionInfo', 'isExport'));
     }
 
     // ── 2. PDF download ───────────────────────────────────────────────────────────
@@ -784,6 +849,10 @@ class OrderController extends Controller
             }
         }
 
+        $currencies = Currency::get()->keyBy('code');
+        $sym = $this->orderSymbol($order, $currencies);
+        $regionInfo = $this->regionInfo($order, $currencies);
+        $isExport = $order->gst_type === 'export' || $order->tax_handling === 'export';
 
         $pdf = Pdf::loadView('admin.orders.invoice', [
             'order' => $order,
@@ -791,6 +860,9 @@ class OrderController extends Controller
             'setting' => $setting,
             'isPdf' => true,   // hides the print bar in the view
             'logo_64' => $logo_64,
+            'sym' => $sym,
+            'regionInfo' => $regionInfo,
+            'isExport' => $isExport,
         ])
             ->setPaper('a4', 'portrait')
             ->setOptions([
@@ -820,7 +892,6 @@ class OrderController extends Controller
 
         return view('admin.orders.print-labels', compact('orders'));
     }
-
     public function previewLabels(Request $request)
     {
         $request->validate([
@@ -844,7 +915,6 @@ class OrderController extends Controller
             'cols' => $grid['cols'],
         ]);
     }
-
     public function generateLabels(Request $request)
     {
         $request->validate([
@@ -872,7 +942,6 @@ class OrderController extends Controller
 
         return $pdf->stream('order-labels-' . now()->format('Y-m-d-His') . '.pdf');
     }
-
     private function labelGridConfig(string $size): array
     {
         // ── Labels-per-A4-sheet config ──
@@ -889,6 +958,27 @@ class OrderController extends Controller
             'A8' => ['perPage' => 2, 'cols' => 2], // manager ke exact instruction ke hisaab se
             default => ['perPage' => 1, 'cols' => 1],
         };
+    }
+
+    // ═══════════════ helpers: region / currency ═══════════════
+
+    /** Region (tax type) aur country filter: index aur export dono me */
+    private function applyRegionFilters($query, Request $request)
+    {
+        if ($type = $request->input('region')) {
+            if ($type === 'india_gst') {
+                // purane orders (tax_handling khali) India GST hi the
+                $query->where(fn($q) => $q->whereNull('tax_handling')->orWhere('tax_handling', 'india_gst'));
+            } elseif (in_array($type, ['export', 'destination_vat'], true)) {
+                $query->where('tax_handling', $type);
+            }
+        }
+
+        if ($country = $request->input('country')) {
+            $query->where('country_code', strtoupper($country));
+        }
+
+        return $query;
     }
 
 }

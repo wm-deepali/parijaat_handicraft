@@ -12,8 +12,8 @@ return new class extends Migration
             $table->id();
             $table->foreignId('order_id')->nullable()->constrained('orders')->nullOnDelete();
             $table->string('order_number')->nullable();
-            $table->string('gateway')->default('razorpay'); // razorpay, cod
-            $table->string('payment_id')->nullable();       // razorpay payment/order id
+            $table->string('gateway')->default('razorpay'); 
+            $table->string('payment_id')->nullable();     
             $table->decimal('amount', 12, 2)->default(0);
             $table->string('method')->nullable();           // upi, card, cod, etc.
             $table->string('status');                        // created, captured, failed, refunded, pending

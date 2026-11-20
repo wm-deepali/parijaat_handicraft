@@ -65,8 +65,9 @@ use App\Http\Controllers\Auth\LoginController;
 use App\Http\Controllers\CustomerAuthController;
 use App\Http\Controllers\ProductReviewController;
 use App\Http\Controllers\UserDashboardController;
-use App\Http\Controllers\RazorpayWebhookController;
+// use App\Http\Controllers\RazorpayWebhookController;
 use App\Http\Controllers\RegionController;
+use App\Http\Controllers\CashfreeWebhookController;
 
 Route::middleware('maintenance.mode')->group(function () {
 
@@ -85,9 +86,6 @@ Route::middleware('maintenance.mode')->group(function () {
         Route::view('/contact', 'front-pages.contact')->name('contact');
         Route::view('/blog-detail', 'front-pages.blog-detail')->name('blog.detail');
         Route::view('/certifications', 'front-pages.certifications')->name('certifications');
-        Route::view('/dashboard', 'front-pages.dashboard')->name('dashboard');
-        Route::view('/order-success', 'front-pages.order-success')->name('order.success');
-        Route::view('/payment', 'front-pages.payment')->name('payment');
         Route::view('/privacy-policy', 'front-pages.privacy-policy')->name('privacy-policy');
     });
 
@@ -103,6 +101,8 @@ Route::middleware('maintenance.mode')->group(function () {
 
     // checkout routes
     Route::get('/checkout', [CheckoutController::class, 'checkout'])->name('checkout');
+    Route::post('/checkout/guest-address', [CheckoutController::class, 'guestAddress'])->middleware('throttle:20,1')->name('checkout.guest-address');
+    Route::get('/payment', [CheckoutController::class, 'payment'])->name('payment');
     Route::post('/checkout/ajax-login', [CustomerAuthController::class, 'ajaxLogin'])->middleware('throttle:10,1')->name('checkout.ajax-login');
     Route::post('/checkout/ajax-register', [CustomerAuthController::class, 'ajaxRegister'])->middleware('throttle:10,1')->name('checkout.ajax-register');
     Route::post('/checkout/track-step', [CheckoutController::class, 'trackStep'])->middleware('throttle:30,1')->name('checkout.track-step');
@@ -120,19 +120,35 @@ Route::middleware('maintenance.mode')->group(function () {
 
     // Yeh sab login ke baad hi
     Route::middleware('customer')->group(function () {
+
+        Route::get('/dashboard', [UserDashboardController::class, 'index'])->name('dashboard');
+        Route::post('/profile/update', [UserDashboardController::class, 'updateProfile'])->name('profile.update');
+        Route::post('/profile/address', [UserDashboardController::class, 'storeAddress'])->name('profile.address.store');
+        Route::put('/profile/address/{id}', [UserDashboardController::class, 'updateAddress'])->name('profile.address.update');
+        Route::delete('/profile/address/{id}', [UserDashboardController::class, 'destroyAddress'])->name('profile.address.destroy');
+        Route::get('/orders/{order}/invoice', [UserDashboardController::class, 'invoice'])->name('user.orders.invoice');
+        Route::get('/orders/{order}/invoice/download', [UserDashboardController::class, 'invoiceDownload'])->name('user.orders.invoice.download');
         Route::post('/product/{product}/review', [ProductReviewController::class, 'store'])->middleware(['throttle:5,1'])->name('product.review.store');
         Route::post('/address/store', [CheckoutController::class, 'storeAddress'])->name('address.store');
         Route::put('/address/{id}', [CheckoutController::class, 'updateAddress'])->name('address.update');
+        Route::delete('/wishlist/{product}', [UserDashboardController::class, 'removeWishlist'])->name('profile.wishlist.remove');
         Route::post('/checkout/change-default-address', [CheckoutController::class, 'changeDefaultAddress'])->name('checkout.change-default-address');
         Route::post('/checkout/place-order', [CheckoutController::class, 'placeOrder'])->name('checkout.place-order');
-        Route::post('/payment/razorpay/success', [CheckoutController::class, 'razorpaySuccess'])->name('checkout.razorpay.success');
+
         Route::get('/order-success/{order}', [CheckoutController::class, 'orderSuccess'])->name('order.success');
         Route::post('/user/logout', [CustomerAuthController::class, 'logout'])->name('user.logout');
+
+        // Route::post('/payment/razorpay/success', [CheckoutController::class, 'razorpaySuccess'])->name('checkout.razorpay.success');
+        Route::post('/payment/cashfree/verify', [CheckoutController::class, 'cashfreeVerify'])->name('checkout.cashfree.verify');
+        Route::get('/payment/cashfree/return', [CheckoutController::class, 'cashfreeReturn'])->name('checkout.cashfree.return');
+
     });
 
 });
 
-Route::post('/razorpay/webhook', [RazorpayWebhookController::class, 'handle'])->name('razorpay.webhook');
+// Route::post('/razorpay/webhook', [RazorpayWebhookController::class, 'handle'])->name('razorpay.webhook');
+Route::post('/cashfree/webhook', [CashfreeWebhookController::class, 'handle'])->name('cashfree.webhook');
+
 
 // Admin Routes list
 Route::middleware('guest')->group(function () {
@@ -231,6 +247,10 @@ Route::prefix('admin')->name('admin.')->group(function () {
         Route::post('coupons/{coupon}/share', [CouponController::class, 'share'])->name('coupons.share');
         Route::resource('coupons', CouponController::class);
 
+
+        Route::get('orders/print-labels', [OrderController::class, 'printLabels'])->name('orders.print-labels');
+        Route::post('orders/preview-labels', [OrderController::class, 'previewLabels'])->name('orders.preview-labels');
+        Route::post('orders/generate-labels', [OrderController::class, 'generateLabels'])->name('orders.generate-labels');
 
         // Orders routes
         Route::get('orders', [OrderController::class, 'index'])->name('orders.index');

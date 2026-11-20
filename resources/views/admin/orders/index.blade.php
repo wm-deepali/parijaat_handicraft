@@ -676,6 +676,30 @@
                                 </select>
                             </div>
                             <div class="filter-group">
+                                <label>Region</label>
+                                <select name="region" class="filter-control">
+                                    <option value="">All</option>
+                                    <option value="india_gst" {{ request('region') === 'india_gst' ? 'selected' : '' }}>
+                                        India GST</option>
+                                    <option value="export" {{ request('region') === 'export' ? 'selected' : '' }}>Export
+                                        (no tax)</option>
+                                    <option value="destination_vat" {{ request('region') === 'destination_vat' ? 'selected' : '' }}>Destination VAT</option>
+                                </select>
+                            </div>
+                            @if($orderCountries->isNotEmpty())
+                                <div class="filter-group">
+                                    <label>Country</label>
+                                    <select name="country" class="filter-control">
+                                        <option value="">All</option>
+                                        @foreach($orderCountries as $iso => $cname)
+                                            <option value="{{ $iso }}" {{ request('country') === $iso ? 'selected' : '' }}>
+                                                {{ $cname }}
+                                            </option>
+                                        @endforeach
+                                    </select>
+                                </div>
+                            @endif
+                            <div class="filter-group">
                                 <label>From Date</label>
                                 <input type="date" name="from_date" value="{{ request('from_date') }}"
                                     class="filter-control" style="min-width:140px">
@@ -756,6 +780,9 @@
                                 <tr>
                                     <td>
                                         <span class="order-id">#{{ $order->order_number }}</span>
+                                        @if($order->country_code && $order->country_code !== $defaultIso)
+                                            <div class="customer-email">{{ $order->country_code }}</div>
+                                        @endif
                                     </td>
                                     <td>
                                         <div style="display:flex;align-items:center;gap:10px">
@@ -777,7 +804,21 @@
                                         </span>
                                     </td>
                                     <td>
-                                        <span class="amount-cell">₹{{ number_format($order->grand_total, 2) }}</span>
+                                        @php
+                                            $defCode = $order->default_currency_code ?: $defaultCode;
+                                            $defCur = $currencies[$defCode] ?? null;
+                                            $defSym = $defCur ? ($defCur->symbol ?: $defCur->code) : $sym;
+                                            $custCur = $order->currency_code ? ($currencies[$order->currency_code] ?? null) : null;
+                                            $showCust = $custCur && $order->total_customer !== null && $order->currency_code !== $defCode;
+                                        @endphp
+                                        <span
+                                            class="amount-cell">{{ $defSym }}{{ number_format($order->grand_total, 2) }}</span>
+                                        @if($showCust)
+                                            <div class="customer-email">
+                                                {{ $custCur->symbol ?: $custCur->code }}{{ number_format($order->total_customer, (int) $custCur->decimals) }}
+                                                {{ $order->currency_code }}
+                                            </div>
+                                        @endif
                                     </td>
                                     <td>
                                         <span class="pay-pill {{ $payClass }}">

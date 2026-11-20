@@ -12,7 +12,7 @@ return new class extends Migration
             $table->id();
             $table->string('method');                 // GET, POST, etc.
             $table->string('endpoint');
-            $table->string('service');                 // Razorpay, reCAPTCHA, MSG91, Meta WhatsApp, Shiprocket...
+            $table->string('service');         
             $table->unsignedSmallInteger('status_code')->nullable();
             $table->unsignedInteger('response_time_ms')->nullable();
             $table->json('request_payload')->nullable();

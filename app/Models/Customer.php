@@ -15,6 +15,8 @@ class Customer extends Authenticatable
         'name',
         'email',
         'mobile',
+        'country_code',
+        'dial_code',
         'alternate_mobile',
         'dob',
         'gender',

@@ -6,123 +6,61 @@ use Illuminate\Database\Eloquent\Model;
 
 class Order extends Model
 {
-    protected $fillable = [
+    // placeOrder() writes many columns (billing_*, gst, razorpay_*, courier...),
+    // and the Region snapshot is applied with forceFill, so nothing is listed here.
+    protected $guarded = [];
 
-        'customer_id',
-        'address_id',
+    protected $casts = [
+        'subtotal'                 => 'decimal:2',
+        'discount'                 => 'decimal:2',
+        'tax_amount'               => 'decimal:2',
+        'shipping_charge'          => 'decimal:2',
+        'grand_total'              => 'decimal:2',
+        'cgst_amount'              => 'decimal:2',
+        'sgst_amount'              => 'decimal:2',
+        'igst_amount'              => 'decimal:2',
 
-        'order_number',
+        // Region::snapshot() columns
+        'exchange_rate'            => 'float',
+        'price_adjustment_percent' => 'float',
+        'price_adjustment_amount'  => 'float',
+        'total_default'            => 'float',
+        'total_customer'           => 'float',
+        'inr_rate'                 => 'float',
+        'total_inr'                => 'float',
 
-        'customer_name',
-        'customer_email',
-        'customer_phone',
-
-        'address_line_1',
-        'address_line_2',
-
-        'state_id',
-        'city_id',
-        'pincode',
-
-        'billing_name',
-        'billing_address_line_1',
-        'billing_address_line_2',
-        'billing_state_id',
-        'billing_city_id',
-        'billing_pincode',
-
-        'coupon_code',
-
-        'subtotal',
-        'discount',
-        'shipping_charge',
-        'tax_amount',
-        'grand_total',
-
-        'gst_type',
-
-        'cgst_rate',
-        'sgst_rate',
-        'igst_rate',
-
-        'cgst_amount',
-        'sgst_amount',
-        'igst_amount',
-
-        'payment_method',
-        'payment_status',
-        'paid_at',
-
-        'transaction_id',
-
-        'razorpay_order_id',
-        'razorpay_payment_id',
-        'razorpay_signature',
-
-        'status',
-        'tracking_number',
-        'courier_id'
+        'paid_at'                  => 'datetime',
     ];
 
-    protected $casts = ['paid_at' => 'datetime'];
+    /*
+    |--------------------------------------------------------------------------
+    | Relationships
+    |--------------------------------------------------------------------------
+    */
 
-    public function billingState()
+    public function items()
     {
-        return $this->belongsTo(\App\Models\State::class, 'billing_state_id');
-    }
-
-    public function billingCity()
-    {
-        return $this->belongsTo(\App\Models\City::class, 'billing_city_id');
+        return $this->hasMany(OrderItem::class);
     }
 
     public function customer()
     {
-        return $this->belongsTo(
-            Customer::class
-        );
+        return $this->belongsTo(Customer::class);
     }
 
     public function address()
     {
-        return $this->belongsTo(
-            CustomerAddress::class,
-            'address_id'
-        );
-    }
-
-    public function items()
-    {
-        return $this->hasMany(
-            OrderItem::class
-        );
-    }
-
-    public function invoice()
-    {
-        return $this->hasOne(
-            Invoice::class
-        );
+        return $this->belongsTo(CustomerAddress::class, 'address_id');
     }
 
     public function state()
     {
-        return $this->belongsTo(
-            State::class
-        );
+        return $this->belongsTo(State::class);
     }
 
     public function city()
     {
-        return $this->belongsTo(
-            City::class
-        );
-    }
-
-    public function statusHistory()
-    {
-        return $this->hasMany(OrderStatusHistory::class)
-            ->latest();
+        return $this->belongsTo(City::class);
     }
 
     public function courier()
@@ -130,21 +68,29 @@ class Order extends Model
         return $this->belongsTo(Courier::class);
     }
 
-    public function returns()
+    public function invoice()
     {
-        return $this->hasMany(
-            OrderReturn::class
-        );
+        return $this->hasOne(Invoice::class);
+    }
+
+    public function statusHistory()
+    {
+        return $this->hasMany(OrderStatusHistory::class)->latest();   // keep your existing order
     }
 
     public function ndrs()
     {
-        return $this->hasMany(Ndr::class)->latest();
+        return $this->hasMany(Ndr::class);
     }
 
-    public function latestNdr()
+    public function payments()
     {
-        return $this->hasOne(Ndr::class)->latestOfMany();
+        return $this->hasMany(OrderPayment::class);
+    }
+
+    public function latestPayment()
+    {
+        return $this->hasOne(OrderPayment::class)->latestOfMany();
     }
 
     public function refundTransactions()
@@ -152,14 +98,40 @@ class Order extends Model
         return $this->hasMany(RefundTransaction::class);
     }
 
-    public function payments()
+    /* ── NEW: country and currency of the order ── */
+
+    public function country()
     {
-        return $this->hasMany(\App\Models\OrderPayment::class);
+        return $this->belongsTo(Country::class, 'country_code', 'iso2');
     }
 
-    public function latestPayment()
+    public function currency()
     {
-        return $this->hasOne(\App\Models\OrderPayment::class)->latestOfMany();
+        return $this->belongsTo(Currency::class, 'currency_code', 'code');
     }
 
+    /*
+    |--------------------------------------------------------------------------
+    | Accessors
+    |--------------------------------------------------------------------------
+    */
+
+    /** True when the order was placed from outside India. */
+    public function getIsInternationalAttribute(): bool
+    {
+        return $this->country_code && strtoupper($this->country_code) !== 'IN';
+    }
+
+    /** "$120.00" / "AED 440.70", or null for old orders with no snapshot. */
+    public function getCustomerTotalLabelAttribute(): ?string
+    {
+        if (!$this->currency_code || $this->total_customer === null) {
+            return null;
+        }
+
+        $symbol = $this->currency?->symbol ?: $this->currency_code;
+        $space  = ctype_alpha(str_replace(' ', '', $symbol)) ? ' ' : '';
+
+        return $symbol . $space . number_format((float) $this->total_customer, (int) ($this->currency?->decimals ?? 2));
+    }
 }

@@ -16,7 +16,7 @@ class CustomerAddress extends Model
 
         'address_line_1',
         'address_line_2',
-
+        'country',
         'state_id',
         'city_id',
 

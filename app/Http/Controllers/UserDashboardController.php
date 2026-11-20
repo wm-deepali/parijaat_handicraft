@@ -2,246 +2,529 @@
 
 namespace App\Http\Controllers;
 
-use Carbon\Carbon;
-use App\Models\Cart;
+use App\Models\City;
 use App\Models\Order;
 use App\Models\State;
+use App\Support\Region;
+use App\Models\Product;
 use App\Models\Wishlist;
+use App\Models\Currency;
 use Illuminate\Http\Request;
 use App\Models\InvoiceSetting;
-use Illuminate\Validation\Rule;
 use Barryvdh\DomPDF\Facade\Pdf;
+use App\Models\CustomerAddress;
+use Illuminate\Validation\Rule;
 use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Facades\Route;
 use Illuminate\Support\Facades\Storage;
+use App\Http\Controllers\Concerns\InvoiceHelpers;
 
 class UserDashboardController extends Controller
 {
-    public function index()
+    use InvoiceHelpers;
+
+    public function index(Request $request)
     {
         $customer = auth('customer')->user();
-        $customerId = $customer->id;
+        $country = app(Region::class)->current();
 
-        $with = [
-            'items.product',
-            'items.imageVariant',
-            'items.skuVariant',
-            'items.addons',
-            'courier',
-            'city',
-            'state',
-            'billingState',
-            'billingCity',
-            'invoice',
-            'statusHistory',
-        ];
+        $addresses = $customer->addresses()->with(['state', 'city'])
+            ->orderByDesc('is_default')->latest()->get();
 
-        // status => [label, css class]
-        $statusMeta = [
-            'new' => ['Order Placed', 'processing'],
-            'pending' => ['Order Placed', 'processing'],
-            'processing' => ['Processing', 'processing'],
-            'shipped' => ['Shipped', 'shipped'],
-            'delivered' => ['Delivered', 'delivered'],
-            'cancelled' => ['Cancelled', 'cancelled'],
-            'ndr' => ['Delivery Attempt Failed', 'cancelled'],
-            'rto' => ['Returned to Seller', 'cancelled'],
-        ];
+        $states = State::when($country, fn($q) => $q->where('country_id', $country->id))
+            ->orderBy('name')->get();
 
-        // ── Dashboard tab ─────────────────────────────────────
-        $counts = Order::where('customer_id', $customerId)
+        $currencies = Currency::get()->keyBy('code');
+
+        // ── Dashboard stats (one grouped query) ──
+        $byStatus = Order::where('customer_id', $customer->id)
             ->selectRaw('status, COUNT(*) as c')
             ->groupBy('status')
             ->pluck('c', 'status');
 
+        $ordersTotal = (int) $byStatus->sum();
+
         $stats = [
-            'total' => $counts->sum(),
-            'active' => collect(['new', 'pending', 'processing', 'shipped', 'ndr'])->sum(fn($s) => $counts[$s] ?? 0),
-            'delivered' => $counts['delivered'] ?? 0,
-            'closed' => ($counts['cancelled'] ?? 0) + ($counts['rto'] ?? 0),
+            'total' => $ordersTotal,
+            'active' => (int) collect(['new', 'pending', 'processing', 'shipped'])->sum(fn($s) => $byStatus[$s] ?? 0),
+            'delivered' => (int) ($byStatus['delivered'] ?? 0),
+            'cancelled' => (int) ($byStatus['cancelled'] ?? 0),
         ];
 
-        $recentOrders = Order::with(['items.product', 'items.imageVariant'])
-            ->where('customer_id', $customerId)
-            ->latest()
-            ->take(3)
-            ->get();
+        // ── Dashboard tab: 3 recent orders ──
+        $recent = Order::where('customer_id', $customer->id)
+            ->with($this->orderRelations())
+            ->latest()->take(3)->get()
+            ->map(fn($o) => $this->presentOrder($o, $currencies));
 
-        // ── My Orders tab ─────────────────────────────────────
-        $orders = Order::with($with)
-            ->where('customer_id', $customerId)
-            ->latest()
-            ->paginate(10, ['*'], 'orders_page');
+        // ── My Orders tab ──
+        $search = trim((string) $request->input('q'));
 
-        // ── Track Order tab ───────────────────────────────────
-        $mine = Order::with($with)->where('customer_id', $customerId);
-        $trackNo = ltrim(trim((string) request('track')), '#');
-        $trackOrder = null;
-        $trackError = null;
+        $orders = Order::where('customer_id', $customer->id)
+            ->when($search !== '', function ($q) use ($search) {
+                $q->where(function ($w) use ($search) {
+                    $w->where('order_number', 'like', "%{$search}%")
+                        ->orWhereHas('items', fn($i) => $i->where('product_name', 'like', "%{$search}%"));
+                });
+            })
+            ->with($this->orderRelations())
+            ->latest()
+            ->paginate(10)
+            ->withQueryString()
+            ->fragment('tab-3');
+
+        $orders->getCollection()->transform(fn($o) => $this->presentOrder($o, $currencies));
+
+        // ── Track Order tab ──
+        $trackNo = ltrim(trim((string) $request->input('track')), '#');
+        $trackNotFound = false;
+        $tracked = null;
+
+        $trackBase = Order::where('customer_id', $customer->id)->with($this->orderRelations());
 
         if ($trackNo !== '') {
-            $trackOrder = (clone $mine)->where('order_number', $trackNo)->first();
-
-            if ($trackOrder && request()->filled('phone')) {
-                $last10 = fn($v) => substr(preg_replace('/\D/', '', (string) $v), -10);
-                if ($last10(request('phone')) !== $last10($trackOrder->customer_phone)) {
-                    $trackOrder = null;
-                }
-            }
-
-            if (!$trackOrder) {
-                $trackError = 'We could not find an order with these details.';
-            }
+            $found = (clone $trackBase)->where('order_number', $trackNo)->first();
+            $found ? $tracked = $this->presentOrder($found, $currencies) : $trackNotFound = true;
         } else {
-            $trackOrder = (clone $mine)
-                ->whereIn('status', ['new', 'pending', 'processing', 'shipped', 'ndr'])
-                ->latest()->first()
-                ?? (clone $mine)->latest()->first();
+            $found = (clone $trackBase)->whereIn('status', ['new', 'pending', 'processing', 'shipped'])->latest()->first()
+                ?? (clone $trackBase)->latest()->first();
+
+            if ($found) {
+                $tracked = $this->presentOrder($found, $currencies);
+            }
         }
 
-        // ── Profile tab ───────────────────────────────────────
-        $addresses = $customer->addresses()->with(['state', 'city'])
-            ->orderByDesc('is_default')->latest()->get();
-        $states = State::orderBy('name')->get();
-
-        // ── Wishlist tab ──────────────────────────────────────
-        $wishlist = Wishlist::with(['product.category', 'product.subcategory'])
-            ->where('customer_id', $customerId)
-            ->whereHas('product')          // skip products that were deleted
-            ->latest()
-            ->get();
+        // ── Wishlist tab ──
+        $wishlist = $this->wishlistItems($customer->id);
+        $wishCount = $wishlist->count();
 
         return view('front-pages.dashboard', compact(
             'customer',
-            'stats',
-            'recentOrders',
-            'orders',
-            'statusMeta',
-            'trackOrder',
-            'trackError',
             'addresses',
             'states',
-            'wishlist'
+            'country',
+            'orders',
+            'ordersTotal',
+            'stats',
+            'recent',
+            'tracked',
+            'trackNotFound',
+            'trackNo',
+            'wishlist',
+            'wishCount'
         ));
     }
 
-    // Customer-side invoice download (only for their own order)
-    public function invoiceDownload(Order $order)
+    private function orderRelations(): array
     {
-        abort_unless($order->customer_id === auth('customer')->id(), 404);
+        return [
+            'items.product',
+            'items.imageVariant',
+            'items.addons',
+            'courier',
+            'state',
+            'city',
+            'country',
+            'invoice',
+            'latestPayment',
+            'statusHistory',
+            'refundTransactions',
+        ];
+    }
 
-        $invoice = $order->invoice;
-        abort_unless($invoice, 404);
+    /**
+     * Everything the order cards / track panel need, already formatted.
+     * Amounts are stored in the default currency; they are shown in the currency the customer paid in.
+     */
+    private function presentOrder(Order $o, $currencies): array
+    {
+        // ── currency / money formatter ──
+        $defCode = $o->default_currency_code ?: app(Region::class)->default()?->currency_code;
+        $hasSnap = $o->currency_code && $o->total_customer !== null;
+        $cur = $currencies[$o->currency_code ?: $defCode] ?? null;
+        $symbol = $cur ? ($cur->symbol ?: $cur->code) : '₹';
+        $space = ctype_alpha(str_replace(' ', '', $symbol)) ? ' ' : '';
+        $decimals = (int) ($cur->decimals ?? 2);
 
-        $order->load(['items.product', 'items.addons', 'state', 'city']);
+        // default currency -> customer currency (fx + country extra %), same ratio the order was frozen with
+        $factor = ($hasSnap && (float) $o->total_default > 0)
+            ? (float) $o->total_customer / (float) $o->total_default
+            : 1.0;
+
+        $money = fn($v) => $symbol . $space . number_format((float) $v * $factor, $decimals);
+        $total = $hasSnap
+            ? $symbol . $space . number_format((float) $o->total_customer, $decimals)
+            : $money($o->grand_total);
+
+        // ── status badge ──
+        $statusMap = [
+            'new' => ['Placed', 'pending'],
+            'pending' => ['Pending', 'pending'],
+            'processing' => ['Processing', 'processing'],
+            'shipped' => ['Shipped', 'shipped'],
+            'delivered' => ['Delivered', 'delivered'],
+            'cancelled' => ['Cancelled', 'cancelled'],
+        ];
+        [$statusLabel, $statusClass] = $statusMap[$o->status] ?? [ucfirst($o->status), 'processing'];
+
+        // ── items ──
+        $items = $o->items->map(function ($i) use ($money) {
+            $thumb = null;
+            if ($i->imageVariant && $i->imageVariant->image) {
+                $thumb = asset('storage/' . $i->imageVariant->image);
+            } elseif ($i->product) {
+                $thumb = $i->product->display_image;
+            }
+
+            $variant = null;
+            if (!empty($i->selected_attributes)) {
+                $variant = collect($i->selected_attributes)->map(function ($value, $key) {
+                    if (is_array($value)) {
+                        $name = $value['attribute'] ?? $value['name'] ?? $key;
+                        $val = $value['value'] ?? $value['label'] ?? reset($value);
+                        return $name . ': ' . $val;
+                    }
+                    return $key . ': ' . $value;
+                })->join(' · ');
+            }
+
+            $addonsTotal = $i->addons->sum('price');
+
+            return [
+                'name' => $i->product_name ?? ($i->product->name ?? 'Product'),
+                'thumb' => $thumb,
+                'variant' => $variant,
+                'qty' => $i->quantity,
+                'addons' => $i->addons->map(fn($a) => $a->detail . ' (' . $money($a->price) . ')')->all(),
+                'line' => $money(($i->price * $i->quantity) + $addonsTotal),
+            ];
+        })->all();
+
+        // ── price details ──
+        $prices = [['label' => 'Subtotal', 'value' => $money($o->subtotal), 'green' => false, 'total' => false]];
+
+        if ($o->discount > 0) {
+            $prices[] = [
+                'label' => 'Discount' . ($o->coupon_code ? " ({$o->coupon_code})" : ''),
+                'value' => '− ' . $money($o->discount),
+                'green' => true,
+                'total' => false,
+            ];
+        }
+
+        $prices[] = [
+            'label' => 'Shipping',
+            'value' => $o->shipping_charge > 0 ? $money($o->shipping_charge) : 'Free',
+            'green' => $o->shipping_charge <= 0,
+            'total' => false,
+        ];
+
+        if ($o->tax_amount > 0) {
+            $prices[] = [
+                'label' => $o->tax_handling === 'destination_vat' ? 'VAT' : 'Tax (GST)',
+                'value' => $money($o->tax_amount),
+                'green' => false,
+                'total' => false,
+            ];
+        }
+
+        $prices[] = [
+            'label' => $o->payment_status === 'paid' ? 'Total paid' : 'Total',
+            'value' => $total,
+            'green' => false,
+            'total' => true,
+        ];
+
+        // ── refund (cancelled + paid only) ──
+        $refund = null;
+        if ($o->status === 'cancelled' && in_array($o->payment_status, ['paid', 'refunded'])) {
+            $done = $o->refundTransactions->where('status', 'completed')->first();
+            $refund = [
+                'amount' => $done ? $money($done->amount) : $total,
+                'status' => $done ? 'Refund completed' : 'Refund pending',
+            ];
+        }
+
+        // ── timeline ──
+        $labels = [
+            'new' => ['Order Placed', 'We have received your order.'],
+            'pending' => ['Order Placed', 'We have received your order.'],
+            'processing' => ['Order Confirmed', 'Your order is being prepared.'],
+            'shipped' => ['Shipped', 'Your package has been dispatched.'],
+            'delivered' => ['Delivered', 'Package delivered to you.'],
+            'cancelled' => ['Order Cancelled', 'This order was cancelled.'],
+        ];
+
+        // skip COD-payment log rows (previous_status === status)
+        $history = $o->statusHistory
+            ->sortBy('created_at')
+            ->filter(fn($h) => $h->previous_status !== $h->status)
+            ->values();
+
+        $timeline = [];
+        if ($history->isEmpty() || !in_array($history->first()->status, ['new', 'pending'])) {
+            $timeline[] = ['status' => 'new', 'time' => $o->created_at];
+        }
+        foreach ($history as $h) {
+            $timeline[] = ['status' => $h->status, 'time' => $h->created_at];
+        }
+
+        $isTerminal = in_array($o->status, ['delivered', 'cancelled']);
+        $lastIdx = count($timeline) - 1;
+
+        $steps = [];
+        foreach ($timeline as $idx => $t) {
+            [$title, $desc] = $labels[$t['status']] ?? [ucfirst($t['status']), ''];
+
+            if ($t['status'] === 'cancelled') {
+                $class = 'cancel';
+            } elseif ($idx === $lastIdx && !$isTerminal) {
+                $class = 'current';
+            } else {
+                $class = 'done';
+            }
+
+            $steps[] = [
+                'class' => $class,
+                'title' => $title,
+                'desc' => $desc,
+                'time' => $t['time']->format('d M, h:i A'),
+            ];
+        }
+
+        // upcoming steps for an order still in progress
+        $flow = ['processing', 'shipped', 'delivered'];
+        $curIdx = array_search($o->status, $flow);
+        if (!$isTerminal && $curIdx !== false) {
+            foreach (array_slice($flow, $curIdx + 1) as $next) {
+                $steps[] = ['class' => '', 'title' => $labels[$next][0], 'desc' => '', 'time' => null];
+            }
+        } elseif (!$isTerminal && in_array($o->status, ['new', 'pending'])) {
+            foreach ($flow as $next) {
+                $steps[] = ['class' => '', 'title' => $labels[$next][0], 'desc' => '', 'time' => null];
+            }
+        }
+
+        // ── 4-stage progress bar for the Track tab (null for cancelled etc.) ──
+        $stageDefs = ['new' => 'Order Placed', 'processing' => 'Confirmed', 'shipped' => 'Shipped', 'delivered' => 'Delivered'];
+        $stageKeys = array_keys($stageDefs);
+        $normal = in_array($o->status, ['new', 'pending']) ? 'new' : $o->status;
+        $curStage = array_search($normal, $stageKeys);
+        $stages = null;
+
+        if ($curStage !== false) {
+            $times = [];
+            foreach ($history as $h) {
+                $k = in_array($h->status, ['new', 'pending']) ? 'new' : $h->status;
+                $times[$k] ??= $h->created_at;
+            }
+            $times['new'] ??= $o->created_at;
+
+            $stages = [];
+            foreach ($stageKeys as $idx => $k) {
+                $class = $idx < $curStage
+                    ? 'done'
+                    : ($idx === $curStage ? ($k === 'delivered' ? 'done' : 'current') : '');
+
+                $stages[] = [
+                    'key' => $k,
+                    'title' => $stageDefs[$k],
+                    'class' => $class,
+                    'time' => ($idx <= $curStage && isset($times[$k])) ? $times[$k]->format('d M, h:i A') : null,
+                ];
+            }
+        }
+
+        // ── payment / shipment boxes ──
+        $payMethod = ucfirst(str_replace('_', ' ', $o->payment_method ?? '—'));
+        $txn = $o->transaction_id ?: $o->razorpay_payment_id;
+
+        return [
+            'id' => $o->id,
+            'number' => $o->order_number,
+            'placed' => $o->created_at->format('d M Y'),
+            'total' => $total,
+            'status' => $o->status,
+            'status_label' => $statusLabel,
+            'status_class' => $statusClass,
+            'is_active' => !$isTerminal,
+
+            'items' => $items,
+            'items_count' => count($items),
+            'prices' => $prices,
+            'refund' => $refund,
+            'steps' => $steps,
+            'stages' => $stages,
+
+            'address' => [
+                'name' => $o->customer_name,
+                'line1' => $o->address_line_1,
+                'line2' => $o->address_line_2,
+                'city' => $o->city?->name,
+                'state' => $o->state?->name,
+                'pin' => $o->pincode,
+                'country' => $o->country?->name ?? 'India',
+                'phone' => $o->customer_phone,
+            ],
+            'payment' => [
+                'method' => $payMethod,
+                'status' => ucfirst($o->payment_status),
+                'txn' => $txn,
+                'paid_via' => $o->latestPayment?->method_label,
+            ],
+            'shipment' => ($o->courier || $o->tracking_number) ? [
+                'courier' => $o->courier?->name,
+                'tracking' => $o->tracking_number,
+                'site' => $o->courier?->website_url,
+            ] : null,
+
+            // opens this order in the dashboard's Track Order tab
+            'track_url' => url()->current() . '?track=' . urlencode($o->order_number) . '#tab-2',
+            'has_invoice' => (bool) $o->invoice,
+            'invoice_url' => ($o->invoice && Route::has('user.orders.invoice'))
+                ? route('user.orders.invoice', $o->id)
+                : null,
+        ];
+    }
+
+    // ── Customer invoice: browser view ──
+    public function invoice($id)
+    {
+        $order = $this->invoiceOrder($id);
+
+        if (!$order->invoice) {
+            return back()->with('error', 'Invoice is not available for this order yet.');
+        }
+
+        return view('admin.orders.invoice', $this->invoiceViewData($order));
+    }
+
+    // ── Customer invoice: PDF download ──
+    public function invoiceDownload($id)
+    {
+        $order = $this->invoiceOrder($id);
+
+        if (!$order->invoice) {
+            return back()->with('error', 'Invoice is not available for this order yet.');
+        }
+
+        $pdf = Pdf::loadView('admin.orders.invoice', $this->invoiceViewData($order) + ['isPdf' => true])
+            ->setPaper('a4', 'portrait')
+            ->setOptions([
+                'defaultFont' => 'DejaVu Sans',
+                'isRemoteEnabled' => false,
+                'isHtml5ParserEnabled' => true,
+                'dpi' => 150,
+            ]);
+
+        return $pdf->download('Invoice-' . $order->invoice->invoice_number . '.pdf');
+    }
+
+    // Only the logged-in customer's own order, otherwise 404
+    private function invoiceOrder($id): Order
+    {
+        return Order::where('customer_id', auth('customer')->id())
+            ->with(['items.product', 'items.addons', 'state', 'city', 'latestPayment', 'invoice'])
+            ->findOrFail($id);
+    }
+
+    private function invoiceViewData(Order $order): array
+    {
         $setting = InvoiceSetting::with(['state', 'city'])->first();
 
         $logo_64 = null;
         if ($setting?->company_logo) {
             $logoPath = storage_path('app/public/' . $setting->company_logo);
             if (file_exists($logoPath)) {
-                $logo_64 = 'data:' . mime_content_type($logoPath) . ';base64,' .
-                    base64_encode(file_get_contents($logoPath));
+                $logo_64 = 'data:' . mime_content_type($logoPath) . ';base64,'
+                    . base64_encode(file_get_contents($logoPath));
             }
         }
 
-        return Pdf::loadView('admin.orders.invoice', [
+        $currencies = Currency::get()->keyBy('code');
+
+        return [
             'order' => $order,
-            'invoice' => $invoice,
+            'invoice' => $order->invoice,
             'setting' => $setting,
-            'isPdf' => true,
             'logo_64' => $logo_64,
-        ])
-            ->setPaper('a4', 'portrait')
-            ->setOptions(['defaultFont' => 'DejaVu Sans', 'isRemoteEnabled' => false, 'isHtml5ParserEnabled' => true, 'dpi' => 150])
-            ->download('Invoice-' . $invoice->invoice_number . '.pdf');
+            'sym' => $this->orderSymbol($order, $currencies),
+            'regionInfo' => $this->regionInfo($order, $currencies),
+            'isExport' => $order->gst_type === 'export' || $order->tax_handling === 'export',
+            'customerView' => true,
+        ];
     }
 
-    // ── Profile: personal details ─────────────────────────────
     public function updateProfile(Request $request)
     {
         $customer = auth('customer')->user();
 
-        // "+91 98765 43210" -> "9876543210"
-        $request->merge(['mobile' => substr(preg_replace('/\D/', '', (string) $request->mobile), -10)]);
-
         $v = $request->validate([
-            'name' => 'required|string|max:255',
-            'mobile' => ['required', 'regex:/^[6-9]\d{9}$/', Rule::unique('customers', 'mobile')->ignore($customer->id)],
-            'dob' => 'nullable|date|before:today',
-            'avatar' => 'nullable|image|max:2048',
+            'name' => ['required', 'max:100', 'regex:/^[A-Za-z\s]+$/'],
+            'mobile' => ['required', 'regex:/^\d{6,14}$/', Rule::unique('customers', 'mobile')->ignore($customer->id)],
+            'dob' => ['nullable', 'date', 'before:today'],
+            'photo' => ['nullable', 'image', 'mimes:jpg,jpeg,png', 'max:2048'],
         ], [
-            'mobile.regex' => 'Enter a valid 10 digit mobile number.',
-            'mobile.unique' => 'This mobile number is already used by another account.',
-            'dob.before' => 'Date of birth must be in the past.',
-            'avatar.max' => 'Photo must be 2 MB or smaller.',
+            'name.regex' => 'Name should contain only letters.',
+            'mobile.regex' => 'Enter a valid mobile number.',
         ]);
 
         $data = [
             'name' => $v['name'],
             'mobile' => $v['mobile'],
-            'dob' => !empty($v['dob']) ? Carbon::parse($v['dob'])->toDateString() : null,
+            'dob' => $v['dob'] ?? null,
         ];
 
-        if ($request->hasFile('avatar')) {
-            // avatar may also be a Google profile URL, only delete our own uploads
-            if ($customer->avatar && !str_starts_with($customer->avatar, 'http')) {
+        if ($request->hasFile('photo')) {
+            if ($customer->avatar) {
                 Storage::disk('public')->delete($customer->avatar);
             }
-            $data['avatar'] = $request->file('avatar')->store('customers', 'public');
+            $data['avatar'] = $request->file('photo')->store('avatars', 'public');
         }
 
         $customer->update($data);
 
-        return response()->json(['success' => true, 'message' => 'Profile updated.']);
+        return response()->json(['success' => true]);
     }
 
-    // ── Profile: addresses ────────────────────────────────────
-    private function addressRules(Request $request): array
+    private function rules(Request $request): array
     {
+        $country = app(Region::class)->current();
+        $isIndia = !$country || $country->iso2 === 'IN';
+
         return [
             'name' => 'required|string|max:255',
-            'phone' => ['required', 'regex:/^[6-9]\d{9}$/'],
+            'phone' => ['required', $isIndia ? 'regex:/^[6-9]\d{9}$/' : 'regex:/^[0-9+\-\s()]{6,20}$/'],
+            'pincode' => ['required', $isIndia ? 'regex:/^\d{6}$/' : 'regex:/^[A-Za-z0-9\- ]{3,12}$/'],
+            'state_id' => ['required', Rule::exists('states', 'id')->when($country, fn($r) => $r->where('country_id', $country->id))],
+            'city_id' => ['required', Rule::exists('cities', 'id')->where('state_id', $request->state_id)],
             'address_line_1' => 'required|string|max:255',
             'address_line_2' => 'nullable|string|max:255',
-            'state_id' => 'required|exists:states,id',
-            'city_id' => ['required', Rule::exists('cities', 'id')->where('state_id', $request->state_id)],
-            'pincode' => ['required', 'regex:/^\d{6}$/'],
             'address_type' => 'nullable|in:home,office,other',
-        ];
-    }
-
-    private function addressMessages(): array
-    {
-        return [
-            'phone.regex' => 'Enter a valid 10 digit mobile number.',
-            'pincode.regex' => 'Enter a valid 6 digit pincode.',
-            'state_id.required' => 'Please select a state.',
-            'city_id.required' => 'Please select a city.',
-            'city_id.exists' => 'Please select a city from the chosen state.',
-            'address_line_1.required' => 'Please enter your house / flat number.',
+            'is_default' => 'nullable|boolean',
         ];
     }
 
     public function storeAddress(Request $request)
     {
         $customer = auth('customer')->user();
-        $v = $request->validate($this->addressRules($request), $this->addressMessages());
+        $v = $request->validate($this->rules($request));
 
-        DB::transaction(function () use ($customer, $v, $request) {
-            // first address is always the default
-            $makeDefault = $request->boolean('is_default') || !$customer->addresses()->exists();
+        DB::transaction(function () use ($customer, $v) {
+            $makeDefault = !empty($v['is_default']) || !$customer->addresses()->exists();
 
             if ($makeDefault) {
-                $customer->addresses()->update(['is_default' => 0]);
+                CustomerAddress::where('customer_id', $customer->id)->update(['is_default' => 0]);
             }
 
-            $customer->addresses()->create([
+            CustomerAddress::create([
+                'customer_id' => $customer->id,
                 'name' => $v['name'],
                 'email' => $customer->email,
                 'phone' => $v['phone'],
                 'address_line_1' => $v['address_line_1'],
                 'address_line_2' => $v['address_line_2'] ?? null,
-                'country' => 'India',
+                'country' => app(Region::class)->current()?->name ?? 'India',
                 'state_id' => $v['state_id'],
                 'city_id' => $v['city_id'],
                 'pincode' => $v['pincode'],
@@ -250,19 +533,16 @@ class UserDashboardController extends Controller
             ]);
         });
 
-        // GST + shipping follow the default address
-        Cart::where('customer_id', $customer->id)->first()?->recalculateTotals();
-
         return response()->json(['success' => true]);
     }
 
     public function updateAddress(Request $request, $id)
     {
         $customer = auth('customer')->user();
-        $address = $customer->addresses()->findOrFail($id);
-        $v = $request->validate($this->addressRules($request), $this->addressMessages());
+        $address = CustomerAddress::where('customer_id', $customer->id)->findOrFail($id);
+        $v = $request->validate($this->rules($request));
 
-        DB::transaction(function () use ($customer, $address, $v, $request) {
+        DB::transaction(function () use ($customer, $address, $v) {
             $address->update([
                 'name' => $v['name'],
                 'phone' => $v['phone'],
@@ -274,56 +554,80 @@ class UserDashboardController extends Controller
                 'address_type' => $v['address_type'] ?? 'home',
             ]);
 
-            if ($request->boolean('is_default')) {
-                $customer->addresses()->update(['is_default' => 0]);
+            if (!empty($v['is_default'])) {
+                CustomerAddress::where('customer_id', $customer->id)->update(['is_default' => 0]);
                 $address->update(['is_default' => 1]);
             }
         });
 
-        Cart::where('customer_id', $customer->id)->first()?->recalculateTotals();
-
         return response()->json(['success' => true]);
     }
 
-    public function deleteAddress($id)
+    public function destroyAddress($id)
     {
         $customer = auth('customer')->user();
-        $address = $customer->addresses()->findOrFail($id);
+        $address = CustomerAddress::where('customer_id', $customer->id)->findOrFail($id);
+        $wasDefault = $address->is_default;
 
-        try {
-            DB::transaction(function () use ($customer, $address) {
-                $wasDefault = $address->is_default;
-                $address->delete();
+        $address->delete();
 
-                // keep one default if any address is left
-                if ($wasDefault) {
-                    $customer->addresses()->latest()->first()?->update(['is_default' => 1]);
-                }
-            });
-        } catch (\Illuminate\Database\QueryException $e) {
-            return response()->json([
-                'success' => false,
-                'message' => 'This address is linked to a past order and cannot be removed.',
-            ], 422);
+        if ($wasDefault) {
+            $customer->addresses()->latest()->first()?->update(['is_default' => 1]);
         }
-
-        Cart::where('customer_id', $customer->id)->first()?->recalculateTotals();
 
         return response()->json(['success' => true]);
     }
 
+    /**
+     * Wishlist cards for the dashboard: same card data as the listing pages,
+     * plus category, stock and "you save" amount. Hidden/deleted products are skipped.
+     */
+    private function wishlistItems(int $customerId)
+    {
+        $ids = Wishlist::where('customer_id', $customerId)->latest('id')->pluck('product_id')->all();
+
+        if (!$ids) {
+            return collect();
+        }
+
+        $cards = Product::visible()->forCard()->whereIn('id', $ids)->get()->keyBy('id');
+
+        $extra = Product::whereIn('id', $ids)
+            ->with('category:id,name')
+            ->get(['id', 'category_id', 'price', 'mrp', 'stock'])
+            ->keyBy('id');
+
+        $region = app(Region::class);
+
+        return collect($ids)
+            ->filter(fn($id) => $cards->has($id))
+            ->map(function ($id) use ($cards, $extra, $region) {
+                $card = $cards[$id]->toCard();
+                $x = $extra[$id] ?? null;
+
+                $img = $card['img'] ?? null;
+                if ($img && !\Illuminate\Support\Str::startsWith($img, ['http://', 'https://', '//'])) {
+                    $img = asset($img);
+                }
+
+                $card['img'] = $img;
+                $card['category'] = $x?->category?->name;
+                $card['in_stock'] = $x ? $x->stock > 0 : true;
+                $card['save'] = ($x && $x->mrp > $x->price) ? $region->format($x->mrp - $x->price) : null;
+
+                return $card;
+            })
+            ->values();
+    }
+
+    // ── Wishlist: remove (AJAX) ──
     public function removeWishlist($id)
     {
-        $customerId = auth('customer')->id();
-
-        Wishlist::where('customer_id', $customerId)
+        Wishlist::where('customer_id', auth('customer')->id())
             ->where('product_id', $id)
             ->delete();
 
-        return response()->json([
-            'success' => true,
-            'count' => Wishlist::where('customer_id', $customerId)->whereHas('product')->count(),
-        ]);
+        return response()->json(['success' => true]);
     }
 
 }

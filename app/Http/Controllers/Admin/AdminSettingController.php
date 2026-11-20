@@ -262,15 +262,20 @@ class AdminSettingController extends Controller
     public function paymentSettingStore(Request $request)
     {
         $validated = $request->validate([
-            'test_key_id' => 'nullable|string|max:255',
-            'test_key_secret' => 'nullable|string',
-            'live_key_id' => 'nullable|string|max:255',
-            'live_key_secret' => 'nullable|string',
-            'test_webhook_secret' => 'nullable|string|max:255',
-            'live_webhook_secret' => 'nullable|string|max:255',
+            'cf_test_app_id' => 'nullable|string|max:255',
+            'cf_test_secret' => 'nullable|string',
+            'cf_live_app_id' => 'nullable|string|max:255',
+            'cf_live_secret' => 'nullable|string',
         ]);
 
         $validated['live_mode'] = $request->has('live_mode');
+
+        if (
+            $validated['live_mode']
+            && (empty($validated['cf_live_app_id']) || empty($validated['cf_live_secret']))
+        ) {
+            return back()->withInput()->withErrors(['Enter the Live App ID and Secret Key before turning on Live Mode.']);
+        }
 
         PaymentSetting::updateOrCreate(
             ['id' => 1],

@@ -38,6 +38,7 @@
 <body>
 
     @include('layouts.tracking-body-top')
+    @php $authCustomer = auth('customer')->user(); @endphp
 
     @if (!empty($seo?->body_scripts))
         {!! $seo->body_scripts !!}
@@ -176,55 +177,46 @@
                                 </svg>
                             </button>
                             <div class="acc-drop">
-                                <div class="acc-user">
-                                    <div class="acc-head">
-                                        <span class="acc-avatar">A</span>
-                                        <div class="acc-meta">
-                                            <b>Aarav Mehta</b><span>aarav@example.com</span>
+                                @if ($authCustomer)
+                                    <div class="acc-user">
+                                        <div class="acc-head">
+                                            <span
+                                                class="acc-avatar">{{ strtoupper(mb_substr($authCustomer->name, 0, 1)) }}</span>
+                                            <div class="acc-meta">
+                                                <b>{{ $authCustomer->name }}</b><span>{{ $authCustomer->email }}</span>
+                                            </div>
+                                        </div>
+                                        <ul class="acc-list">
+                                            <li><a href="{{ route('dashboard') }}#tab-2"><i
+                                                        class="fa-solid fa-truck-fast"></i>Track Order</a></li>
+                                            <li><a href="{{ route('dashboard') }}#tab-2"><i
+                                                        class="fa-solid fa-box-open"></i>My Orders</a></li>
+                                            <li><a href="{{ route('dashboard') }}#tab-4"><i
+                                                        class="fa-regular fa-heart"></i>My Wishlist</a></li>
+                                            <li><a href="{{ route('dashboard') }}#tab-1"><i
+                                                        class="fa-regular fa-user"></i>My Profile</a></li>
+                                        </ul>
+                                        <div class="acc-foot">
+                                            <a href="javascript:void(0)" class="acc-out"
+                                                onclick="document.getElementById('logoutForm').submit()">
+                                                <i class="fa-solid fa-right-from-bracket"></i>Sign Out</a>
+                                            <form id="logoutForm" action="{{ route('user.logout') }}" method="post"
+                                                style="display:none">@csrf</form>
                                         </div>
                                     </div>
-                                    <ul class="acc-list">
-                                        <li>
-                                            <a href="dashboard.html#tab-2"><i class="fa-solid fa-truck-fast"></i>Track
-                                                Order</a>
-                                        </li>
-                                        <li>
-                                            <a href="dashboard.html#tab-2"><i class="fa-solid fa-box-open"></i>My
-                                                Orders</a>
-                                        </li>
-                                        <li>
-                                            <a href="dashboard.html#tab-4"><i class="fa-regular fa-heart"></i>My
-                                                Wishlist</a>
-                                        </li>
-                                        <li>
-                                            <a href="dashboard.html#tab-1"><i class="fa-regular fa-user"></i>My
-                                                Profile</a>
-                                        </li>
-                                    </ul>
-                                    <div class="acc-foot">
-                                        <a href="javascript:void(0)" class="acc-out"><i
-                                                class="fa-solid fa-right-from-bracket"></i>Sign
-                                            Out</a>
+                                @else
+                                    <div class="acc-guest">
+                                        <h5>Welcome!</h5>
+                                        <p>Login to track orders, save your wishlist and check out faster.</p>
+                                        <button type="button" class="btn btn-primary" data-model=".login-pop">Login</button>
+                                        <button type="button" class="btn btn-outline-primary" data-model=".login-pop"
+                                            data-tab-go="register">Create Account</button>
                                     </div>
-                                </div>
-                                <div class="acc-guest" hidden>
-                                    <h5>Welcome!</h5>
-                                    <p>
-                                        Login to track orders, save your wishlist and check out
-                                        faster.
-                                    </p>
-                                    <button type="button" class="btn btn-primary" data-model=".login-pop">
-                                        Login
-                                    </button>
-                                    <button type="button" class="btn btn-outline-primary" data-model=".login-pop"
-                                        data-tab-go="register">
-                                        Create Account
-                                    </button>
-                                </div>
+                                @endif
                             </div>
                         </div>
 
-                        <a href="javascript:void()" data-model=".login-pop" class="action-link wish-link"
+                        <a href="{{ $authCustomer ? route('dashboard') . '#tab-4' : 'javascript:void(0)' }}" @unless ($authCustomer) data-model=".login-pop" @endunless class="action-link wish-link"
                             aria-label="Wishlist">
                             <span class="ico">
                                 <svg class="ic" viewBox="0 0 24 24" aria-hidden="true">
@@ -584,11 +576,14 @@
             <button type="button" class="float-link" data-model=".ham-pop" aria-label="Menu">
                 <i class="fa-solid fa-bars"></i><span>Menu</span>
             </button>
-            <a href="javascript:void()" data-model=".login-pop" class="float-link"><i
-                    class="fa-regular fa-heart"></i><span>Wishlist</span><b class="f-count">0</b></a>
+            <a href="{{ $authCustomer ? route('dashboard') . '#tab-4' : 'javascript:void(0)' }}" @unless ($authCustomer)
+            data-model=".login-pop" @endunless class="float-link">
+                <i class="fa-regular fa-heart"></i><span>Wishlist</span><b class="f-count">0</b></a>
             <a href="{{ route('cart') }}" class="float-link"><i class="fa-solid fa-bag-shopping"></i><span>Cart</span><b
                     class="f-count">{{ $miniCart?->items->sum('quantity') ?? 0 }}</b></a>
-            <a href="dashboard.html#tab-1" class="float-link"><i class="fa-regular fa-user"></i><span>Account</span></a>
+            <a href="{{ $authCustomer ? route('dashboard') . '#tab-1' : 'javascript:void(0)' }}" @unless ($authCustomer)
+            data-model=".login-pop" @endunless class="float-link">
+                <i class="fa-regular fa-user"></i><span>Account</span></a>
         </nav>
     </footer>
 
@@ -1333,6 +1328,90 @@
         })();
     </script>
 
+    <script>
+        $(function () {
+            var AUTH = {
+                loggedIn: @json((bool) $authCustomer),
+                login: "{{ route('checkout.ajax-login') }}",
+                register: "{{ route('checkout.ajax-register') }}",
+                google: "{{ route('user.google.login') }}",
+                openAuth: @json(session('open_auth'))
+            };
+
+            function csrf() { return $('meta[name="csrf-token"]').attr('content'); }
+            $.ajaxSetup({ headers: { 'X-CSRF-TOKEN': csrf(), 'Accept': 'application/json' } });
+
+            function errText(xhr) {
+                var j = xhr.responseJSON || {};
+                return (j.errors && Object.values(j.errors)[0][0]) || j.message || 'Something went wrong. Please try again.';
+            }
+
+            function showError($f, msg) {
+                var $e = $f.find('.pop-error');
+                if (!$e.length) {
+                    $e = $('<p class="pop-error" style="color:#b22222;font-size:13px;margin:8px 0"></p>')
+                        .insertBefore($f.find('.pop-submit'));
+                }
+                $e.text(msg || '').toggle(!!msg);
+            }
+
+            // ── login / register from the modal (works on every page) ──
+            $(document).on('submit', '.login-pop .pop-form', function (e) {
+                e.preventDefault();
+                e.stopImmediatePropagation();
+
+                var $f = $(this), $btn = $f.find('.pop-submit');
+                if ($btn.data('busy')) return;
+
+                var isReg = $f.closest('.tabs').data('tab') === 'pop-register';
+                var data = {};
+                $.each($f.serializeArray(), function (_, f) { data[f.name] = f.value; });
+
+                showError($f, '');
+                $btn.data('busy', true).prop('disabled', true);
+
+                $.ajax({
+                    url: isReg ? AUTH.register : AUTH.login, method: 'POST', dataType: 'json',
+                    contentType: 'application/json', data: JSON.stringify(data)
+                })
+                    .done(function (res) {
+                        $btn.data('busy', false).prop('disabled', false);
+
+                        // session was regenerated: use the new CSRF token
+                        if (res.csrf_token) {
+                            $('meta[name="csrf-token"]').attr('content', res.csrf_token);
+                            $('input[name="_token"]').val(res.csrf_token);
+                            $.ajaxSetup({ headers: { 'X-CSRF-TOKEN': res.csrf_token, 'Accept': 'application/json' } });
+                        }
+                        AUTH.loggedIn = true;
+
+                        // pages (like payment) can listen, take over, and call e.preventDefault()
+                        var ev = $.Event('auth:success');
+                        $(document).trigger(ev, [res]);
+                        if (!ev.isDefaultPrevented()) window.location.reload();
+                    })
+                    .fail(function (xhr) {
+                        $btn.data('busy', false).prop('disabled', false);
+                        showError($f, errText(xhr));
+                    });
+            });
+
+            // ── Google ──
+            $(document).on('click', '.pop-google', function () {
+                window.location.href = AUTH.google + '?redirect=' + encodeURIComponent(window.location.href);
+            });
+
+            // ── open the modal when the server asks for it (/user/login, /user/register) ──
+            if (AUTH.openAuth && !AUTH.loggedIn) {
+                setTimeout(function () {
+                    $('.wish-link[data-model=".login-pop"]').first().trigger('click');
+                    if (AUTH.openAuth === 'register') {
+                        $('.login-pop .tab-nav li[data-tab="pop-register"]').trigger('click');
+                    }
+                }, 300);
+            }
+        });
+    </script>
 
     @stack('scripts')
     @include('layouts.tracking-body-bottom')

@@ -325,14 +325,24 @@ class CustomerAuthController extends Controller
 
     public function ajaxLogin(Request $request)
     {
-        $data = $request->validate([
-            'login_id' => ['required', 'string'],
-            'password' => ['required'],
-        ]);
+        $request->validate(['password' => ['required']]);
 
-        $login = trim($data['login_id']);
-        $field = filter_var($login, FILTER_VALIDATE_EMAIL) ? 'email' : 'mobile';
-        $credentials = [$field => $login, 'password' => $data['password']];
+        $login = trim((string) ($request->input('login_id') ?: $request->input('email')));
+
+        if ($login !== '' && filter_var($login, FILTER_VALIDATE_EMAIL)) {
+            $credentials = ['email' => $login, 'password' => $request->password];
+        } else {
+            if ($login !== '') {                       // old callers sending a phone inside login_id
+                $request->merge(['phone' => $login]);
+            }
+            [$national] = $this->phoneParts($request);
+
+            if ($national === '') {
+                return response()->json(['success' => false, 'message' => 'Enter your email or mobile number.'], 422);
+            }
+
+            $credentials = ['mobile' => $national, 'password' => $request->password];
+        }
 
         // attempt() se PEHLE capture
         $guestSessionId = session()->getId();
@@ -354,7 +364,7 @@ class CustomerAuthController extends Controller
             return response()->json([
                 'success' => true,
                 'message' => 'Login successful.',
-                'csrf_token' => csrf_token(), // 👈 naya token
+                'csrf_token' => csrf_token(),
                 'cart_subtotal' => (float) ($cart ? $cart->items()->sum('total') : 0),
                 'tracking_events' => [
                     'ga4' => ['name' => 'login', 'params' => ['method' => 'email_password']],
@@ -364,23 +374,38 @@ class CustomerAuthController extends Controller
 
         return response()->json([
             'success' => false,
-            'message' => 'Invalid email or password.',
+            'message' => 'Invalid email/mobile or password.',
         ], 422);
     }
 
     public function ajaxRegister(Request $request)
     {
+        [$national, $iso, $dial] = $this->phoneParts($request);
+
+        $request->merge([
+            'name' => $request->input('name') ?: $request->input('full_name'),
+            'mobile' => $national,      // digits only, no spaces, no country code
+            'country_code' => $iso,
+            'dial_code' => $dial,
+        ]);
+
         $validated = $request->validate(
             [
                 'name' => ['required', 'max:100', 'regex:/^[A-Za-z\s]+$/'],
                 'email' => ['required', 'email', 'unique:customers,email'],
-                'mobile' => ['required', 'regex:/^[6-9]\d{9}$/', 'unique:customers,mobile'],
+                'mobile' => [
+                    'required',
+                    $iso === 'IN' ? 'regex:/^[6-9]\d{9}$/' : 'regex:/^\d{6,14}$/',
+                    'unique:customers,mobile',
+                ],
+                'country_code' => ['nullable', 'string', 'max:3'],
+                'dial_code' => ['nullable', 'string', 'max:6'],
                 'alternate_mobile' => ['nullable', 'regex:/^[6-9]\d{9}$/', 'different:mobile'],
                 'password' => ['required', 'min:8', 'confirmed'],
             ],
             [
                 'name.regex' => 'Name should contain only letters.',
-                'mobile.regex' => 'Enter a valid Indian mobile number.',
+                'mobile.regex' => $iso === 'IN' ? 'Enter a valid Indian mobile number.' : 'Enter a valid mobile number.',
                 'password.confirmed' => 'Password and confirm password do not match.',
             ]
         );
@@ -427,6 +452,22 @@ class CustomerAuthController extends Controller
         }
 
         return Socialite::driver('google')->redirect();
+    }
+
+    // Modal sends: phone ("70566 74262"), phone_full ("+917056674262"), country_code ("IN"), dial_code ("+91")
+    private function phoneParts(Request $request): array
+    {
+        $dial = preg_replace('/\D/', '', (string) $request->input('dial_code')) ?: '91';
+        $iso = strtoupper((string) $request->input('country_code')) ?: 'IN';
+        $full = preg_replace('/\D/', '', (string) $request->input('phone_full'));
+
+        if ($full !== '' && str_starts_with($full, $dial)) {
+            $national = substr($full, strlen($dial));          // number without country code
+        } else {
+            $national = preg_replace('/\D/', '', (string) ($request->input('mobile') ?: $request->input('phone')));
+        }
+
+        return [$national, $iso, '+' . $dial];
     }
 
 }

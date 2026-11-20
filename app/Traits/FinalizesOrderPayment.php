@@ -245,7 +245,7 @@ trait FinalizesOrderPayment
                 $order->customer_email,
                 array_merge($variables, [
                     '{payment_amount}' => '₹' . number_format($order->grand_total, 2),
-                    '{transaction_id}' => $order->transaction_id ?? $order->razorpay_payment_id ?? 'N/A',
+                    '{transaction_id}' => $order->transaction_id ?? 'N/A',
                     '{invoice_url}' => route('order.success', $order->id),
                 ]),
                 $order->customer_name
@@ -309,22 +309,24 @@ trait FinalizesOrderPayment
     }
 
     /**
-     * Marks a Razorpay order as paid. Safe to call from both the browser
+     * Marks an online-paid order as paid. Safe to call from both the browser
      * callback and the webhook. Returns the Order if THIS call processed it,
      * or null if it was already paid.
      *
+     * $gateway: 'cashfree' | 'razorpay'
      * $request is passed only from the browser callback (for Meta CAPI ip/UA/fbp/fbc).
-     * From the webhook it stays null.
      */
-    protected function finalizeRazorpayPayment(
+    protected function finalizeOnlinePayment(
         int $orderId,
         string $paymentId,
-        ?string $signature,
+        string $gateway,
         string $triggeredBy,
         ?int $customerId = null,
-        ?Request $request = null
+        ?Request $request = null,
+        ?string $signature = null
     ): ?Order {
         $cart = null;
+        $label = ucfirst($gateway);
 
         DB::beginTransaction();
 
@@ -339,19 +341,24 @@ trait FinalizesOrderPayment
                 return null;
             }
 
-            $order->update([
+            $paid = [
                 'payment_status' => 'paid',
                 'paid_at' => now(),
-                'razorpay_payment_id' => $paymentId,
-                'razorpay_signature' => $signature,
                 'transaction_id' => $paymentId,
                 'status' => 'processing',
-            ]);
+            ];
+
+            if ($gateway === 'razorpay') {
+                $paid['razorpay_payment_id'] = $paymentId;
+                $paid['razorpay_signature'] = $signature;
+            }
+
+            $order->update($paid);
 
             $order->statusHistory()->create([
                 'status' => 'processing',
                 'previous_status' => 'pending',
-                'remarks' => 'Payment received successfully via Razorpay',
+                'remarks' => "Payment received successfully via {$label}",
                 'triggered_by' => $triggeredBy,
             ]);
 
@@ -371,7 +378,7 @@ trait FinalizesOrderPayment
             \App\Models\AdminNotification::notify([
                 'type' => 'payment',
                 'title' => 'Payment received',
-                'message' => "Payment of ₹" . number_format($order->grand_total, 2) . " for order #{$order->order_number} successfully received via Razorpay.",
+                'message' => "Payment of ₹" . number_format($order->grand_total, 2) . " for order #{$order->order_number} successfully received via {$label}.",
                 'reference' => '#' . $order->order_number,
                 'icon' => 'fa-credit-card',
                 'url' => route('admin.orders.show', $order->id),
@@ -394,14 +401,14 @@ trait FinalizesOrderPayment
             $this->logPayment([
                 'order_id' => $order->id,
                 'order_number' => $order->order_number,
-                'gateway' => 'razorpay',
+                'gateway' => $gateway,
                 'payment_id' => $paymentId,
                 'amount' => $order->grand_total,
-                'method' => 'razorpay',
+                'method' => $gateway,
                 'status' => 'captured',
                 'customer_name' => $order->customer_name,
                 'customer_email' => $order->customer_email,
-                'meta' => ['razorpay_payment_id' => $paymentId, 'source' => $triggeredBy],
+                'meta' => [$gateway . '_payment_id' => $paymentId, 'source' => $triggeredBy],
             ]);
 
             DB::commit();
@@ -415,7 +422,7 @@ trait FinalizesOrderPayment
         try {
             CartTracker::track('order_placed', $cart, [
                 'order_number' => $order->order_number,
-                'method' => 'razorpay',
+                'method' => $gateway,
                 'amount' => (float) $order->grand_total,
             ]);
         } catch (\Throwable $e) {
@@ -442,4 +449,12 @@ trait FinalizesOrderPayment
 
         return $order;
     }
+
+    // Razorpay (disabled for now): uncomment when Razorpay comes back
+    // protected function finalizeRazorpayPayment(
+    //     int $orderId, string $paymentId, ?string $signature, string $triggeredBy,
+    //     ?int $customerId = null, ?Request $request = null
+    // ): ?Order {
+    //     return $this->finalizeOnlinePayment($orderId, $paymentId, 'razorpay', $triggeredBy, $customerId, $request, $signature);
+    // }
 }

@@ -838,7 +838,7 @@
                                                             <div class="product-variant" style="margin-top:4px">
                                                                 @foreach($item->addons as $addon)
                                                                     <div>+ {{ $addon->detail }}
-                                                                        (₹{{ number_format($addon->price, 2) }})</div>
+                                                                        ({{ $sym }}{{ number_format($addon->price, 2) }})</div>
                                                                 @endforeach
                                                             </div>
                                                         @endif
@@ -846,8 +846,12 @@
                                                 </div>
                                             </td>
                                             <td><span class="qty-chip">× {{ $item->quantity }}</span></td>
-                                            <td><span class="price-cell">₹{{ number_format($item->price, 2) }}</span></td>
-                                            <td><span class="subtotal-cell">₹{{ number_format($lineTotal, 2) }}</span></td>
+                                            <td><span
+                                                    class="price-cell">{{ $sym }}{{ number_format($item->price, 2) }}</span>
+                                            </td>
+                                            <td><span
+                                                    class="subtotal-cell">{{ $sym }}{{ number_format($lineTotal, 2) }}</span>
+                                            </td>
                                         </tr>
                                     @endforeach
                                 </tbody>
@@ -857,7 +861,8 @@
                                             style="text-align:right;color:var(--text-hint);font-size:12px;font-weight:600;text-transform:uppercase;letter-spacing:.04em">
                                             Subtotal
                                         </td>
-                                        <td><span class="subtotal-cell">₹{{ number_format($order->subtotal, 2) }}</span>
+                                        <td><span
+                                                class="subtotal-cell">{{ $sym }}{{ number_format($order->subtotal, 2) }}</span>
                                         </td>
                                     </tr>
                                 </tfoot>
@@ -868,7 +873,7 @@
                         <div style="padding:16px 20px;border-top:1px solid var(--border);background:#fafafa">
                             <div class="price-row">
                                 <span class="label">Subtotal</span>
-                                <span class="value">₹{{ number_format($order->subtotal, 2) }}</span>
+                                <span class="value">{{ $sym }}{{ number_format($order->subtotal, 2) }}</span>
                             </div>
 
                             @if($order->discount > 0)
@@ -882,7 +887,7 @@
                                             </span>
                                         @endif
                                     </span>
-                                    <span class="value">− ₹{{ number_format($order->discount, 2) }}</span>
+                                    <span class="value">− {{ $sym }}{{ number_format($order->discount, 2) }}</span>
                                 </div>
                             @endif
 
@@ -890,31 +895,36 @@
                                 <span class="label">Shipping</span>
                                 <span class="value">
                                     @if($order->shipping_charge > 0)
-                                        ₹{{ number_format($order->shipping_charge, 2) }}
+                                        {{ $sym }}{{ number_format($order->shipping_charge, 2) }}
                                     @else
                                         <span style="color:var(--green)">FREE</span>
                                     @endif
                                 </span>
                             </div>
 
-                            {{-- GST breakdown --}}
+                            {{-- Tax breakdown --}}
                             @if($order->tax_amount > 0)
                                 @if($order->gst_type === 'igst' && $order->igst_amount > 0)
                                     <div class="price-row">
                                         <span class="label">IGST ({{ $order->igst_rate }}%)</span>
-                                        <span class="value">₹{{ number_format($order->igst_amount, 2) }}</span>
+                                        <span class="value">{{ $sym }}{{ number_format($order->igst_amount, 2) }}</span>
+                                    </div>
+                                @elseif($order->gst_type === 'vat')
+                                    <div class="price-row">
+                                        <span class="label">VAT</span>
+                                        <span class="value">{{ $sym }}{{ number_format($order->tax_amount, 2) }}</span>
                                     </div>
                                 @else
                                     @if($order->cgst_amount > 0)
                                         <div class="price-row">
                                             <span class="label">CGST ({{ $order->cgst_rate }}%)</span>
-                                            <span class="value">₹{{ number_format($order->cgst_amount, 2) }}</span>
+                                            <span class="value">{{ $sym }}{{ number_format($order->cgst_amount, 2) }}</span>
                                         </div>
                                     @endif
                                     @if($order->sgst_amount > 0)
                                         <div class="price-row">
                                             <span class="label">SGST ({{ $order->sgst_rate }}%)</span>
-                                            <span class="value">₹{{ number_format($order->sgst_amount, 2) }}</span>
+                                            <span class="value">{{ $sym }}{{ number_format($order->sgst_amount, 2) }}</span>
                                         </div>
                                     @endif
                                 @endif
@@ -922,7 +932,7 @@
 
                             <div class="price-row total">
                                 <span class="label">Total</span>
-                                <span class="value">₹{{ number_format($order->grand_total, 2) }}</span>
+                                <span class="value">{{ $sym }}{{ number_format($order->grand_total, 2) }}</span>
                             </div>
                         </div>
                     </div>
@@ -1022,6 +1032,94 @@
                         </div>
                     </div>
 
+                    {{-- ── International Order ── --}}
+                    @if($regionInfo)
+                        <div class="section-card">
+                            <div class="section-card-header">
+                                <h5>International Order</h5>
+                                <span style="font-size:12px;color:var(--text-hint)">{{ $regionInfo['country'] }}</span>
+                            </div>
+                            <div class="section-card-body" style="padding:16px 20px">
+                                <div class="info-row">
+                                    <span
+                                        class="info-label">{{ $order->payment_status === 'paid' ? 'Customer paid' : 'Customer pays' }}</span>
+                                    <span class="info-value">
+                                        <strong>{{ $regionInfo['customer_symbol'] }}{{ $regionInfo['customer_total'] }}</strong>
+                                        <small
+                                            style="color:var(--text-hint)">({{ $regionInfo['customer_currency'] }})</small>
+                                    </span>
+                                </div>
+
+                                @if($regionInfo['rate'])
+                                    <div class="info-row">
+                                        <span class="info-label">Exchange rate</span>
+                                        <span class="info-value">{{ $regionInfo['rate'] }}</span>
+                                    </div>
+                                @endif
+
+                                <div class="info-row">
+                                    <span class="info-label">Order total ({{ $regionInfo['default_currency'] }})</span>
+                                    <span
+                                        class="info-value">{{ $regionInfo['default_symbol'] }}{{ $regionInfo['list_total'] }}</span>
+                                </div>
+
+                                @if($regionInfo['has_adjustment'])
+                                    <div class="info-row">
+                                        <span class="info-label">Country adjustment</span>
+                                        <span class="info-value">
+                                            +{{ $regionInfo['adjustment_percent'] }}%
+                                            (+{{ $regionInfo['default_symbol'] }}{{ $regionInfo['adjustment_amount'] }})
+                                            <div style="font-size:11px;color:var(--text-hint);font-weight:400">
+                                                Extra revenue, not tax
+                                            </div>
+                                        </span>
+                                    </div>
+                                    <div class="info-row">
+                                        <span class="info-label">Total incl. adjustment</span>
+                                        <span class="info-value">
+                                            <strong>{{ $regionInfo['default_symbol'] }}{{ $regionInfo['default_total'] }}</strong>
+                                        </span>
+                                    </div>
+                                @endif
+
+                                @if($regionInfo['inr_total'])
+                                    <div class="info-row">
+                                        <span class="info-label">Accounts (INR)</span>
+                                        <span class="info-value">
+                                            <strong>{{ $regionInfo['inr_symbol'] }}{{ $regionInfo['inr_total'] }}</strong>
+                                            @if($regionInfo['inr_rate'])
+                                                <div style="font-size:11px;color:var(--text-hint);font-weight:400">
+                                                    {{ $regionInfo['inr_rate'] }} (order ke din ka rate)
+                                                </div>
+                                            @endif
+                                        </span>
+                                    </div>
+                                @endif
+
+                                <div class="info-row">
+                                    <span class="info-label">Tax</span>
+                                    <span class="info-value">
+                                        {{ $regionInfo['tax_label'] }}
+                                        @if($regionInfo['tax_amount'] > 0)
+                                            ·
+                                            {{ $regionInfo['default_symbol'] }}{{ number_format($regionInfo['tax_amount'], 2) }}
+                                        @endif
+                                    </span>
+                                </div>
+
+                                @if($order->invoice)
+                                    <div class="info-row">
+                                        <span class="info-label">Invoice no.</span>
+                                        <span class="info-value"
+                                            style="font-family:'SF Mono','Fira Code',monospace;font-size:12px">
+                                            {{ $order->invoice->invoice_number }}
+                                        </span>
+                                    </div>
+                                @endif
+                            </div>
+                        </div>
+                    @endif
+
                     {{-- ── Credit Notes ── --}}
                     @if($creditNoteRefunds->isNotEmpty())
                         <div class="section-card">
@@ -1050,7 +1148,7 @@
                                             </div>
                                         </div>
                                         <div style="display:flex;align-items:center;gap:10px">
-                                            <strong>₹{{ number_format($cnRefund->amount, 2) }}</strong>
+                                            <strong>{{ $sym }}{{ number_format($cnRefund->amount, 2) }}</strong>
                                             <a href="{{ route('admin.credit-notes.show', $cnRefund) }}" target="_blank"
                                                 class="btn-secondary-dash" style="padding:5px 10px" title="View">
                                                 <i class="fa fa-eye"></i>
@@ -1248,7 +1346,7 @@
                                 @if($order->city) {{ $order->city->name }}, @endif
                                 @if($order->state) {{ $order->state->name }}<br> @endif
                                 @if($order->pincode) {{ $order->pincode }}<br> @endif
-                                India
+                                {{ $countryName }}
                                 @if($order->customer_phone)
                                     <br><span style="color:var(--text-hint);font-size:12px">
                                         📞 {{ $order->customer_phone }}

@@ -3,6 +3,7 @@
 namespace App\Support;
 
 use App\Models\Country;
+use App\Models\Currency;
 use App\Models\Setting;
 use Illuminate\Support\Collection;
 
@@ -47,28 +48,32 @@ class Region
             ?? $this->default();
     }
 
-    /** Default currency -> customer currency ka multiplier (Extra % + exchange rate), bina round kiye. */
-    public function factor(): float
+    /** Sirf exchange rate: 1 default currency = ? customer currency (Extra % ke bina). */
+    public function fxRate(): float
     {
         $cur = $this->current();
         $def = $this->default();
 
-        if (!$cur || !$def) {
+        if (!$cur || !$def || $cur->currency_code === $def->currency_code) {
             return 1.0;
         }
 
-        $factor = 1 + ((float) $cur->price_adjustment / 100);
+        $from = (float) ($def->currency?->usd_rate ?? 0);
+        $to = (float) ($cur->currency?->usd_rate ?? 0);
 
-        if ($cur->currency_code !== $def->currency_code) {
-            $from = (float) ($def->currency?->usd_rate ?? 0);
-            $to = (float) ($cur->currency?->usd_rate ?? 0);
+        return ($from > 0 && $to > 0) ? $to / $from : 1.0;
+    }
 
-            if ($from > 0 && $to > 0) {
-                $factor *= $to / $from;
-            }
+    /** Default currency -> customer currency ka multiplier (Extra % + exchange rate), bina round kiye. */
+    public function factor(): float
+    {
+        $cur = $this->current();
+
+        if (!$cur || !$this->default()) {
+            return 1.0;
         }
 
-        return $factor;
+        return (1 + ((float) $cur->price_adjustment / 100)) * $this->fxRate();
     }
 
     /** Default currency ka amount -> customer ki currency me. */
@@ -125,6 +130,51 @@ class Region
             'symbol' => $this->symbol(),
             'space' => $this->symbolNeedsSpace(),
             'decimals' => $this->decimals(),
+        ];
+    }
+
+    /**
+     * Order lagte hi freeze hone wali values. $defaultTotal = default currency me grand total.
+     * Khali array = country ya default country set nahi (freeze skip).
+     */
+    public function snapshot(float $defaultTotal): array
+    {
+        $cur = $this->current();
+        $def = $this->default();
+
+        if (!$cur || !$def) {
+            return [];
+        }
+
+        $adj = (float) $cur->price_adjustment;
+        $adjAmount = round($defaultTotal * $adj / 100, 3);
+        $fx = $this->fxRate();
+
+        // 1 default currency = ? INR (us din ke rate par)
+        $inrPerDefault = null;
+        if ($def->currency_code === 'INR') {
+            $inrPerDefault = 1.0;
+        } else {
+            $inr = Currency::where('code', 'INR')->first();
+            $defRate = (float) ($def->currency?->usd_rate ?? 0);
+
+            if ($inr && (float) $inr->usd_rate > 0 && $defRate > 0) {
+                $inrPerDefault = (float) $inr->usd_rate / $defRate;
+            }
+        }
+
+        return [
+            'country_code' => $cur->iso2,
+            'currency_code' => $cur->currency_code,
+            'default_currency_code' => $def->currency_code,
+            'exchange_rate' => $fx,
+            'price_adjustment_percent' => $adj,
+            'price_adjustment_amount' => $adjAmount,
+            'tax_handling' => $cur->tax_handling,
+            'total_default' => round($defaultTotal, 3),
+            'total_customer' => round(($defaultTotal + $adjAmount) * $fx, $this->decimals()),
+            'inr_rate' => $inrPerDefault,
+            'total_inr' => $inrPerDefault ? round(($defaultTotal + $adjAmount) * $inrPerDefault, 2) : null,
         ];
     }
 }

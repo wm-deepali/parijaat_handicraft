@@ -25,6 +25,11 @@ return new class extends Migration {
             $table->string('test_webhook_secret')->nullable();
             $table->string('live_webhook_secret')->nullable();
 
+            $table->string('cf_test_app_id')->nullable();
+            $table->text('cf_test_secret')->nullable();
+            $table->string('cf_live_app_id')->nullable();
+            $table->text('cf_live_secret')->nullable();
+
             $table->timestamps();
         });
     }

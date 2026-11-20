@@ -60,7 +60,9 @@ return new class extends Migration {
             // GST
             $table->enum('gst_type', [
                 'cgst_sgst',
-                'igst'
+                'igst',
+                'vat',
+                'export'
             ])->nullable();
 
             $table->decimal('cgst_rate', 5, 2)->default(0);
