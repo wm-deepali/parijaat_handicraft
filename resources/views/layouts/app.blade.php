@@ -5,10 +5,7 @@
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <meta name="csrf-token" content="{{ csrf_token() }}">
-    <title>@yield('title', $general->brand)</title>
-    @hasSection('meta_description')
-        <meta name="description" content="@yield('meta_description')" />
-    @endif
+    @include('layouts.seo')
     @if ($general->favicon_url)
         <link rel="icon" href="{{ $general->favicon_url }}" />
     @endif
@@ -1418,10 +1415,19 @@
                         }
                         AUTH.loggedIn = true;
 
+                        // login / sign_up (+ CompleteRegistration) events from the server
+                        var sent = typeof window.fireTrackingEvents === 'function'
+                            ? window.fireTrackingEvents(res.tracking_events)
+                            : false;
+
                         // pages (like payment) can listen, take over, and call e.preventDefault()
                         var ev = $.Event('auth:success');
                         $(document).trigger(ev, [res]);
-                        if (!ev.isDefaultPrevented()) window.location.reload();
+
+                        if (!ev.isDefaultPrevented()) {
+                            // the page is about to reload: give the pixel requests a moment to leave
+                            setTimeout(function () { window.location.reload(); }, sent ? 250 : 0);
+                        }
                     })
                     .fail(function (xhr) {
                         $btn.data('busy', false).prop('disabled', false);
@@ -1505,8 +1511,9 @@
 
                         $('[data-wish-count]').text(res.count);
 
-                        if (res.tracking_events && typeof window.runTrackingEvents === 'function') {
-                            window.runTrackingEvents(res.tracking_events);
+                        // only sent by the server when the product was added
+                        if (res.tracking_events) {
+                            window.fireTrackingEvents(res.tracking_events);
                         }
 
                         notify('success', res.added ? 'Added to Wishlist' : 'Removed from Wishlist', res.message);
@@ -1683,7 +1690,58 @@
                     });
             }, true);
         })();
+
     </script>
+
+    <script>
+        // Fires the pixel events returned by the server ({ ga4: {name, params}, meta: {name, params, event_id?} })
+        // Returns true when at least one event was sent.
+        window.fireTrackingEvents = function (events) {
+            if (!events) return false;
+            var sent = false;
+
+            try {
+                if (events.ga4 && typeof gtag === 'function') {
+                    gtag('event', events.ga4.name, events.ga4.params || {});
+                    sent = true;
+                }
+
+                if (events.meta && typeof fbq === 'function') {
+                    // event_id (if the server sends one) lets Meta de-duplicate against server-side events
+                    var opts = events.meta.event_id ? { eventID: events.meta.event_id } : undefined;
+                    fbq('track', events.meta.name, events.meta.params || {}, opts);
+                    sent = true;
+                }
+            } catch (e) { /* tracking must never break the page */ }
+
+            return sent;
+        };
+
+        // keep the old name working for any code that already calls it
+        window.runTrackingEvents = window.runTrackingEvents || window.fireTrackingEvents;
+    </script>
+
+    @php
+        $flashSignup = session('fire_signup_event');
+        $flashLogin = session('fire_login_event');
+    @endphp
+    @if ($flashSignup || $flashLogin)
+        <script>
+            window.addEventListener('load', function () {
+                @if ($flashSignup)
+                    window.fireTrackingEvents({
+                        ga4: { name: 'sign_up', params: { method: @json(is_string($flashSignup) ? $flashSignup : 'email_password') } },
+                        meta: { name: 'CompleteRegistration', params: { status: true } }
+                    });
+                @endif
+                @if ($flashLogin)
+                    window.fireTrackingEvents({
+                        ga4: { name: 'login', params: { method: @json(is_string($flashLogin) ? $flashLogin : 'email_password') } }
+                    });
+                @endif
+            });
+        </script>
+    @endif
 
     @stack('scripts')
     @include('layouts.tracking-body-bottom')

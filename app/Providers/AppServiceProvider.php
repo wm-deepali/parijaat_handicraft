@@ -30,7 +30,6 @@ class AppServiceProvider extends ServiceProvider
             return "<?php echo e(app(\\App\\Support\\Region::class)->defaultSymbol()); ?>";
         });
 
-
         // @moneyDefault($amount): amount already in the default currency, shown as is: "$120.00"
         Blade::directive('moneyDefault', function ($expression) {
             $expression = trim((string) $expression);
@@ -53,9 +52,12 @@ class AppServiceProvider extends ServiceProvider
             return "<?php echo e(app(\\App\\Support\\Region::class)->format($expression)); ?>";
         });
 
+        // $seo (route-level row, page_key = route name) + $general for every view / partial
         View::composer('*', function ($view) {
-            // Built once per request, then reused for every view / partial
-            static $shared = null;
+            $request = request();
+
+            // built once per request (kept on the request, not in a static, so tests/Octane don't leak it)
+            $shared = $request->attributes->get('view_shared');
 
             if ($shared === null) {
                 $name = Route::currentRouteName();
@@ -65,9 +67,12 @@ class AppServiceProvider extends ServiceProvider
                     // new Setting() avoids "property on null" errors if the row doesn't exist yet
                     'general' => Setting::first() ?? new Setting(),
                 ];
+
+                $request->attributes->set('view_shared', $shared);
             }
 
-            $view->with($shared);
+            // never overwrite something a controller passed on purpose
+            $view->with(array_diff_key($shared, $view->getData()));
         });
 
         View::composer('layouts.app', function ($view) {

@@ -1152,4 +1152,11 @@ $(document).on("submit", ".review-form", function (e) {
             apply();
         });
     </script>
+
+    @if(!empty($viewItemScript))
+        <script>
+            {!! $viewItemScript !!}
+        </script>
+    @endif
+
 @endpush

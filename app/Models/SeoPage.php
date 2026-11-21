@@ -43,7 +43,15 @@ class SeoPage extends Model
     protected static function booted(): void
     {
         // Admin edits show up on the site immediately
-        static::saved(fn (self $m) => Cache::forget(self::cacheKey($m->page_key)));
+        static::saved(function (self $m) {
+            Cache::forget(self::cacheKey($m->page_key));
+
+            // page_key was edited: clear the old key as well
+            if ($m->wasChanged('page_key')) {
+                Cache::forget(self::cacheKey((string) $m->getOriginal('page_key')));
+            }
+        });
+
         static::deleted(fn (self $m) => Cache::forget(self::cacheKey($m->page_key)));
     }
 
@@ -52,17 +60,52 @@ class SeoPage extends Model
         return 'seo_page.' . $key;
     }
 
+    /* ───────────── Scopes ───────────── */
+
     public function scopeActive($query)
     {
         return $query->where('is_active', true);
     }
 
+    public function scopeInSitemap($query)
+    {
+        return $query->active()->where('in_sitemap', true);
+    }
+
+    public function scopeGrouped($query)
+    {
+        return $query->orderBy('page_group')->orderBy('page_name');
+    }
+
+    /* ───────────── Lookup ───────────── */
+
+    /**
+     * Cached lookup by page_key (= Laravel route name, e.g. "home", "product.show").
+     * A miss is cached as false, so routes without a row (admin pages etc.)
+     * don't hit the database on every request.
+     */
     public static function forKey(string $key): ?self
     {
-        return Cache::remember(
+        $row = Cache::remember(
             self::cacheKey($key),
             3600,
-            fn () => static::active()->where('page_key', $key)->first()
+            fn () => static::active()->where('page_key', $key)->first() ?? false
         );
+
+        return $row ?: null;
+    }
+
+    /* ───────────── Accessors ───────────── */
+
+    /** Robots value is noindex (used to show a badge in the admin list). */
+    public function getIsNoindexAttribute(): bool
+    {
+        return str_contains(strtolower((string) $this->robots), 'noindex');
+    }
+
+    /** Dynamic template rows (category.show, product.show...) have {placeholders} in the slug. */
+    public function getIsTemplateAttribute(): bool
+    {
+        return str_contains((string) $this->slug, '{');
     }
 }

@@ -3,6 +3,7 @@
 namespace App\Http\Controllers;
 
 use App\Models\Blog;
+use App\Support\Seo;
 use App\Models\Coupon;
 use App\Support\Region;
 use App\Models\Product;
@@ -322,6 +323,13 @@ class FrontController extends Controller
         $recent = $this->recentlyViewed();
         $related = $this->youMayAlsoLove($category->id);
 
+        $seoOverride = Seo::for([
+            'meta_title' => $category->meta_title ?: $category->name . ' | {site}',
+            'meta_description' => $category->meta_description
+                ?: 'Explore handcrafted ' . $category->name . ' online. Authentic Indian craftsmanship with worldwide shipping.',
+            'og_image' => $category->image ? asset('storage/' . $category->image) : null,
+        ]);
+
         return view('front-pages.category', compact(
             'category',
             'tabs',
@@ -334,7 +342,8 @@ class FrontController extends Controller
             'priceMax',
             'recent',
             'related',
-            'priceStep'
+            'priceStep',
+            'seoOverride'
         ));
     }
 
@@ -785,6 +794,39 @@ class FrontController extends Controller
         $region = app(Region::class);
         $regionJs = $region->js();
 
+        $img = $product->images->first()?->image;   // check the column name on your product images table
+
+        $schema = array_filter([
+            '@context' => 'https://schema.org',
+            '@type' => 'Product',
+            'name' => $product->name,
+            'image' => $img ? [asset('storage/' . $img)] : null,
+            'category' => $product->category?->name,
+            'aggregateRating' => ($product->reviews_count ?? 0) > 0 ? [
+                '@type' => 'AggregateRating',
+                'ratingValue' => round((float) $product->avg_rating, 1),
+                'reviewCount' => (int) $product->reviews_count,
+            ] : null,
+            'offers' => ($code = $region->current()?->currency_code) ? [
+                '@type' => 'Offer',
+                'url' => url()->current(),
+                'priceCurrency' => $code,
+                'price' => number_format((float) $region->convert((float) $product->price), 2, '.', ''),
+                'availability' => $product->stock > 0
+                    ? 'https://schema.org/InStock'
+                    : 'https://schema.org/OutOfStock',
+            ] : null,
+        ]);
+
+        $seoOverride = Seo::for([
+            'meta_title' => $product->meta_title ?: $product->name . ' | {site}',
+            'meta_description' => $product->meta_description
+                ?: Str::limit(strip_tags((string) ($product->short_description ?? '')), 155),
+            'og_image' => $img ? asset('storage/' . $img) : null,
+            'og_type' => 'product',
+            'schema_markup' => json_encode($schema, JSON_UNESCAPED_UNICODE | JSON_UNESCAPED_SLASHES),
+        ]);
+
         // real coupons -> [icon, title, desc, code]
         $coupons = Coupon::available()
             ->latest('id')
@@ -815,6 +857,8 @@ class FrontController extends Controller
 
         Product::trackView($product->id);
 
+        $viewItemScript = \App\Services\Tracking\PixelTracker::viewItemScript($product);
+
         return view('front-pages.product-detail', compact(
             'product',
             'ratingBreakdown',
@@ -829,7 +873,9 @@ class FrontController extends Controller
             'coupons',
             'freeShipFrom',
             'reviewState',
-            'regionJs'
+            'regionJs',
+            'seoOverride',
+            'viewItemScript'
         ));
     }
 
@@ -916,7 +962,14 @@ class FrontController extends Controller
             ->get()
             ->map(fn($b) => $this->card($b));
 
-        return view('front-pages.blog-detail', compact('blog', 'content', 'toc', 'related', 'popular'));
+        $seoOverride = Seo::for([
+            'meta_title' => ($blog->meta_title ?: $blog->title) . ' | {site}',
+            'meta_description' => $blog->meta_description ?: Str::limit(strip_tags((string) $blog->excerpt), 155),
+            'og_image' => $blog->image_url,
+            'og_type' => 'article',
+        ]);
+
+        return view('front-pages.blog-detail', compact('blog', 'content', 'toc', 'related', 'popular', 'seoOverride'));
     }
 
     /** Same array shape the blog-card partial already uses (+ url, date_label) */
@@ -988,7 +1041,12 @@ class FrontController extends Controller
         $page = DynamicPage::active()->where('slug', $slug)->firstOrFail();
         $content = $page->renderedContent(Setting::current());
 
-        return view('front-pages.page', compact('page', 'content'));
+        $seoOverride = Seo::for([
+            'meta_title' => $page->meta_title ?: (filled($page->title) ? $page->title . ' | {site}' : null),
+            'meta_description' => $page->meta_description,
+        ]);
+
+        return view('front-pages.page', compact('page', 'content', 'seoOverride'));
     }
 
     public function subscribe(Request $request)
@@ -1017,32 +1075,32 @@ class FrontController extends Controller
         }
 
         $data = $request->validate([
-            'full_name'    => 'required|string|max:120',
-            'company'      => 'required|string|max:150',
-            'email'        => 'required|email:rfc|max:150',
-            'phone'        => 'required|string|max:30',
-            'phone_full'   => 'nullable|string|max:30',
+            'full_name' => 'required|string|max:120',
+            'company' => 'required|string|max:150',
+            'email' => 'required|email:rfc|max:150',
+            'phone' => 'required|string|max:30',
+            'phone_full' => 'nullable|string|max:30',
             'country_code' => 'nullable|string|max:5',
-            'dial_code'    => 'nullable|string|max:8',
-            'category'     => 'required|string|max:120',
-            'quantity'     => 'required|integer|min:1|max:10000000',
-            'country'      => 'required|string|max:100',
-            'frequency'    => ['nullable', Rule::in(BulkEnquiry::FREQUENCIES)],
-            'message'      => 'nullable|string|max:3000',
-            'reference'    => 'nullable|array|max:5',
-            'reference.*'  => 'file|mimes:jpg,jpeg,png,webp,pdf,doc,docx,xls,xlsx|max:10240',
+            'dial_code' => 'nullable|string|max:8',
+            'category' => 'required|string|max:120',
+            'quantity' => 'required|integer|min:1|max:10000000',
+            'country' => 'required|string|max:100',
+            'frequency' => ['nullable', Rule::in(BulkEnquiry::FREQUENCIES)],
+            'message' => 'nullable|string|max:3000',
+            'reference' => 'nullable|array|max:5',
+            'reference.*' => 'file|mimes:jpg,jpeg,png,webp,pdf,doc,docx,xls,xlsx|max:10240',
         ], [
             'full_name.required' => 'Please enter your full name.',
-            'company.required'   => 'Please enter your company name.',
-            'email.required'     => 'Please enter your business email.',
-            'phone.required'     => 'Please enter your phone number.',
-            'category.required'  => 'Please select a product category.',
-            'quantity.required'  => 'Please enter the quantity.',
-            'quantity.integer'   => 'Quantity must be a number.',
-            'country.required'   => 'Please enter the country to ship to.',
-            'reference.max'      => 'You can attach up to 5 files.',
-            'reference.*.max'    => 'Each file must be 10 MB or smaller.',
-            'reference.*.mimes'  => 'Allowed files: JPG, PNG, WEBP, PDF, DOC, XLS.',
+            'company.required' => 'Please enter your company name.',
+            'email.required' => 'Please enter your business email.',
+            'phone.required' => 'Please enter your phone number.',
+            'category.required' => 'Please select a product category.',
+            'quantity.required' => 'Please enter the quantity.',
+            'quantity.integer' => 'Quantity must be a number.',
+            'country.required' => 'Please enter the country to ship to.',
+            'reference.max' => 'You can attach up to 5 files.',
+            'reference.*.max' => 'Each file must be 10 MB or smaller.',
+            'reference.*.mimes' => 'Allowed files: JPG, PNG, WEBP, PDF, DOC, XLS.',
         ]);
 
         $files = [];
@@ -1054,20 +1112,20 @@ class FrontController extends Controller
         }
 
         $enquiry = BulkEnquiry::create([
-            'full_name'    => $data['full_name'],
-            'company'      => $data['company'],
-            'email'        => strtolower(trim($data['email'])),
-            'phone'        => $data['phone'],
-            'phone_full'   => $data['phone_full'] ?? null,
+            'full_name' => $data['full_name'],
+            'company' => $data['company'],
+            'email' => strtolower(trim($data['email'])),
+            'phone' => $data['phone'],
+            'phone_full' => $data['phone_full'] ?? null,
             'country_code' => $data['country_code'] ?? null,
-            'dial_code'    => $data['dial_code'] ?? null,
-            'category'     => $data['category'],
-            'quantity'     => $data['quantity'],
+            'dial_code' => $data['dial_code'] ?? null,
+            'category' => $data['category'],
+            'quantity' => $data['quantity'],
             'ship_country' => $data['country'],
-            'frequency'    => $data['frequency'] ?? null,
-            'message'      => $data['message'] ?? null,
-            'files'        => $files ?: null,
-            'ip_address'   => $request->ip(),
+            'frequency' => $data['frequency'] ?? null,
+            'message' => $data['message'] ?? null,
+            'files' => $files ?: null,
+            'ip_address' => $request->ip(),
         ]);
 
         return response()->json([

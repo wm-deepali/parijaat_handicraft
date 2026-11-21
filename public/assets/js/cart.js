@@ -17,6 +17,33 @@
         return j.message || 'Something went wrong. Please try again.';
     }
 
+    // ── Pixel events: server sends { ga4: {name, params}, meta: {name, params, event_id?} } ──
+    // Returns true if something was sent (used to give the pixels a moment before a redirect).
+    function fireTrackingEvents(events) {
+        if (!events) return false;
+        var sent = false;
+
+        try {
+            if (events.ga4 && typeof gtag === 'function') {
+                gtag('event', events.ga4.name, events.ga4.params || {});
+                sent = true;
+            }
+
+            if (events.meta && typeof fbq === 'function') {
+                // event_id (if the server sends one) lets Meta de-duplicate against server-side events
+                var opts = events.meta.event_id ? { eventID: events.meta.event_id } : undefined;
+                fbq('track', events.meta.name, events.meta.params || {}, opts);
+                sent = true;
+            }
+        } catch (e) { /* tracking must never break the cart */ }
+
+        return sent;
+    }
+
+    // one global name, kept under both names (wishlist + any older code use these)
+    window.fireTrackingEvents = fireTrackingEvents;
+    window.runTrackingEvents = window.runTrackingEvents || fireTrackingEvents;
+
     function call(url, method, payload) {
         return $.ajax({
             url: url, method: method, dataType: 'json',
@@ -49,6 +76,7 @@
         call(window.APP.cartAdd, 'POST', payloadFor($btn))
             .done(function (res) {
                 updateCartUI(res);
+                fireTrackingEvents(res.tracking_events);   // AddToCart
                 if (res.coupon_message) notify('error', 'Coupon', res.coupon_message);
                 notify('success', $btn.data('toast-title') || 'Added to Cart', $btn.data('toast-text') || res.message);
             })
@@ -64,7 +92,11 @@
         $btn.data('busy', true);
 
         call(window.APP.cartAdd, 'POST', payloadFor($btn))
-            .done(function () { window.location.href = href; })
+            .done(function (res) {
+                // the page is about to change: fire first, then give the pixel requests a moment to leave
+                var sent = fireTrackingEvents(res.tracking_events);   // AddToCart
+                setTimeout(function () { window.location.href = href; }, sent ? 250 : 0);
+            })
             .fail(function (xhr) { $btn.data('busy', false); notify('error', 'Could not continue', errorText(xhr)); });
     });
 
@@ -80,6 +112,7 @@
         })
             .done(function (res) {
                 updateCartUI(res);
+                fireTrackingEvents(res.tracking_events);   // AddToCart (plus) or RemoveFromCart (minus); null if qty didn't change
                 if (res.coupon_message) notify('error', 'Coupon', res.coupon_message);
             })
             .fail(function (xhr) { $row.data('busy', false); notify('error', 'Could not update', errorText(xhr)); });
@@ -95,11 +128,17 @@
         call(window.APP.cartRemove.replace(':id', $row.data('id')), 'DELETE')
             .done(function (res) {
                 updateCartUI(res);
+                fireTrackingEvents(res.tracking_events);   // RemoveFromCart
                 if (res.coupon_message) notify('error', 'Coupon', res.coupon_message);
             })
             .fail(function (xhr) { $row.data('busy', false); notify('error', 'Could not remove', errorText(xhr)); });
     });
-    
-    window.cartUI = { notify: notify, errorText: errorText, updateCartUI: updateCartUI };
+
+    window.cartUI = {
+        notify: notify,
+        errorText: errorText,
+        updateCartUI: updateCartUI,
+        fireTrackingEvents: fireTrackingEvents
+    };
 
 })(jQuery);

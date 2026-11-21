@@ -1,38 +1,48 @@
 @php
-    $base      = $seo ?? null;                    // route-level row (from composer)
-    $seo       = $seoOverride ?? $base;           // per-record override (from controller)
-    $site      = $general->site_name ?: config('app.name');
-    $hasTitle  = $__env->hasSection('title');
-    $hasMeta   = $__env->hasSection('meta');
+    $base = $seo ?? null;                    // route-level row (composer)
+    $seo = $seoOverride ?? $base;            // per-record override (controller)
+    $site = $general->brand ?: config('app.name');
+
+    $fill = fn($v) => filled($v) ? str_replace('{site}', $site, $v) : null;
 
     $abs = function ($path) {
-        if (!$path) return null;
-        return \Illuminate\Support\Str::startsWith($path, ['http://', 'https://']) ? $path : url($path);
+        if (!$path) {
+            return null;
+        }
+        if (\Illuminate\Support\Str::startsWith($path, ['http://', 'https://'])) {
+            return $path;
+        }
+        if (\Illuminate\Support\Str::startsWith($path, ['/', 'storage/', 'assets/'])) {
+            return url($path);
+        }
+
+        return asset('storage/' . $path);
     };
 
-    $fallbackImg = $general->header_logo ? asset('storage/' . $general->header_logo) : null;
+    $fallbackImg = $general->header_logo_url ?: null;
 
-    $title     = $seo->meta_title ?? $site;
-    $desc      = $seo->meta_description ?? null;
-    $canonical = $seo->canonical_url ?? url()->current();
-    $robots    = $seo->robots ?? 'index, follow';
+    $title = $fill($seo->meta_title ?? null) ?: ($__env->hasSection('title') ? trim($__env->yieldContent('title')) : null) ?: $site;
+    $desc = $fill($seo->meta_description ?? null) ?: (trim($__env->yieldContent('meta_description')) ?: null);
+    $canonical = ($seo->canonical_url ?? null) ?: url()->current();
+    $robots = ($seo->robots ?? null) ?: 'index, follow';
 
-    $ogTitle   = $seo->og_title ?? $title;
-    $ogDesc    = $seo->og_description ?? $desc;
-    $ogImage   = $abs($seo->og_image ?? null) ?: $fallbackImg;
+    // internal search result pages should not be indexed
+    if (request()->filled('q')) {
+        $robots = 'noindex, follow';
+    }
 
-    $twTitle   = $seo->twitter_title ?? $ogTitle;
-    $twDesc    = $seo->twitter_description ?? $ogDesc;
-    $twImage   = $abs($seo->twitter_image ?? null) ?: $ogImage;
+    $ogTitle = $fill($seo->og_title ?? null) ?: $title;
+    $ogDesc = $fill($seo->og_description ?? null) ?: $desc;
+    $ogImage = $abs($seo->og_image ?? null) ?: $fallbackImg;
+
+    $twTitle = $fill($seo->twitter_title ?? null) ?: $ogTitle;
+    $twDesc = $fill($seo->twitter_description ?? null) ?: $ogDesc;
+    $twImage = $abs($seo->twitter_image ?? null) ?: $ogImage;
 @endphp
 
-@if ($hasTitle)
-    <title>@yield('title')</title>
-@else
-    <title>{{ $title }}</title>
-@endif
+<title>{{ $title }}</title>
 
-@if ($hasMeta)
+@if ($__env->hasSection('meta'))
     @yield('meta')
 @else
     @if ($desc)
@@ -46,8 +56,7 @@
 
     {{-- Open Graph --}}
     <meta property="og:site_name" content="{{ $site }}" />
-    <meta property="og:locale" content="en_IN" />
-    <meta property="og:type" content="{{ $seo->og_type ?? 'website' }}" />
+    <meta property="og:type" content="{{ ($seo->og_type ?? null) ?: 'website' }}" />
     <meta property="og:title" content="{{ $ogTitle }}" />
     @if ($ogDesc)
         <meta property="og:description" content="{{ $ogDesc }}" />
@@ -58,7 +67,7 @@
     @endif
 
     {{-- Twitter / X --}}
-    <meta name="twitter:card" content="{{ $seo->twitter_card ?? 'summary_large_image' }}" />
+    <meta name="twitter:card" content="{{ ($seo->twitter_card ?? null) ?: 'summary_large_image' }}" />
     <meta name="twitter:title" content="{{ $twTitle }}" />
     @if ($twDesc)
         <meta name="twitter:description" content="{{ $twDesc }}" />
@@ -67,9 +76,16 @@
         <meta name="twitter:image" content="{{ $twImage }}" />
     @endif
 
-    {{-- Structured data (re-encoded so a stray </script> in the JSON can't break the page) --}}
+    {{-- Structured data. {site}/{url} are replaced, then re-encoded so a stray </script> can't break the page --}}
     @if (!empty($seo?->schema_markup))
-        @php $schema = json_decode($seo->schema_markup, true); @endphp
+        @php
+            $rawSchema = str_replace(
+                ['{site}', '{url}'],
+                [trim(json_encode($site, JSON_UNESCAPED_UNICODE), '"'), rtrim(url('/'), '/')],
+                $seo->schema_markup
+            );
+            $schema = json_decode($rawSchema, true);
+        @endphp
         @if ($schema)
             <script type="application/ld+json">{!! json_encode($schema, JSON_UNESCAPED_UNICODE | JSON_UNESCAPED_SLASHES | JSON_HEX_TAG) !!}</script>
         @endif
