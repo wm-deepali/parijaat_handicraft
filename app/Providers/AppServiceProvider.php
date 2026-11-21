@@ -2,10 +2,14 @@
 
 namespace App\Providers;
 
+use App\Support\Region;
 use App\Models\Setting;
 use App\Models\SeoPage;
 use App\Support\NavMenu;
-use App\Support\Region;
+use App\Models\HomeCard;
+use App\Models\HomeSection;
+use App\Models\DynamicPage;
+use App\Models\Announcement;
 use App\Models\GoogleSetting;
 use Illuminate\Support\Facades\Blade;
 use Illuminate\Support\Facades\View;
@@ -74,10 +78,15 @@ class AppServiceProvider extends ServiceProvider
                 : \App\Models\Cart::where('session_id', session()->getId());
 
             $view->with([
+                'announcements' => Announcement::active()->orderBy('id')->get(),
+                'promiseCards' => HomeCard::active()->section('promise')->ordered()->get(),
+                'newsSection' => HomeSection::where('key', 'newsletter')->where('status', 1)->first(),
                 'googleSetting' => GoogleSetting::first() ?? new GoogleSetting(),
                 'navMenu' => NavMenu::build(),
                 'regionOptions' => $region->options(),
                 'regionCurrent' => $region->current(),
+                // slug => heading of every active dynamic page (footer policy links)
+                'policyPages' => DynamicPage::active()->pluck('heading', 'slug'),
                 'miniCart' => $cartQuery->with([
                     'items.product.images',
                     'items.product.category',

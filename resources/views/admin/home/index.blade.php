@@ -311,29 +311,220 @@
             <!-- Widget grid -->
             <div class="widget-grid">
 
-                <!-- 1. Home Sliders -->
+                <!-- 1 : Hero Banner -->
                 <div class="widget-card">
                     <div class="widget-head">
-                        <div class="widget-icon wi-blue"><i class="fa fa-picture-o"></i></div>
+                        <span class="widget-num">1</span>
+                        <div class="widget-icon wi-accent"><i class="fa fa-image"></i></div>
                         <div>
-                            <div style="display:flex;align-items:center;gap:8px">
-                                <span class="widget-num">1</span>
-                                <span class="widget-title">Home Sliders</span>
-                            </div>
-                            <span class="type-badge tb-multiple"><i class="fa fa-th-large"></i> Multiple</span>
+                            <div class="widget-title">Hero Banner Slider</div>
+                            <span class="type-badge tb-multiple">
+                                {{ $bannerActive }} active / {{ $bannerCount }} total
+                            </span>
                         </div>
                     </div>
-                    <div style="font-size:12px;color:var(--text-hint)">Main hero banner carousel shown at the top of the
-                        homepage.</div>
                     <div class="widget-actions">
-                        <a href="{{ route('admin.home.sliders.index') }}" class="btn-manage">
+                        <a href="{{ route('admin.home-banners.index') }}" class="btn-manage">
+                            <i class="fa fa-pencil"></i> Manage
+                        </a>
+                        <a href="{{ route('admin.home-banners.create') }}" class="btn-secondary-sm">
+                            <i class="fa fa-plus"></i> Add
+                        </a>
+                    </div>
+                </div>
+
+                <!-- 2 : Brand Story -->
+                <div class="widget-card">
+                    <div class="widget-head">
+                        <span class="widget-num">2</span>
+                        <div class="widget-icon wi-purple"><i class="fa fa-book-open"></i></div>
+                        <div>
+                            <div class="widget-title">Brand Story</div>
+                            <span class="type-badge tb-fixed">Single section</span>
+                        </div>
+                    </div>
+                    <div class="widget-actions">
+                        <a href="{{ route('admin.home-story.edit') }}" class="btn-manage">
                             <i class="fa fa-pencil"></i> Manage
                         </a>
                     </div>
                 </div>
 
-            </div>
+                <!-- Craft Collections -->
+                <div class="widget-card">
+                    <div class="widget-head">
+                        <span class="widget-num">3</span>
+                        <div class="widget-icon wi-amber"><i class="fa fa-palette"></i></div>
+                        <div>
+                            <div class="widget-title">Craft Collections</div>
+                            <span class="type-badge tb-mixed">Heading + Feature + Cards</span>
+                        </div>
+                    </div>
+                    <div class="widget-actions">
+                        <a href="{{ route('admin.home-sections.edit', 'craft') }}" class="btn-manage"><i
+                                class="fa fa-pencil"></i> Heading</a>
+                        <a href="{{ route('admin.home-sections.edit', 'craft_feature') }}"
+                            class="btn-secondary-sm">Feature</a>
+                        <a href="{{ route('admin.home-cards.index', 'craft') }}" class="btn-secondary-sm">Cards</a>
+                    </div>
+                </div>
 
+                <!-- Why Choose Us -->
+                <div class="widget-card">
+                    <div class="widget-head">
+                        <span class="widget-num">4</span>
+                        <div class="widget-icon wi-green"><i class="fa fa-shield-halved"></i></div>
+                        <div>
+                            <div class="widget-title">Why Choose Us</div>
+                            <span class="type-badge tb-multiple">Heading + Items</span>
+                        </div>
+                    </div>
+                    <div class="widget-actions">
+                        <a href="{{ route('admin.home-sections.edit', 'why') }}" class="btn-manage"><i
+                                class="fa fa-pencil"></i> Heading</a>
+                        <a href="{{ route('admin.home-cards.index', 'why') }}" class="btn-secondary-sm">Items</a>
+                    </div>
+                </div>
+
+                <!-- Become a Partner -->
+                <div class="widget-card">
+                    <div class="widget-head">
+                        <span class="widget-num">5</span>
+                        <div class="widget-icon wi-blue"><i class="fa fa-handshake"></i></div>
+                        <div>
+                            <div class="widget-title">Become a Partner Block</div>
+                            <span class="type-badge tb-fixed">Single section</span>
+                        </div>
+                    </div>
+                    <div class="widget-actions">
+                        <a href="{{ route('admin.home-sections.edit', 'affiliate') }}" class="btn-manage"><i
+                                class="fa fa-pencil"></i> Manage</a>
+                    </div>
+                </div>
+
+                <!-- Recently Viewed -->
+                <div class="widget-card">
+                    <div class="widget-head">
+                        <span class="widget-num">6</span>
+                        <div class="widget-icon wi-accent"><i class="fa fa-clock-rotate-left"></i></div>
+                        <div>
+                            <div class="widget-title">Recently Viewed</div>
+                            <span class="type-badge tb-fixed">Heading only (products are automatic)</span>
+                        </div>
+                    </div>
+                    <div class="widget-actions">
+                        <a href="{{ route('admin.home-sections.edit', 'recent') }}" class="btn-manage"><i
+                                class="fa fa-pencil"></i> Manage</a>
+                    </div>
+                </div>
+
+                <!-- Marketplaces -->
+                <div class="widget-card">
+                    <div class="widget-head">
+                        <span class="widget-num">7</span>
+                        <div class="widget-icon wi-amber"><i class="fa fa-store"></i></div>
+                        <div>
+                            <div class="widget-title">Marketplaces</div>
+                            <span class="type-badge tb-mixed">Heading + Cards</span>
+                        </div>
+                    </div>
+                    <div class="widget-actions">
+                        <a href="{{ route('admin.home-sections.edit', 'marketplace') }}" class="btn-manage"><i
+                                class="fa fa-pencil"></i> Heading</a>
+                        <a href="{{ route('admin.home-cards.index', 'marketplace') }}"
+                            class="btn-secondary-sm">Cards</a>
+                    </div>
+                </div>
+
+                <!-- Customer Reviews -->
+                <div class="widget-card">
+                    <div class="widget-head">
+                        <span class="widget-num">8</span>
+                        <div class="widget-icon wi-green"><i class="fa fa-star"></i></div>
+                        <div>
+                            <div class="widget-title">Customer Reviews</div>
+                            <span class="type-badge tb-fixed">Heading only (reviews are automatic)</span>
+                        </div>
+                    </div>
+                    <div class="widget-actions">
+                        <a href="{{ route('admin.home-sections.edit', 'reviews') }}" class="btn-manage"><i
+                                class="fa fa-pencil"></i> Manage</a>
+                    </div>
+                </div>
+
+                <!-- Reels -->
+                <div class="widget-card">
+                    <div class="widget-head">
+                        <span class="widget-num">9</span>
+                        <div class="widget-icon wi-purple"><i class="fa fa-video"></i></div>
+                        <div>
+                            <div class="widget-title">Reels</div>
+                            <span class="type-badge tb-mixed">Heading + Reels</span>
+                        </div>
+                    </div>
+                    <div class="widget-actions">
+                        <a href="{{ route('admin.home-sections.edit', 'reels') }}" class="btn-manage"><i
+                                class="fa fa-pencil"></i> Heading</a>
+                        <a href="{{ route('admin.home-cards.index', 'reel') }}" class="btn-secondary-sm">Reels</a>
+                    </div>
+                </div>
+
+
+                <!-- Deals (Festive Sale banner) -->
+                <div class="widget-card">
+                    <div class="widget-head">
+                        <span class="widget-num">10</span>
+                        <div class="widget-icon wi-amber"><i class="fa fa-bolt"></i></div>
+                        <div>
+                            <div class="widget-title">Deals Banner</div>
+                            <span class="type-badge tb-multiple">Soonest-ending deal shows with timer</span>
+                        </div>
+                    </div>
+                    <div class="widget-actions">
+                        <a href="{{ route('admin.product-deals.index') }}" class="btn-manage"><i
+                                class="fa fa-pencil"></i> Manage</a>
+                        <a href="{{ route('admin.product-deals.create') }}" class="btn-secondary-sm"><i
+                                class="fa fa-plus"></i> Add</a>
+                    </div>
+                </div>
+
+
+                <!-- 11 : Offers & Coupons -->
+                <div class="widget-card">
+                    <div class="widget-head">
+                        <span class="widget-num">11</span>
+                        <div class="widget-icon wi-amber"><i class="fa fa-tags"></i></div>
+                        <div>
+                            <div class="widget-title">Offers &amp; Deals</div>
+                            <span class="type-badge tb-mixed">Heading + Offer cards (coupons are automatic)</span>
+                        </div>
+                    </div>
+                    <div class="widget-actions">
+                        <a href="{{ route('admin.home-sections.edit', 'offers') }}" class="btn-manage"><i
+                                class="fa fa-pencil"></i> Heading</a>
+                        <a href="{{ route('admin.home-cards.index', 'offer') }}" class="btn-secondary-sm">Cards</a>
+                    </div>
+                </div>
+
+                <!-- 12 : Footer Promise + Newsletter -->
+                <div class="widget-card">
+                    <div class="widget-head">
+                        <span class="widget-num">12</span>
+                        <div class="widget-icon wi-green"><i class="fa fa-envelope-open-text"></i></div>
+                        <div>
+                            <div class="widget-title">Footer Promise &amp; Newsletter</div>
+                            <span class="type-badge tb-mixed">Promise items + Newsletter box</span>
+                        </div>
+                    </div>
+                    <div class="widget-actions">
+                        <a href="{{ route('admin.home-cards.index', 'promise') }}" class="btn-manage"><i
+                                class="fa fa-pencil"></i> Promise</a>
+                        <a href="{{ route('admin.home-sections.edit', 'newsletter') }}"
+                            class="btn-secondary-sm">Newsletter</a>
+                    </div>
+                </div>
+
+            </div>
         </div>
     </div>
 </div>

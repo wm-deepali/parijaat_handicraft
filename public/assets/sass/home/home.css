@@ -2214,6 +2214,12 @@
   letter-spacing: 0.14em;
   line-height: 1;
 }
+.home-secF .craft-tags li a {
+  font-family: "Poppins";
+  font-size: 10px;
+  font-weight: 600;
+}
+
 @media only screen and (max-width: 768px) {
   .home-secF .craft-tags li {
     padding: 8px 14px;
@@ -3463,6 +3469,7 @@
   color: var(--primary);
   transition: border-color 0.3s ease;
 }
+.why-icon i { font-size: 28px; line-height: 1; }
 @media only screen and (max-width: 1024px) {
   .home-secH .why-item .why-icon {
     margin-bottom: 20px;

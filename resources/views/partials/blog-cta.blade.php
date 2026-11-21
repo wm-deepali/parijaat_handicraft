@@ -1,4 +1,5 @@
 {{-- resources/views/partials/blog-cta.blade.php --}}
+@php $contact = \App\Models\Setting::contact(); @endphp
 <div class="cta-box">
     <span class="cta-orb cta-orb-1" aria-hidden="true"></span>
     <span class="cta-orb cta-orb-2" aria-hidden="true"></span>
@@ -13,26 +14,32 @@
         </p>
 
         <div class="cta-btns">
-            <a href="product-listing.html" class="btn btn-white">
+            <a href="{{ route('products') }}" class="btn btn-white">
                 Explore Collections <i class="fa-solid fa-arrow-right"></i>
             </a>
-            <a href="https://wa.me/910000000000" target="_blank" rel="noopener" class="btn cta-line">
-                <i class="fa-brands fa-whatsapp"></i> WhatsApp Us
-            </a>
+            @if($contact['whatsapp'])
+                <a href="https://wa.me/{{ $contact['whatsapp'] }}" target="_blank" rel="noopener" class="btn cta-line">
+                    <i class="fa-brands fa-whatsapp"></i> WhatsApp Us
+                </a>
+            @endif
         </div>
     </div>
 
     <ul class="cta-actions">
-        <li>
-            <a href="tel:+910000000000" class="cta-action">
-                <span class="cta-action-ic"><i class="fa-solid fa-phone"></i></span>
-                <span class="cta-action-text">
-                    <b>Call Our Team</b>
-                    <small>Mon – Sat, 10 AM – 7 PM</small>
-                </span>
-                <i class="fa-solid fa-arrow-right cta-action-go"></i>
-            </a>
-        </li>
+        @if($contact['phone_link'])
+            <li>
+                <a href="tel:{{ $contact['phone_link'] }}" class="cta-action">
+                    <span class="cta-action-ic"><i class="fa-solid fa-phone"></i></span>
+                    <span class="cta-action-text">
+                        <b>Call Our Team</b>
+                        @if($contact['hours'])
+                            <small>{{ $contact['hours'] }}</small>
+                        @endif
+                    </span>
+                    <i class="fa-solid fa-arrow-right cta-action-go"></i>
+                </a>
+            </li>
+        @endif
         <li>
             <button type="button" class="cta-action" data-model=".enquiry-pop">
                 <span class="cta-action-ic"><i class="fa-solid fa-boxes-stacked"></i></span>
@@ -43,15 +50,17 @@
                 <i class="fa-solid fa-arrow-right cta-action-go"></i>
             </button>
         </li>
-        <li>
-            <a href="mailto:info@parijaathandicraft.com" class="cta-action">
-                <span class="cta-action-ic"><i class="fa-solid fa-envelope"></i></span>
-                <span class="cta-action-text">
-                    <b>Email Us</b>
-                    <small>info@parijaathandicraft.com</small>
-                </span>
-                <i class="fa-solid fa-arrow-right cta-action-go"></i>
-            </a>
-        </li>
+        @if($contact['email'])
+            <li>
+                <a href="mailto:{{ $contact['email'] }}" class="cta-action">
+                    <span class="cta-action-ic"><i class="fa-solid fa-envelope"></i></span>
+                    <span class="cta-action-text">
+                        <b>Email Us</b>
+                        <small>{{ $contact['email'] }}</small>
+                    </span>
+                    <i class="fa-solid fa-arrow-right cta-action-go"></i>
+                </a>
+            </li>
+        @endif
     </ul>
 </div>

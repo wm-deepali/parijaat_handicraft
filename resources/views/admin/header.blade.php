@@ -135,7 +135,7 @@
             <a href="#"><i class="fa-solid fa-file-lines"></i> Content Management</a>
             <ul>
                 <li><a href="{{ route('admin.announcements.index') }}">Announcement Bar</a></li>
-                <li><a href="{{ route('admin.home-page.index') }}">Home Page Widgets</a></li>
+                <li><a href="{{ route('admin.home.index') }}">Home Page Widgets</a></li>
                 <li><a href="{{ route('admin.faqs.index') }}">FAQ</a></li>
                 <li><a href="{{ route('admin.blogs.index') }}">Blog Management</a></li>
                 <li><a href="{{ route('admin.pages.index') }}">Dynamic Pages</a></li>
@@ -145,12 +145,14 @@
         {{-- ENQUIRIES --}}
         <li class="{{ request()->routeIs(
     'admin.contact-enquiries.*',
+    'admin.bulk-enquiries.*',
     'admin.coupon-enquiries.*',
     'admin.home.subscribers.*'
 ) ? 'active' : '' }}">
             <a href="#"><i class="fa-solid fa-envelope"></i> Enquiries</a>
             <ul>
                 <li><a href="{{ route('admin.contact-enquiries.index') }}">Contact Us Enquiries</a></li>
+                <li><a href="{{ route('admin.bulk-enquiries.index') }}">Bulk Enquiries</a></li>
                 <li><a href="{{ route('admin.coupon-enquiries.index') }}">Coupon Enquiries</a></li>
             </ul>
         </li>

@@ -24,6 +24,9 @@ class DatabaseSeeder extends Seeder
             AttributeSeeder::class,
             CollectionOccasionSeeder::class,
             ProductMappingSeeder::class,
+            HomePageSeeder::class,
+            BlogSeeder::class,
+            FaqSeeder::class,
         ]);
 
 

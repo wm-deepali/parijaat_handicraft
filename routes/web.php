@@ -17,21 +17,26 @@ use App\Http\Controllers\Admin\{
     HomePageController,
     CustomerController,
     CategoryController,
+    HomeCardController,
     TaxReportController,
     SystemLogController,
     DashboardController,
+    HomeStoryController,
     NdrReportController,
     AttributeController,
-    HomeSliderController,
+    HomeBannerController,
     StoredCartController,
     CreditNoteController,
     CollectionController,
+    HomeSectionController,
     DynamicPageController,
     FaqCategoryController,
     StockAlertsController,
+    ProductDealController,
     SalesReportController,
     OrderReportController,
     OrderReturnController,
+    BulkEnquiryController,
     AdminSettingController,
     ReturnReasonController,
     AnnouncementController,
@@ -80,13 +85,17 @@ Route::middleware('maintenance.mode')->group(function () {
         Route::get('/category/{slug}', 'category')->name('category.show');
         Route::get('/search/suggest', 'searchSuggest')->name('search.suggest');
 
-        Route::view('/faqs', 'front-pages.faq')->name('faqs');
-        Route::view('/blogs', 'front-pages.blogs')->name('blogs');
+        Route::get('/faqs', 'faqs')->name('faqs');
+        Route::get('/blogs', 'blogs')->name('blogs');
+        Route::get('/blog/{slug}', 'blogDetail')->name('blog.show');
+        Route::get('/page/{slug}', 'page')->name('page.show');
+
+        Route::post('/newsletter/subscribe', 'subscribe')->middleware('throttle:10,1')->name('newsletter.subscribe');
+        Route::post('/bulk-enquiry', 'bulkEnquiryStore')->middleware('throttle:5,1')->name('bulk-enquiry.store');
+
         Route::view('/about', 'front-pages.about')->name('about');
         Route::view('/contact', 'front-pages.contact')->name('contact');
-        Route::view('/blog-detail', 'front-pages.blog-detail')->name('blog.detail');
         Route::view('/certifications', 'front-pages.certifications')->name('certifications');
-        Route::view('/privacy-policy', 'front-pages.privacy-policy')->name('privacy-policy');
     });
 
     Route::get('/pincode/check', [PincodeController::class, 'check'])->middleware('throttle:30,1')->name('pincode.check');
@@ -205,6 +214,13 @@ Route::prefix('admin')->name('admin.')->group(function () {
         Route::post('tax-classes', [TaxClassController::class, 'update'])->name('tax-classes.update');
         Route::delete('tax-classes/{taxClass}', [TaxClassController::class, 'destroy'])->name('tax-classes.destroy');
 
+        Route::get('bulk-enquiries/export', [BulkEnquiryController::class, 'export'])->name('bulk-enquiries.export');
+        Route::delete('bulk-enquiries/bulk-delete', [BulkEnquiryController::class, 'bulkDelete'])->name('bulk-enquiries.bulk-delete');
+        Route::get('bulk-enquiries', [BulkEnquiryController::class, 'index'])->name('bulk-enquiries.index');
+        Route::get('bulk-enquiries/{bulkEnquiry}', [BulkEnquiryController::class, 'show'])->name('bulk-enquiries.show');
+        Route::put('bulk-enquiries/{bulkEnquiry}', [BulkEnquiryController::class, 'update'])->name('bulk-enquiries.update');
+        Route::delete('bulk-enquiries/{bulkEnquiry}', [BulkEnquiryController::class, 'destroy'])->name('bulk-enquiries.destroy');
+
         Route::get('contact-enquiries', [ContactEnquiryController::class, 'index'])->name('contact-enquiries.index');
         Route::get('contact-enquiries/export', [ContactEnquiryController::class, 'export'])->name('contact-enquiries.export');
         Route::delete('contact-enquiries/bulk-delete', [ContactEnquiryController::class, 'bulkDelete'])->name('contact-enquiries.bulk-delete');
@@ -217,20 +233,31 @@ Route::prefix('admin')->name('admin.')->group(function () {
 
         Route::get('/logout', [LogoutController::class, 'logout']);
 
+        Route::get('/home', [HomePageController::class, 'index'])->name('home.index');
+        Route::resource('home-banners', HomeBannerController::class)->except(['show']);
 
-        // ✅ MAIN DASHBOARD
-        Route::get('/home-page', [HomePageController::class, 'index'])
-            ->name('home-page.index');
+        Route::get('home-story', [HomeStoryController::class, 'edit'])->name('home-story.edit');
+        Route::put('home-story', [HomeStoryController::class, 'update'])->name('home-story.update');
 
-        Route::prefix('home/sliders')->name('home.sliders.')->group(function () {
-            Route::get('/', [HomeSliderController::class, 'index'])->name('index');
-            Route::get('/create', [HomeSliderController::class, 'create'])->name('create');
-            Route::post('/store', [HomeSliderController::class, 'store'])->name('store');
-            Route::get('/edit/{id}', [HomeSliderController::class, 'edit'])->name('edit');
-            Route::put('/update/{id}', [HomeSliderController::class, 'update'])->name('update');
-            Route::delete('/delete/{id}', [HomeSliderController::class, 'destroy'])->name('destroy');
-        });
+        Route::get('home-sections/{key}', [HomeSectionController::class, 'edit'])
+            ->where('key', 'craft|craft_feature|why|affiliate|recent|marketplace|reviews|reels|offers|newsletter')->name('home-sections.edit');
+        Route::put('home-sections/{key}', [HomeSectionController::class, 'update'])
+            ->where('key', 'craft|craft_feature|why|affiliate|recent|marketplace|reviews|reels|offers|newsletter')->name('home-sections.update');
 
+        Route::controller(HomeCardController::class)
+            ->prefix('home-cards/{section}')
+            ->where(['section' => 'craft|why|marketplace|reel|offer|promise'])
+            ->name('home-cards.')
+            ->group(function () {
+                Route::get('/', 'index')->name('index');
+                Route::get('create', 'create')->name('create');
+                Route::post('/', 'store')->name('store');
+                Route::get('{card}/edit', 'edit')->name('edit');
+                Route::put('{card}', 'update')->name('update');
+                Route::delete('{card}', 'destroy')->name('destroy');
+            });
+
+        Route::resource('product-deals', ProductDealController::class)->except(['show']);
 
         Route::get('/seo', [SeoController::class, 'index'])->name('seo.index');
         Route::put('/seo/{id}', [SeoController::class, 'update'])->name('seo.update');

@@ -50,16 +50,35 @@ class DynamicPage extends Model
     /**
      * Replaces placeholders in the content with values from Settings,
      * so the email, phone and address stay in sync with the admin.
+     *
+     * [[site_name]] [[email]] [[phone]] [[phone_link]] [[address]] [[hours]]
+     * A list item whose placeholder has no value is removed.
      */
     public function renderedContent(?Setting $s): string
     {
-        $map = [
-            '[[site_name]]' => e($s?->site_name ?: config('app.name')),
-            '[[email]]' => e($s?->support_email ?: $s?->admin_email),
-            '[[phone]]' => e($s?->phone),
-            '[[address]]' => e($s?->business_address),
+        $phone = trim((string) $s?->phone);
+
+        $values = [
+            '[[site_name]]' => trim((string) ($s?->site_name ?: config('app.name'))),
+            '[[email]]' => trim((string) ($s?->support_email ?: $s?->admin_email)),
+            '[[phone]]' => $phone,
+            '[[phone_link]]' => preg_replace('/[^\d+]/', '', $phone),
+            '[[address]]' => trim((string) $s?->business_address),
+            '[[hours]]' => trim((string) $s?->business_hours),
         ];
 
-        return strtr((string) $this->content, $map);
+        $html = (string) $this->content;
+
+        foreach ($values as $key => $value) {
+            if ($value === '') {
+                $html = preg_replace(
+                    '/<li\b[^>]*>(?:(?!<\/li>).)*?' . preg_quote($key, '/') . '.*?<\/li>/is',
+                    '',
+                    $html
+                );
+            }
+        }
+
+        return strtr($html, array_map('e', $values));
     }
 }

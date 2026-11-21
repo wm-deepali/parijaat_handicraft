@@ -5,7 +5,13 @@
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <meta name="csrf-token" content="{{ csrf_token() }}">
-    <title>Home | Parijaat Handicraft</title>
+    <title>@yield('title', $general->brand)</title>
+    @hasSection('meta_description')
+        <meta name="description" content="@yield('meta_description')" />
+    @endif
+    @if ($general->favicon_url)
+        <link rel="icon" href="{{ $general->favicon_url }}" />
+    @endif
     <!-- ================= Google Fonts ================= -->
     <link rel="preconnect" href="https://fonts.googleapis.com" />
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin="" />
@@ -41,6 +47,7 @@
     @php
         $authCustomer = auth('customer')->user();
         $wishOn = (bool) ($general->wishlist ?? true);
+        $soc = $general->socials;
         $wishCount = $wishOn ? count(\App\Models\Wishlist::currentProductIds()) : 0;
     @endphp
 
@@ -56,48 +63,59 @@
                 <div class="top-grid">
                     <div class="top-left">
                         <ul class="social">
-                            <li>
-                                <a href="javascript:void(0)" aria-label="Facebook"><i
-                                        class="fa-brands fa-facebook-f fi"></i></a>
-                            </li>
-                            <li>
-                                <a href="javascript:void(0)" aria-label="Instagram"><i
-                                        class="fa-brands fa-instagram fi"></i></a>
-                            </li>
-                            <li>
-                                <a href="javascript:void(0)" aria-label="YouTube"><i
-                                        class="fa-brands fa-youtube fi"></i></a>
-                            </li>
-                            <li>
-                                <a href="https://wa.me/910000000000" target="_blank" rel="noopener"
-                                    aria-label="WhatsApp"><i class="fa-brands fa-whatsapp fi"></i></a>
-                            </li>
+                            @foreach (['facebook', 'instagram', 'youtube'] as $k)
+                                @isset($soc[$k])
+                                    <li>
+                                        <a href="{{ $soc[$k]['url'] }}" target="_blank" rel="noopener"
+                                            aria-label="{{ $soc[$k]['label'] }}"><i class="{{ $soc[$k]['icon'] }} fi"></i></a>
+                                    </li>
+                                @endisset
+                            @endforeach
+                            @if ($general->whatsapp_url)
+                                <li>
+                                    <a href="{{ $general->whatsapp_url }}" target="_blank" rel="noopener"
+                                        aria-label="WhatsApp"><i class="fa-brands fa-whatsapp fi"></i></a>
+                                </li>
+                            @endif
                         </ul>
                     </div>
-                    <div class="announce">
-                        <button type="button" class="announcement-prev" aria-label="Previous announcement">
-                            <i class="fa-solid fa-chevron-left fi"></i>
-                        </button>
-                        <div class="swiper announcement-swiper">
-                            <div class="swiper-wrapper">
-                                <div class="swiper-slide">
-                                    <p>Celebrating Indian Craftsmanship</p>
-                                </div>
-                                <div class="swiper-slide">
-                                    <p>Thoughtfully Made, Beautifully Delivered Worldwide</p>
+                    @if ($announcements->isNotEmpty())
+                        <div class="announce">
+                            @if ($announcements->count() > 1)
+                                <button type="button" class="announcement-prev" aria-label="Previous announcement">
+                                    <i class="fa-solid fa-chevron-left fi"></i>
+                                </button>
+                            @endif
+                            <div class="swiper announcement-swiper">
+                                <div class="swiper-wrapper">
+                                    @foreach ($announcements as $a)
+                                        <div class="swiper-slide">
+                                            <p>
+                                                @if ($a->link)
+                                                    <a href="{{ $a->link }}">{{ $a->title }}</a>
+                                                @else
+                                                    {{ $a->title }}
+                                                @endif
+                                            </p>
+                                        </div>
+                                    @endforeach
                                 </div>
                             </div>
+                            @if ($announcements->count() > 1)
+                                <button type="button" class="announcement-next" aria-label="Next announcement">
+                                    <i class="fa-solid fa-chevron-right fi"></i>
+                                </button>
+                            @endif
                         </div>
-                        <button type="button" class="announcement-next" aria-label="Next announcement">
-                            <i class="fa-solid fa-chevron-right fi"></i>
-                        </button>
-                    </div>
+                    @endif
                     <ul class="top-right">
                         <li><a href="{{ route('dashboard') }}#tab-2">Track Your Order</a></li>
                         <li class="hide-lg">
                             <a href="{{ route('contact') }}">Help &amp; Support</a>
                         </li>
-                        <li><a href="tel:+910000000000">+91 00000 00000</a></li>
+                        @if ($general->phone_link)
+                            <li><a href="tel:{{ $general->phone_link }}">{{ $general->phone }}</a></li>
+                        @endif
                         @if (($regionOptions ?? collect())->count() > 1)
                             <li class="currency">
                                 <form action="{{ route('region.set') }}" method="post">
@@ -125,8 +143,12 @@
                 <div class="main-wrapper">
                     <div class="colA">
                         <a href="{{ route('home') }}" class="logo">
-                            <img src="{{ asset('assets/images/logo.png')}}" alt="Parijaat Handicraft"
-                                title="Parijaat Handicraft" width="180" height="54" />
+                            @if ($general->header_logo_url)
+                                <img src="{{ $general->header_logo_url }}" alt="{{ $general->brand }}"
+                                    title="{{ $general->brand }}" width="180" height="54" />
+                            @else
+                                {{ $general->brand }}
+                            @endif
                         </a>
                     </div>
 
@@ -382,7 +404,7 @@
                             </li>
                         @endif
 
-                        <li><a href="about.html#craft">Our Craft</a></li>
+                        <li><a href="{{ route('about') }}#craft">Our Craft</a></li>
                         <li><a href="{{ route('about') }}">About Us</a></li>
                         <li><a href="{{ route('certifications') }}">Certifications</a></li>
                         <li><a href="{{ route('contact') }}">Contact Us</a></li>
@@ -395,114 +417,110 @@
     @yield('content')
 
     <footer>
-        <div class="foot-promise">
-            <div class="container">
-                <ul class="promise-list">
-                    <li>
-                        <i class="fa-solid fa-truck-fast"></i>
-                        <h6>Worldwide Shipping</h6>
-                        <p>
-                            Every order is carefully packed and safely delivered across
-                            India and to customers worldwide.
-                        </p>
-                    </li>
-                    <li>
-                        <i class="fa-regular fa-gem"></i>
-                        <h6>Authentic Craftsmanship</h6>
-                        <p>
-                            Each piece is handcrafted with fine detailing, made to last for
-                            generations.
-                        </p>
-                    </li>
-                    <li>
-                        <i class="fa-regular fa-heart"></i>
-                        <h6>Your Happiness, Guaranteed</h6>
-                        <p>
-                            Easy returns, secure payments and friendly support on every
-                            purchase.
-                        </p>
-                    </li>
-                </ul>
-            </div>
-        </div>
 
-        <div class="foot-news">
-            <figure class="news-bg">
-                <picture><img src="{{ asset('assets/images/home/contact.png')}}" alt="Handcrafted brass decor"
-                        loading="lazy" />
-                </picture>
-            </figure>
-            <div class="container">
-                <div class="news-box">
-                    <h3>Join our family</h3>
-                    <p class="news-lead">
-                        Promotions, new products and offers. Directly to your inbox.
-                    </p>
-                    <form class="form news-form" action="#" method="post">
-                        <div class="form-group">
-                            <input type="email" id="footNewsEmail" name="email" placeholder=" " required />
-                            <label for="footNewsEmail">Your email address</label>
-                        </div>
-                        <button type="submit" class="btn btn-primary">Subscribe</button>
-                    </form>
-                    <p class="news-note">
-                        Your personal data will be used to support your experience
-                        throughout this website, as described in our
-                        <a href="privacy-policy.html">Privacy Policy</a>.
-                    </p>
+        @if ($promiseCards->isNotEmpty())
+            <div class="foot-promise">
+                <div class="container">
+                    <ul class="promise-list">
+                        @foreach ($promiseCards as $item)
+                            <li>
+                                @if ($item->icon)
+                                    <i class="{{ $item->icon }}"></i>
+                                @endif
+                                <h6>{{ $item->title }}</h6>
+                                @if ($item->text)
+                                    <p>{{ $item->text }}</p>
+                                @endif
+                            </li>
+                        @endforeach
+                    </ul>
                 </div>
             </div>
-        </div>
+        @endif
+
+        @if ($newsSection)
+            <div class="foot-news">
+                @if ($newsSection->image_url)
+                    <figure class="news-bg">
+                        <picture><img src="{{ $newsSection->image_url }}"
+                                alt="{{ $newsSection->image_alt ?: $newsSection->title }}" loading="lazy" />
+                        </picture>
+                    </figure>
+                @endif
+                <div class="container">
+                    <div class="news-box">
+                        <h3>{{ $newsSection->title }}</h3>
+                        @if ($newsSection->description)
+                            <p class="news-lead">{{ $newsSection->description }}</p>
+                        @endif
+                        <form class="form news-form" id="newsForm" action="{{ route('newsletter.subscribe') }}"
+                            method="post">
+                            @csrf
+                            <div class="form-group">
+                                <input type="email" id="footNewsEmail" name="email" placeholder=" " required />
+                                <label for="footNewsEmail">Your email address</label>
+                            </div>
+                            <button type="submit" class="btn btn-primary">Subscribe</button>
+                        </form>
+                        @isset($policyPages['privacy-policy'])
+                            <p class="news-note">
+                                Your personal data will be used to support your experience
+                                throughout this website, as described in our
+                                <a href="{{ route('page.show', 'privacy-policy') }}">Privacy Policy</a>.
+                            </p>
+                        @endisset
+                    </div>
+                </div>
+            </div>
+        @endif
 
         <div class="foot-main">
             <div class="container">
                 <div class="foot-links">
                     <div class="foot-col foot-about">
                         <h5>About us</h5>
-                        <p>
-                            Discover the beauty of Indian craftsmanship with Parijaat
-                            Handicraft. Thoughtfully curated decor, traditional accessories
-                            and handcrafted treasures for everyday living.
-                        </p>
+                        @if ($general->footer_description)
+                            <p>{{ $general->footer_description }}</p>
+                        @endif
                         <a href="{{ route('about') }}" class="learn-more">Learn more</a>
                         <ul class="foot-contact">
-                            <li>
-                                <i class="fa-solid fa-location-dot"></i><span>Business address, City, State,
-                                    India</span>
-                            </li>
-                            <li>
-                                <i class="fa-solid fa-phone"></i><a href="tel:+910000000000">+91 00000 00000</a>
-                            </li>
-                            <li>
-                                <i class="fa-regular fa-envelope"></i><a
-                                    href="mailto:info@parijaathandicraft.com">info@parijaathandicraft.com</a>
-                            </li>
+                            @if ($general->business_address)
+                                <li>
+                                    <i class="fa-solid fa-location-dot"></i><span>{{ $general->business_address }}</span>
+                                </li>
+                            @endif
+                            @if ($general->phone_link)
+                                <li>
+                                    <i class="fa-solid fa-phone"></i><a
+                                        href="tel:{{ $general->phone_link }}">{{ $general->phone }}</a>
+                                </li>
+                            @endif
+                            @if ($general->contact_email)
+                                <li>
+                                    <i class="fa-regular fa-envelope"></i><a
+                                        href="mailto:{{ $general->contact_email }}">{{ $general->contact_email }}</a>
+                                </li>
+                            @endif
                         </ul>
-                        <ul class="foot-social">
-                            <li>
-                                <a href="#" target="_blank" rel="noopener" aria-label="Facebook"><i
-                                        class="fa-brands fa-facebook-f"></i></a>
-                            </li>
-                            <li>
-                                <a href="#" target="_blank" rel="noopener" aria-label="Instagram"><i
-                                        class="fa-brands fa-instagram"></i></a>
-                            </li>
-                            <li>
-                                <a href="#" target="_blank" rel="noopener" aria-label="YouTube"><i
-                                        class="fa-brands fa-youtube"></i></a>
-                            </li>
-                            <li>
-                                <a href="#" target="_blank" rel="noopener" aria-label="Pinterest"><i
-                                        class="fa-brands fa-pinterest-p"></i></a>
-                            </li>
-                        </ul>
+                        @if ($soc)
+                            <ul class="foot-social">
+                                @foreach (['facebook', 'instagram', 'youtube', 'pinterest'] as $k)
+                                    @isset($soc[$k])
+                                        <li>
+                                            <a href="{{ $soc[$k]['url'] }}" target="_blank" rel="noopener"
+                                                aria-label="{{ $soc[$k]['label'] }}"><i class="{{ $soc[$k]['icon'] }}"></i></a>
+                                        </li>
+                                    @endisset
+                                @endforeach
+                            </ul>
+                        @endif
                     </div>
 
                     <div class="foot-col">
                         <h5>Our Company</h5>
                         <ul>
                             <li><a href="{{ route('about') }}">About Us</a></li>
-                            <li><a href="about.html#craft">Our Craft</a></li>
+                            <li><a href="{{ route('about') }}#craft">Our Craft</a></li>
                             <li><a href="{{ route('certifications') }}">Certifications</a></li>
                             <li><a href="{{ route('blogs') }}">Blogs</a></li>
                             <li><a href="{{ route('contact') }}">Contact Us</a></li>
@@ -513,17 +531,11 @@
                     <div class="foot-col">
                         <h5>Quick Links</h5>
                         <ul>
-                            <li><a href="privacy-policy.html">Privacy Policy</a></li>
-                            <li>
-                                <a href="terms-conditions.html">Terms &amp; Conditions</a>
-                            </li>
-                            <li><a href="shipping-policy.html">Shipping Policy</a></li>
-                            <li>
-                                <a href="returns-exchange.html">Returns &amp; Exchange</a>
-                            </li>
-                            <li>
-                                <a href="refund-cancellation-policy.html">Refund &amp; Cancellation</a>
-                            </li>
+                            @foreach (['privacy-policy', 'terms-conditions', 'shipping-policy', 'returns-exchange', 'refund-cancellation-policy'] as $pSlug)
+                                @if (isset($policyPages[$pSlug]))
+                                    <li><a href="{{ route('page.show', $pSlug) }}">{{ $policyPages[$pSlug] }}</a></li>
+                                @endif
+                            @endforeach
                             <li><a href="{{ route('dashboard') }}#tab-2">Track Order</a></li>
                             <li><a href="{{ route('dashboard') }}#tab-4">Wishlist</a></li>
                         </ul>
@@ -539,22 +551,19 @@
                         </ul>
                     </div>
 
-                    <div class="foot-col">
-                        <h5>Follow Us</h5>
-                        <ul>
-                            <li><a href="#" target="_blank" rel="noopener">Facebook</a></li>
-                            <li>
-                                <a href="#" target="_blank" rel="noopener">Instagram</a>
-                            </li>
-                            <li><a href="#" target="_blank" rel="noopener">YouTube</a></li>
-                            <li>
-                                <a href="#" target="_blank" rel="noopener">Pinterest</a>
-                            </li>
-                            <li>
-                                <a href="https://wa.me/910000000000" target="_blank" rel="noopener">WhatsApp</a>
-                            </li>
-                        </ul>
-                    </div>
+                    @if ($soc || $general->whatsapp_url)
+                        <div class="foot-col">
+                            <h5>Follow Us</h5>
+                            <ul>
+                                @foreach ($soc as $s)
+                                    <li><a href="{{ $s['url'] }}" target="_blank" rel="noopener">{{ $s['label'] }}</a></li>
+                                @endforeach
+                                @if ($general->whatsapp_url)
+                                    <li><a href="{{ $general->whatsapp_url }}" target="_blank" rel="noopener">WhatsApp</a></li>
+                                @endif
+                            </ul>
+                        </div>
+                    @endif
                 </div>
             </div>
 
@@ -562,8 +571,8 @@
                 <div class="container">
                     <div class="bar-grid">
                         <p class="bar-copy">
-                            &copy; 2026 Parijaat Handicraft. All Rights Reserved. Design
-                            &amp; Developed by
+                            {{ $general->footer_copyright ?: '© ' . date('Y') . ' ' . $general->brand . '. All Rights Reserved.' }}
+                            Design &amp; Developed by
                             <a href="javascript:void(0)" target="_blank" rel="noopener">Web Mingo</a>
                         </p>
                         <ul class="bar-pay" aria-label="Accepted payments">
@@ -615,8 +624,15 @@
                     within 1–2 business days.
                 </p>
             </div>
-            <form class="form eq-form" id="enquiryForm" action="#" method="post" enctype="multipart/form-data"
-                novalidate>
+
+            <form class="form eq-form" id="enquiryForm" action="{{ route('bulk-enquiry.store') }}" method="post"
+                enctype="multipart/form-data" novalidate>
+                @csrf
+
+                {{-- honeypot: hidden from people, bots fill it --}}
+                <input type="text" name="website" tabindex="-1" autocomplete="off" aria-hidden="true"
+                    style="position:absolute;left:-9999px;opacity:0;height:0;width:0" />
+
                 <div class="eq-group">
                     <span class="eq-label">Your Details</span>
                     <div class="eq-row">
@@ -642,18 +658,17 @@
                         <input type="hidden" name="dial_code" />
                     </div>
                 </div>
+
                 <div class="eq-group">
                     <span class="eq-label">Your Requirement</span>
                     <div class="eq-row">
                         <div class="form-group">
                             <select id="enqCategory" name="category" required>
                                 <option value="" hidden></option>
-                                <option>Home Decor</option>
-                                <option>Pooja Essentials</option>
-                                <option>Kitchen &amp; Dining</option>
-                                <option>Metal Handicrafts</option>
-                                <option>Gifts &amp; Collections</option>
-                                <option>Mixed Order</option>
+                                @foreach ($navMenu['shop'] ?? [] as $cat)
+                                    <option value="{{ $cat['name'] }}">{{ $cat['name'] }}</option>
+                                @endforeach
+                                <option value="Mixed Order">Mixed Order</option>
                             </select>
                             <label for="enqCategory">Product Category *</label>
                         </div>
@@ -671,10 +686,9 @@
                         <div class="form-group">
                             <select id="enqFreq" name="frequency" required>
                                 <option value="" hidden></option>
-                                <option>One-time order</option>
-                                <option>Monthly</option>
-                                <option>Quarterly</option>
-                                <option>Seasonal / Yearly</option>
+                                @foreach (\App\Models\BulkEnquiry::FREQUENCIES as $f)
+                                    <option value="{{ $f }}">{{ $f }}</option>
+                                @endforeach
                             </select>
                             <label for="enqFreq">Order Frequency</label>
                         </div>
@@ -693,12 +707,14 @@
                         </span>
                         <span class="eq-upload-text">
                             <b>Attach reference images or files</b>
-                            <small>Optional · JPG, PNG, PDF, DOC · max 10 MB each</small>
+                            <small id="enqFileInfo">Optional · JPG, PNG, PDF, DOC · max 10 MB each, up to 5
+                                files</small>
                         </span>
                         <input type="file" id="enqFile" name="reference[]"
                             accept=".jpg,.jpeg,.png,.webp,.pdf,.doc,.docx,.xls,.xlsx" multiple />
                     </label>
                 </div>
+
                 <div class="eq-foot">
                     <button type="submit" class="btn btn-primary eq-submit">
                         Request Quote
@@ -782,8 +798,12 @@
                 </button>
 
                 <a href="{{ route('home') }}" class="ham-logo">
-                    <img src="{{ asset('assets/images/logo.png')}}" alt="Parijaat Handicraft"
-                        title="Parijaat Handicraft" />
+                    @if ($general->header_logo_url)
+                        <img src="{{ $general->header_logo_url }}" alt="{{ $general->brand }}"
+                            title="{{ $general->brand }}" />
+                    @else
+                        {{ $general->brand }}
+                    @endif
                 </a>
 
                 <button class="close close-btn" type="button" aria-label="Close menu">
@@ -824,7 +844,7 @@
                             </li>
                         @endif
 
-                        <li><a href="about.html#craft">Our Craft</a></li>
+                        <li><a href="{{ route('about') }}#craft">Our Craft</a></li>
                         <li><a href="{{ route('about') }}">About Us</a></li>
                         <li><a href="{{ route('certifications') }}">Certifications</a></li>
                         <li><a href="{{ route('dashboard') }}#tab-2">Track Order</a></li>
@@ -992,16 +1012,16 @@
 
             <div class="ham-bottom">
                 <div class="ham-social">
-                    <a href="javascript:void(0)" target="_blank" title="Facebook" aria-label="Facebook"><i
-                            class="fa-brands fa-facebook-f"></i></a>
-                    <a href="javascript:void(0)" target="_blank" title="Instagram" aria-label="Instagram"><i
-                            class="fa-brands fa-instagram"></i></a>
-                    <a href="javascript:void(0)" target="_blank" title="Pinterest" aria-label="Pinterest"><i
-                            class="fa-brands fa-pinterest-p"></i></a>
-                    <a href="javascript:void(0)" target="_blank" title="YouTube" aria-label="YouTube"><i
-                            class="fa-brands fa-youtube"></i></a>
-                    <a href="https://wa.me/910000000000" target="_blank" rel="noopener" title="WhatsApp"
-                        aria-label="WhatsApp"><i class="fa-brands fa-whatsapp"></i></a>
+                    @foreach (['facebook', 'instagram', 'pinterest', 'youtube'] as $k)
+                        @isset($soc[$k])
+                            <a href="{{ $soc[$k]['url'] }}" target="_blank" rel="noopener" title="{{ $soc[$k]['label'] }}"
+                                aria-label="{{ $soc[$k]['label'] }}"><i class="{{ $soc[$k]['icon'] }}"></i></a>
+                        @endisset
+                    @endforeach
+                    @if ($general->whatsapp_url)
+                        <a href="{{ $general->whatsapp_url }}" target="_blank" rel="noopener" title="WhatsApp"
+                            aria-label="WhatsApp"><i class="fa-brands fa-whatsapp"></i></a>
+                    @endif
                 </div>
 
                 <a href="{{ route('products', ['collection' => ['new-arrivals']]) }}"
@@ -1036,8 +1056,10 @@
             </svg>
         </button>
         <div class="model-body">
-            <a href="{{ route('home') }}" class="pop-logo" aria-label="Parijaat Handicraft Home">
-                <img src="{{ asset('assets/images/logo.png')}}" alt="" />
+            <a href="{{ route('home') }}" class="pop-logo" aria-label="{{ $general->brand }} Home">
+                @if ($general->header_logo_url)
+                    <img src="{{ $general->header_logo_url }}" alt="" />
+                @endif
             </a>
             <div class="pop-title">
                 <h3>Welcome Back</h3>
@@ -1125,8 +1147,8 @@
                         </button>
                         <p class="pop-note">
                             By continuing, you agree to our
-                            <a href="terms-conditions.html">Terms &amp; Conditions</a> and
-                            <a href="privacy-policy.html">Privacy Policy</a>.
+                            <a href="{{ route('page.show', 'terms-conditions') }}">Terms &amp; Conditions</a> and
+                            <a href="{{ route('page.show', 'privacy-policy') }}">Privacy Policy</a>.
                         </p>
                     </form>
                     <div class="pop-divider"><span>or</span></div>
@@ -1496,6 +1518,171 @@
                     .always(function () { $b.removeClass('is-busy'); });
             });
         });
+    </script>
+
+    <script>
+        $(function () {
+            $('#newsForm').on('submit', function (e) {
+                e.preventDefault();
+
+                var $f = $(this), $b = $f.find('button[type="submit"]');
+                if ($b.prop('disabled')) return;
+
+                function notify(type, title, text) {
+                    var ui = window.cartUI || {};
+                    if (ui.notify) ui.notify(type, title, text);
+                }
+
+                $b.prop('disabled', true);
+
+                $.ajax({
+                    url: $f.attr('action'),
+                    method: 'POST',
+                    dataType: 'json',
+                    data: { email: $f.find('[name="email"]').val() },
+                    headers: { 'X-CSRF-TOKEN': $('meta[name="csrf-token"]').attr('content') }
+                })
+                    .done(function (res) {
+                        $f[0].reset();
+                        notify('success', 'Newsletter', res.message);
+                    })
+                    .fail(function (xhr) {
+                        var j = xhr.responseJSON || {};
+                        var msg = (j.errors && Object.values(j.errors)[0][0]) || j.message || 'Something went wrong. Please try again.';
+                        notify('error', 'Newsletter', msg);
+                    })
+                    .always(function () { $b.prop('disabled', false); });
+            });
+        });
+    </script>
+
+    <script>
+        (function () {
+            var form = document.getElementById('enquiryForm');
+            if (!form) return;
+
+            var btn = form.querySelector('.eq-submit');
+            var fileInput = form.querySelector('#enqFile');
+            var fileInfo = document.getElementById('enqFileInfo');
+            var defaultInfo = fileInfo ? fileInfo.textContent : '';
+            var MAX_FILES = 5, MAX_MB = 10;
+
+            function notify(type, title, text) {
+                var ui = window.cartUI || {};
+                if (ui.notify) ui.notify(type, title, text);
+            }
+
+            function clearErrors() {
+                form.querySelectorAll('.eq-error').forEach(function (e) { e.remove(); });
+                form.querySelectorAll('.has-error').forEach(function (e) { e.classList.remove('has-error'); });
+            }
+
+            function showError(name, msg) {
+                var base = name.replace(/\.\d+$/, ''); // "reference.0" -> "reference"
+                var field = form.querySelector('[name="' + base + '"], [name="' + base + '[]"]');
+                if (!field) return;
+                var holder = field.closest('.form-group') || field.closest('.eq-upload') || field.parentNode;
+                if (holder.querySelector('.eq-error')) return;
+                holder.classList.add('has-error');
+                var p = document.createElement('p');
+                p.className = 'eq-error';
+                p.textContent = msg;
+                holder.appendChild(p);
+            }
+
+            function csrf() {
+                var m = document.querySelector('meta[name="csrf-token"]');
+                return m ? m.content : '';
+            }
+
+            // show selected file names
+            if (fileInput && fileInfo) {
+                fileInput.addEventListener('change', function () {
+                    var n = fileInput.files.length;
+                    fileInfo.textContent = n
+                        ? (n === 1 ? fileInput.files[0].name : n + ' files selected')
+                        : defaultInfo;
+                });
+            }
+
+            form.addEventListener('submit', function (e) {
+                e.preventDefault();
+                e.stopImmediatePropagation(); // overrides any old handler bound in main.js
+
+                if (btn.disabled) return;
+                clearErrors();
+
+                // client-side file checks before uploading
+                var files = fileInput.files;
+                if (files.length > MAX_FILES) {
+                    showError('reference', 'You can attach up to ' + MAX_FILES + ' files.');
+                    return;
+                }
+                for (var i = 0; i < files.length; i++) {
+                    if (files[i].size > MAX_MB * 1024 * 1024) {
+                        showError('reference', files[i].name + ' is larger than ' + MAX_MB + ' MB.');
+                        return;
+                    }
+                }
+
+                var label = btn.textContent;
+                btn.disabled = true;
+                btn.textContent = 'Sending...';
+
+                fetch(form.action, {
+                    method: 'POST',
+                    body: new FormData(form),
+                    headers: {
+                        'X-CSRF-TOKEN': csrf(),
+                        'Accept': 'application/json'
+                    }
+                })
+                    .then(function (r) {
+                        return r.json().catch(function () { return {}; }).then(function (j) {
+                            return { ok: r.ok, status: r.status, body: j };
+                        });
+                    })
+                    .then(function (res) {
+                        if (res.ok) {
+                            form.reset();
+                            if (fileInfo) fileInfo.textContent = defaultInfo;
+                            var close = document.querySelector('.enquiry-pop .close');
+                            if (close) close.click();
+                            notify('success', 'Bulk Enquiry', res.body.message);
+                            return;
+                        }
+
+                        if (res.status === 422 && res.body.errors) {
+                            var first = null;
+                            Object.keys(res.body.errors).forEach(function (k) {
+                                showError(k, res.body.errors[k][0]);
+                                first = first || k;
+                            });
+                            var f = first && form.querySelector('[name="' + first.replace(/\.\d+$/, '') + '"]');
+                            if (f && f.focus) f.focus();
+                            return;
+                        }
+
+                        if (res.status === 419) {
+                            notify('error', 'Bulk Enquiry', 'Session expired. Please refresh the page and try again.');
+                            return;
+                        }
+                        if (res.status === 429) {
+                            notify('error', 'Bulk Enquiry', 'Too many attempts. Please wait a minute and try again.');
+                            return;
+                        }
+
+                        notify('error', 'Bulk Enquiry', res.body.message || 'Something went wrong. Please try again.');
+                    })
+                    .catch(function () {
+                        notify('error', 'Bulk Enquiry', 'Network error. Please try again.');
+                    })
+                    .finally(function () {
+                        btn.disabled = false;
+                        btn.textContent = label;
+                    });
+            }, true);
+        })();
     </script>
 
     @stack('scripts')

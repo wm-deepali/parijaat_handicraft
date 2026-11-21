@@ -14,18 +14,20 @@ return new class extends Migration {
             $table->string('slug')->unique();
             $table->string('category')->nullable();
             $table->string('author')->nullable();
-            $table->string('tags')->nullable();    
+            $table->string('tags')->nullable();
             $table->date('published_at')->nullable();
             $table->string('image')->nullable();
             $table->text('short_description')->nullable();
             $table->longText('content');
             $table->string('meta_title')->nullable();
             $table->text('meta_description')->nullable();
+            $table->unsignedInteger('views')->default(0);
             $table->boolean('show_home')->default(0);
             $table->boolean('is_featured')->default(false);
             $table->boolean('status')->default(1);
             $table->timestamps();
 
+            $table->index(['status', 'published_at']);
         });
     }
 

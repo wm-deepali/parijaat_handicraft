@@ -18,6 +18,7 @@ class Blog extends Model
         'show_home'    => 'boolean',
         'is_featured'  => 'boolean',
         'status'       => 'boolean',
+        'views'        => 'integer',
     ];
 
     /** Active and already published (future dates stay hidden) */
@@ -25,6 +26,11 @@ class Blog extends Model
     {
         return $q->where('status', 1)
             ->where(fn ($w) => $w->whereNull('published_at')->orWhere('published_at', '<=', now()->toDateString()));
+    }
+
+    public function getUrlAttribute(): string
+    {
+        return route('blog.show', $this->slug);
     }
 
     public function getImageUrlAttribute(): string
@@ -37,6 +43,13 @@ class Blog extends Model
     public function getDisplayDateAttribute()
     {
         return $this->published_at ?? $this->created_at;
+    }
+
+    public function getExcerptAttribute(): string
+    {
+        return filled($this->short_description)
+            ? $this->short_description
+            : Str::limit(trim(strip_tags((string) $this->content)), 140);
     }
 
     public function getReadTimeAttribute(): int
